@@ -6,11 +6,22 @@
 //
 
 import SwiftUI
+import SceneKit
 
 struct ContentView: View {
+    var viewController = ContentViewController()
+    var sceneViewOptions = SceneView.Options()
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            SceneView(
+                scene: viewController.scene,
+                pointOfView: viewController.cameraNode,
+                options: [.allowsCameraControl, .rendersContinuously],
+                delegate: viewController
+            )
+        }
+        
     }
 }
 
