@@ -16,15 +16,14 @@ import SwiftUI
 class ContentViewController: NSObject, SCNSceneRendererDelegate {
 
     let manager = CMMotionManager()
-    //var scnView: SCNView!
     var scene: SCNScene!
-    var sceneViewOptions = SceneView.Options()
     var overlaySKScene: SKScene!
     var cameraNode: SCNNode!
     var linkOneNode: SCNNode!
     var pivotNode: SCNNode!
     var linkTwoNode: SCNNode!
     let twoLinks = TwoLinks()
+    var isPaused = false
     
     override init() {
         super.init()
@@ -77,13 +76,12 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         }
     }
      */
-    
-    func setupOptions() {
-        //sceneViewOptions.
-    }
-    
+
     func setupScene() {
         scene = SCNScene()
+        
+        // Create the background color
+        scene.background.contents = UIColor.black // UIImage(named: "art.scnassets/moonTexture.png")
 
         // create and add a light to the scene
         let lightNode = SCNNode()
@@ -109,13 +107,10 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     }
     
     func setupBackground() {
-        // Create the background image
-        //scene.background.contents = UIImage(named: "art.scnassets/moonTexture.png")
-        
         // Create a floor to define the ground and horizon
         let floorGeometry = SCNSphere(radius: 100)
         floorGeometry.segmentCount = 128
-        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "art.scnassets/moonTexture.png") // UIColor.darkGray
+        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonTexture") // UIColor.darkGray
         floorGeometry.materials.first?.shininess = 0.25
         floorGeometry.materials.first?.specular.contents = UIColor.white
         let floorNode = SCNNode(geometry: floorGeometry)
@@ -173,7 +168,6 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         )
         pivotGeometry.materials.first?.diffuse.contents = UIColor.darkGray
         pivotNode = SCNNode(geometry: pivotGeometry)
-        // pivotNode.position = SCNVector3(0, 0, twoLinks.thickness[0] + 0.5 * twoLinks.thickness[1])
         pivotNode.orientation = SCNQuaternion(sin(Double.pi/4.0), 0, 0, cos(Double.pi/4.0))
         
         // Define the second pendulum link
@@ -188,12 +182,23 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         // Update the link position and orientation
-        twoLinks.update()
+        if (!isPaused) {
+            twoLinks.update()
+        }
         linkOneNode.orientation = twoLinks.orientation[0]
         linkOneNode.position = twoLinks.position[0]
         pivotNode.position = twoLinks.pivotPosition
         linkTwoNode.orientation = twoLinks.orientation[1]
         linkTwoNode.position = twoLinks.position[1]
+    }
+    
+    func resetStates() {
+        twoLinks.θ = [0.0, 0.0]
+        twoLinks.ω = [0.0, 0.0]
+    }
+    
+    func pause() {
+        isPaused = !isPaused
     }
 }
 
