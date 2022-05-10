@@ -11,7 +11,8 @@ import SceneKit
 struct ContentView: View {
     var viewController = ContentViewController()
     var sceneViewOptions = SceneView.Options()
-    let iconSize = 24.0
+    let iconSize = 32.0
+    @State private var isPaused: Bool = false
     
     var body: some View {
         ZStack {
@@ -31,7 +32,8 @@ struct ContentView: View {
                         print("Reset button tapped!")
                         viewController.resetStates()
                     }) {
-                        Image(systemName: "arrow.uturn.left.circle.fill").resizable()
+                        Image(systemName: "arrow.uturn.left.circle.fill")
+                            .resizable()
                             .foregroundColor(Color.gray)
                             .frame(width: iconSize, height: iconSize)
                     }
@@ -40,8 +42,10 @@ struct ContentView: View {
                     Button(action: {
                         print("Pause button tapped!")
                         viewController.pause()
+                        isPaused = viewController.isPaused
                     }) {
-                        Image(systemName: "pause.circle.fill").resizable()
+                        Image(systemName: isPaused ? "play.circle.fill" : "pause.circle.fill")
+                            .resizable()
                             .foregroundColor(Color.gray)
                             .frame(width: iconSize, height: iconSize)
                     }

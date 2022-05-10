@@ -23,7 +23,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     var pivotNode: SCNNode!
     var linkTwoNode: SCNNode!
     let twoLinks = TwoLinks()
-    var isPaused = false
+    var isPaused: Bool = false
     
     override init() {
         super.init()
@@ -198,6 +198,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     }
     
     func pause() {
+        //isPaused.toggle()
         isPaused = !isPaused
     }
 }
