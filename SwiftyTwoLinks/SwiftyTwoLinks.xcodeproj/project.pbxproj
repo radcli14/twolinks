@@ -14,6 +14,8 @@
 		8A093569282840EF00B9A1A0 /* SwiftyTwoLinksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A093568282840EF00B9A1A0 /* SwiftyTwoLinksTests.swift */; };
 		8A093573282840EF00B9A1A0 /* SwiftyTwoLinksUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A093572282840EF00B9A1A0 /* SwiftyTwoLinksUITests.swift */; };
 		8A093575282840EF00B9A1A0 /* SwiftyTwoLinksUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A093574282840EF00B9A1A0 /* SwiftyTwoLinksUITestsLaunchTests.swift */; };
+		8A38FD2A282B27EB00673E97 /* ButtonSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A38FD29282B27EB00673E97 /* ButtonSlider.swift */; };
+		8A38FD2C282B420700673E97 /* CustomButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */; };
 		8AEBF9762829C65E00EABB52 /* TwoLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AEBF9752829C65E00EABB52 /* TwoLinks.swift */; };
 		8AEBF9782829CA2600EABB52 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AEBF9772829CA2600EABB52 /* ContentViewController.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +48,8 @@
 		8A09356E282840EF00B9A1A0 /* SwiftyTwoLinksUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftyTwoLinksUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A093572282840EF00B9A1A0 /* SwiftyTwoLinksUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyTwoLinksUITests.swift; sourceTree = "<group>"; };
 		8A093574282840EF00B9A1A0 /* SwiftyTwoLinksUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyTwoLinksUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		8A38FD29282B27EB00673E97 /* ButtonSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSlider.swift; sourceTree = "<group>"; };
+		8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonStyles.swift; sourceTree = "<group>"; };
 		8AEBF9752829C65E00EABB52 /* TwoLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoLinks.swift; sourceTree = "<group>"; };
 		8AEBF9772829CA2600EABB52 /* ContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -104,6 +108,8 @@
 				8A09355B282840EE00B9A1A0 /* Assets.xcassets */,
 				8A09355D282840EE00B9A1A0 /* Preview Content */,
 				8AEBF9752829C65E00EABB52 /* TwoLinks.swift */,
+				8A38FD29282B27EB00673E97 /* ButtonSlider.swift */,
+				8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */,
 			);
 			path = SwiftyTwoLinks;
 			sourceTree = "<group>";
@@ -264,6 +270,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8AEBF9782829CA2600EABB52 /* ContentViewController.swift in Sources */,
+				8A38FD2A282B27EB00673E97 /* ButtonSlider.swift in Sources */,
+				8A38FD2C282B420700673E97 /* CustomButtonStyles.swift in Sources */,
 				8A09355A282840EC00B9A1A0 /* ContentView.swift in Sources */,
 				8A093558282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift in Sources */,
 				8AEBF9762829C65E00EABB52 /* TwoLinks.swift in Sources */,

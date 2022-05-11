@@ -12,6 +12,7 @@ struct ContentView: View {
     var viewController = ContentViewController()
     var sceneViewOptions = SceneView.Options()
     let iconSize = 32.0
+    let stackPadding = 12.0
     @State private var isPaused: Bool = false
     
     var body: some View {
@@ -26,6 +27,7 @@ struct ContentView: View {
             
             // Add the user controls
             HStack {
+                // Hold the controls on the left side to reset or pause motion
                 VStack(alignment: .trailing) {
                     // Reset the pendulum to initial states
                     Button(action: {
@@ -51,12 +53,26 @@ struct ContentView: View {
                     }
                     
                     Spacer()
+                    
+                    
                 }
-                .padding(12)
+
+                
                 Spacer()
+                
+                // Hold the controls on the right side for link dimensions
+                VStack {
+                    ButtonSlider(text: "a")
+                    ButtonSlider(text: "b")
+                    ButtonSlider(text: "c")
+                    ButtonSlider(text: "d")
+                    ButtonSlider(text: "e")
+                    Spacer()
+                }
+
             }
+            .padding(stackPadding)
         }
-        
     }
 }
 
