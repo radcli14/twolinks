@@ -21,16 +21,23 @@ func rk4(equation: (Double, simd_double4) -> simd_double4, t: Double, x: simd_do
 
 class TwoLinks {
     var length = [0.28, 0.23]
-    var height = [0.05, 0.05]
-    var thickness = [0.0064, 0.0064]
     var offset = [0.125, 0.1]
     var pivot = 0.11
+    
+    var height = [0.05, 0.05]
+    var thickness = [0.0064, 0.0064]
+
     var density = [800.0, 800.0]
     var θ = [0.0, 0.0]
     var ω = [0.0, 0.0]
                      
     private var dt = 1.0 / 60.0
     private let grav = 9.8
+    
+    private let minLength = 0.12
+    private let maxLength = 0.53
+    private let minDistanceFromEdge = 0.03
+    
     private let manager = CMMotionManager()
 
     private var _mass: [Double]? = nil
@@ -66,23 +73,23 @@ class TwoLinks {
         }
     }
     
+    private let _linkOneGeometry = SCNBox(
+        width: 0.28,
+        height: 0.05,
+        length: 0.0064,
+        chamferRadius: 0.01
+    )
+    private let _linkTwoGeometry = SCNBox(
+        width: 0.23,
+        height: 0.05,
+        length: 0.0064,
+        chamferRadius: 0.01
+    )
     var geometry: [SCNBox] {
         get {
-            let linkOne = SCNBox(
-                width: length[0],
-                height: height[0],
-                length: thickness[0],
-                chamferRadius: 0.01
-            )
-            linkOne.materials.first?.diffuse.contents = UIColor.brown
-            let linkTwo = SCNBox(
-                width: length[1],
-                height: height[1],
-                length: thickness[1],
-                chamferRadius: 0.01
-            )
-            linkTwo.materials.first?.diffuse.contents = UIColor.systemBrown
-            return [linkOne, linkTwo]
+            _linkOneGeometry.materials.first?.diffuse.contents = UIColor.brown
+            _linkTwoGeometry.materials.first?.diffuse.contents = UIColor.systemBrown
+            return [_linkOneGeometry, _linkTwoGeometry]
         }
     }
     
@@ -158,5 +165,40 @@ class TwoLinks {
         let newState = rk4(equation: equationOfMotion, t: 0.0, x: priorState, h: dt)
         θ = [newState[0], newState[1]]
         ω = [newState[2], newState[3]]
+    }
+    
+    func nilify() {
+        // When a specified value changes, this makes sure the
+        // properties below get re-calculated on next update
+        _mass = nil
+        _moi = nil
+        _m11 = nil
+        _m22 = nil
+    }
+    
+    var linkOneLengthNorm: Double {
+        get {
+            return 100.0 * (length[0] - minLength) / (maxLength - minLength)
+        }
+    }
+    
+    var linkOneOffsetNorm: Double {
+        get {
+            let value = 100.0 * (offset[0] - minDistanceFromEdge) / (length[0] - 2.0 * minDistanceFromEdge)
+            return min(100.0, max(0.0, value))
+        }
+    }
+    
+    func setLinkOneLengthFromNorm(value: Double) {
+        // Get the norm values before adjusting, to avoid recursion
+        let offsetNorm = linkOneOffsetNorm
+        
+        // Adjust the physical distances
+        length[0] = minLength + 0.01 * value * (maxLength - minLength)
+        _linkOneGeometry.width = length[0]
+        offset[0] = minDistanceFromEdge + 0.01 * offsetNorm * (length[0] - 2.0 * minDistanceFromEdge)
+        
+        // Call this to make sure the mass properties get re-calculated
+        nilify()
     }
 }

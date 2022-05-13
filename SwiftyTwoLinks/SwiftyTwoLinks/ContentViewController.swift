@@ -24,7 +24,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     var linkTwoNode: SCNNode!
     let twoLinks = TwoLinks()
     var isPaused: Bool = false
-    
+
     override init() {
         super.init()
         setupScene()
@@ -126,25 +126,25 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         )
         doorGeometry.materials.first?.diffuse.contents = UIColor.black
         doorGeometry.materials.first?.shininess = 0.5
-        doorGeometry.materials.first?.specular.contents = UIColor.systemGreen
+        doorGeometry.materials.first?.specular.contents = UIColor.white
         let doorNode = SCNNode(geometry: doorGeometry)
         doorNode.position = SCNVector3(0, 0, -0.015)
         doorNode.castsShadow = true
-        let handleGeometry = SCNTorus(
+        /*let handleGeometry = SCNTorus(
             ringRadius: 0.02,
             pipeRadius: 0.0225
         )
         handleGeometry.materials.first?.diffuse.contents = UIColor.lightGray
-        doorGeometry.materials.first?.shininess = 1.0
-        doorGeometry.materials.first?.specular.contents = UIColor.white
+        handleGeometry.materials.first?.shininess = 1.0
+        handleGeometry.materials.first?.specular.contents = UIColor.white
         let handleNode = SCNNode(geometry: handleGeometry)
         handleNode.position = SCNVector3(0.375, 0, 0.02)
-        handleNode.orientation = SCNQuaternion(sin(Double.pi/4.0), 0, 0, cos(Double.pi/4.0))
+        handleNode.orientation = SCNQuaternion(sin(Double.pi/4.0), 0, 0, cos(Double.pi/4.0))*/
         
         // Add the parts into the scene
         scene.rootNode.addChildNode(floorNode)
         scene.rootNode.addChildNode(doorNode)
-        scene.rootNode.addChildNode(handleNode)
+        //scene.rootNode.addChildNode(handleNode)
     }
     
     func setupLinks() {
@@ -198,8 +198,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     }
     
     func pause() {
-        //isPaused.toggle()
-        isPaused = !isPaused
+        isPaused.toggle()
     }
 }
 
