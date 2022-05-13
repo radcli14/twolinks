@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var isPaused: Bool = false
     @State private var dimensionSlidersVisible: Bool = false
     @State private var linkOneLengthSliderVal: Double = 0.5
+    @State private var linkOneOffsetSliderVal: Double = 0.5
     
     var body: some View {
         ZStack {
@@ -65,13 +66,26 @@ struct ContentView: View {
                         Text("Link One Length")
                             .font(.caption)
                             .foregroundColor(Color.white)
-                            .frame(height: 4.0)
+                            .frame(height: 6.0)
                         Slider(value: $linkOneLengthSliderVal, in: 1...100)
-                            .frame(height: 4.0)
+                            .frame(height: 6.0)
                             .onChange(of: linkOneLengthSliderVal) {newValue in
                                 viewController.twoLinks.setLinkOneLengthFromNorm(
                                     value: linkOneLengthSliderVal
                                 )
+                                updateSliders()
+                            }
+                        Text("Link One Offset")
+                            .font(.caption)
+                            .foregroundColor(Color.white)
+                            .frame(height: 6.0)
+                        Slider(value: $linkOneOffsetSliderVal, in: 1...100)
+                            .frame(height: 6.0)
+                            .onChange(of: linkOneOffsetSliderVal) {newValue in
+                                viewController.twoLinks.setLinkOneOffsetFromNorm(
+                                    value: linkOneOffsetSliderVal
+                                )
+                                updateSliders()
                             }
                         Spacer()
                     }
@@ -93,22 +107,20 @@ struct ContentView: View {
                             .frame(width: iconSize, height: iconSize)
                     }.onChange(of: dimensionSlidersVisible) {newValue in
                         if (newValue) {
-                            linkOneLengthSliderVal = viewController.twoLinks.linkOneLengthNorm
+                            updateSliders()
                         }
                     }
-                    /*
-                    ButtonSlider(text: "a")
-                    ButtonSlider(text: "b")
-                    ButtonSlider(text: "c")
-                    ButtonSlider(text: "d")
-                    ButtonSlider(text: "e")
-                     */
                     Spacer()
                 }
 
             }
             .padding(stackPadding)
         }
+    }
+    
+    func updateSliders() {
+        linkOneLengthSliderVal = viewController.twoLinks.linkOneLengthNorm
+        linkOneOffsetSliderVal = viewController.twoLinks.linkOneOffsetNorm
     }
 }
 

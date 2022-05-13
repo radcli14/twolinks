@@ -182,22 +182,30 @@ class TwoLinks {
         }
     }
     
-    var linkOneOffsetNorm: Double {
-        get {
-            let value = 100.0 * (offset[0] - minDistanceFromEdge) / (length[0] - 2.0 * minDistanceFromEdge)
-            return min(100.0, max(0.0, value))
-        }
-    }
-    
     func setLinkOneLengthFromNorm(value: Double) {
         // Get the norm values before adjusting, to avoid recursion
         let offsetNorm = linkOneOffsetNorm
-        
+
         // Adjust the physical distances
         length[0] = minLength + 0.01 * value * (maxLength - minLength)
         _linkOneGeometry.width = length[0]
-        offset[0] = minDistanceFromEdge + 0.01 * offsetNorm * (length[0] - 2.0 * minDistanceFromEdge)
+        offset[0] = (1.0 - 0.01 * offsetNorm) * (0.5 * length[0] - minDistanceFromEdge)
         
+        // Call this to make sure the mass properties get re-calculated
+        nilify()
+    }
+    
+    var linkOneOffsetNorm: Double {
+        get {
+            let n = 1.0 - offset[0] / (0.5 * length[0] - minDistanceFromEdge)
+            return min(100.0, max(0.0, 100.0 * n))
+        }
+    }
+    
+    func setLinkOneOffsetFromNorm(value: Double) {
+        let n = 0.01 * value
+        offset[0] = (1.0 - n) * (0.5 * length[0] - minDistanceFromEdge)
+
         // Call this to make sure the mass properties get re-calculated
         nilify()
     }
