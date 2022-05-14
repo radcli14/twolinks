@@ -16,6 +16,6 @@ struct SliderButtonStyle: ButtonStyle {
             .frame(width: iconSize, height: iconSize)
             .background(.gray)
             .clipShape(Circle())
-            .foregroundColor(.black)
+            .foregroundColor(.white)
     }
 }
