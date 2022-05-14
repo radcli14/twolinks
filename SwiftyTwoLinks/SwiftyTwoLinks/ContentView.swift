@@ -89,45 +89,49 @@ struct ContentView: View {
             .padding(stackPadding)
             .overlay(alignment: .bottom) {
                 if (dimensionSlidersVisible) {
-                    HStack {
-                        VStack {
-                            TextSlider(
-                                title: "Link One Length",
-                                sliderState: $linkOneLengthSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkOneLengthFromNorm,
-                                update: updateSliders
-                            )
+                    VStack {
+                        HStack {
+                            VStack {
+                                TextSlider(
+                                    title: "Link One Length",
+                                    sliderState: $linkOneLengthSliderVal,
+                                    onChangeFunction: viewController.twoLinks.setLinkOneLengthFromNorm,
+                                    update: updateSliders
+                                )
+                                
+                                TextSlider(
+                                    title: "Link One Offset",
+                                    sliderState: $linkOneOffsetSliderVal,
+                                    onChangeFunction: viewController.twoLinks.setLinkOneOffsetFromNorm,
+                                    update: updateSliders
+                                )
+                                
+                            }
                             
-                            TextSlider(
-                                title: "Link One Offset",
-                                sliderState: $linkOneOffsetSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkOneOffsetFromNorm,
-                                update: updateSliders
-                            )
-                            
-                            TextSlider(
-                                title: "Pivot",
-                                sliderState: $pivotSliderVal,
-                                onChangeFunction: viewController.twoLinks.setPivotFromNorm,
-                                update: updateSliders
-                            )
+                            VStack {
+                                TextSlider(
+                                    title: "Link Two Length",
+                                    sliderState: $linkTwoLengthSliderVal,
+                                    onChangeFunction: viewController.twoLinks.setLinkTwoLengthFromNorm,
+                                    update: updateSliders
+                                )
+                                
+                                TextSlider(
+                                    title: "Link Two Offset",
+                                    sliderState: $linkTwoOffsetSliderVal,
+                                    onChangeFunction: viewController.twoLinks.setLinkTwoOffsetFromNorm,
+                                    update: updateSliders
+                                )
+                            }
                         }
                         
-                        VStack {
-                            TextSlider(
-                                title: "Link Two Length",
-                                sliderState: $linkTwoLengthSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkTwoLengthFromNorm,
-                                update: updateSliders
-                            )
-                            
-                            TextSlider(
-                                title: "Link Two Offset",
-                                sliderState: $linkTwoOffsetSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkTwoOffsetFromNorm,
-                                update: updateSliders
-                            )
-                        }
+                        TextSlider(
+                            title: "Pivot",
+                            sliderState: $pivotSliderVal,
+                            onChangeFunction: viewController.twoLinks.setPivotFromNorm,
+                            update: updateSliders
+                        )
+                        .padding(.bottom, 8)
                     }
                 }
             }

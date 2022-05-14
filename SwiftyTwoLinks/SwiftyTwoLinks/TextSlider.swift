@@ -15,12 +15,19 @@ struct TextSlider: View {
     let update: () -> Void
     
     var body: some View {
-        Text(title)
-            .font(.caption)
-        Slider(value: $sliderState, in: 1...100)
-            .onChange(of: sliderState) {newValue in
-                onChangeFunction(sliderState)
-                update()
-            }
+        VStack {
+            Text(title)
+                .font(.caption)
+                .frame(height: 6)
+                .padding(.top, 4)
+            Slider(value: $sliderState, in: 1...100)
+                .onChange(of: sliderState) {newValue in
+                    onChangeFunction(sliderState)
+                    update()
+                }
+        }
+        .frame(width: 128)
+        .background(Color.white.opacity(0.7))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
