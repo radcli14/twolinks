@@ -20,7 +20,7 @@ struct ContentView: View {
     @State private var linkOneOffsetSliderVal: Double = 0.5
     @State private var pivotSliderVal: Double = 0.5
     @State private var linkTwoLengthSliderVal: Double = 0.5
-    @State private var linkTwoOffsetSliderVal: Double = 0.5
+    @State public var linkTwoOffsetSliderVal: Double = 0.5
     
     var body: some View {
         ZStack {
@@ -64,82 +64,7 @@ struct ContentView: View {
                     
                 }
 
-                /*if (dimensionSlidersVisible) {
-                    VStack {
-                        //Spacer()
-                        
-                        Text("Link One Length")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            //.frame(height: 6.0)
-                        Slider(value: $linkOneLengthSliderVal, in: 1...100)
-                            //.frame(height: 6.0)
-                            .onChange(of: linkOneLengthSliderVal) {newValue in
-                                viewController.twoLinks.setLinkOneLengthFromNorm(
-                                    value: linkOneLengthSliderVal
-                                )
-                                updateSliders()
-                            }
-                        
-                        Text("Link One Offset")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            //.frame(height: 6.0)
-                        Slider(value: $linkOneOffsetSliderVal, in: 1...100)
-                            //.frame(height: 6.0)
-                            .onChange(of: linkOneOffsetSliderVal) {newValue in
-                                viewController.twoLinks.setLinkOneOffsetFromNorm(
-                                    value: linkOneOffsetSliderVal
-                                )
-                                updateSliders()
-                            }
-                        
-                        Text("Pivot")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            //.frame(height: 6.0)
-                        Slider(value: $pivotSliderVal, in: 1...100)
-                            //.frame(height: 6.0)
-                            .onChange(of: pivotSliderVal) {newValue in
-                                viewController.twoLinks.setPivotFromNorm(
-                                    value: pivotSliderVal
-                                )
-                                updateSliders()
-                            }
-                        
-                        Text("Link Two Length")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            //.frame(height: 6.0)
-                        Slider(value: $linkTwoLengthSliderVal, in: 1...100)
-                            //.frame(height: 6.0)
-                            .onChange(of: linkTwoLengthSliderVal) {newValue in
-                                viewController.twoLinks.setLinkTwoLengthFromNorm(
-                                    value: linkTwoLengthSliderVal
-                                )
-                                updateSliders()
-                            }
-                        
-                        Text("Link Two Offset")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            //.frame(height: 6.0)
-                        Slider(value: $linkTwoOffsetSliderVal, in: 1...100)
-                            //.frame(height: 6.0)
-                            .onChange(of: linkTwoOffsetSliderVal) {newValue in
-                                viewController.twoLinks.setLinkTwoOffsetFromNorm(
-                                    value: linkTwoOffsetSliderVal
-                                )
-                                updateSliders()
-                            }
-                        
-                        //Spacer()
-                    }
-                    //.padding(12)
-                    */
-                //} else {
-                    Spacer()
-                //}
+                Spacer()
                 
                 // Hold the controls on the right side for link dimensions
                 VStack {
@@ -162,76 +87,48 @@ struct ContentView: View {
 
             }
             .padding(stackPadding)
-            .sheet(isPresented: $dimensionSlidersVisible) {
-                VStack {
-                    //Spacer()
-                    
-                    Text("Link One Length")
-                        .font(.caption)
-                        //.foregroundColor(Color.white)
-                        //.frame(height: 6.0)
-                    Slider(value: $linkOneLengthSliderVal, in: 1...100)
-                        //.frame(height: 6.0)
-                        .onChange(of: linkOneLengthSliderVal) {newValue in
-                            viewController.twoLinks.setLinkOneLengthFromNorm(
-                                value: linkOneLengthSliderVal
+            .overlay(alignment: .bottom) {
+                if (dimensionSlidersVisible) {
+                    HStack {
+                        VStack {
+                            TextSlider(
+                                title: "Link One Length",
+                                sliderState: $linkOneLengthSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkOneLengthFromNorm,
+                                update: updateSliders
                             )
-                            updateSliders()
-                        }
-                    
-                    Text("Link One Offset")
-                        .font(.caption)
-                        //.foregroundColor(Color.white)
-                        //.frame(height: 6.0)
-                    Slider(value: $linkOneOffsetSliderVal, in: 1...100)
-                        //.frame(height: 6.0)
-                        .onChange(of: linkOneOffsetSliderVal) {newValue in
-                            viewController.twoLinks.setLinkOneOffsetFromNorm(
-                                value: linkOneOffsetSliderVal
+                            
+                            TextSlider(
+                                title: "Link One Offset",
+                                sliderState: $linkOneOffsetSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkOneOffsetFromNorm,
+                                update: updateSliders
                             )
-                            updateSliders()
-                        }
-                    
-                    Text("Pivot")
-                        .font(.caption)
-                        //.foregroundColor(Color.white)
-                        //.frame(height: 6.0)
-                    Slider(value: $pivotSliderVal, in: 1...100)
-                        //.frame(height: 6.0)
-                        .onChange(of: pivotSliderVal) {newValue in
-                            viewController.twoLinks.setPivotFromNorm(
-                                value: pivotSliderVal
+                            
+                            TextSlider(
+                                title: "Pivot",
+                                sliderState: $pivotSliderVal,
+                                onChangeFunction: viewController.twoLinks.setPivotFromNorm,
+                                update: updateSliders
                             )
-                            updateSliders()
                         }
-                    
-                    Text("Link Two Length")
-                        .font(.caption)
-                        //.foregroundColor(Color.white)
-                        //.frame(height: 6.0)
-                    Slider(value: $linkTwoLengthSliderVal, in: 1...100)
-                        //.frame(height: 6.0)
-                        .onChange(of: linkTwoLengthSliderVal) {newValue in
-                            viewController.twoLinks.setLinkTwoLengthFromNorm(
-                                value: linkTwoLengthSliderVal
+                        
+                        VStack {
+                            TextSlider(
+                                title: "Link Two Length",
+                                sliderState: $linkTwoLengthSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkTwoLengthFromNorm,
+                                update: updateSliders
                             )
-                            updateSliders()
-                        }
-                    
-                    Text("Link Two Offset")
-                        .font(.caption)
-                        //.foregroundColor(Color.white)
-                        //.frame(height: 6.0)
-                    Slider(value: $linkTwoOffsetSliderVal, in: 1...100)
-                        //.frame(height: 6.0)
-                        .onChange(of: linkTwoOffsetSliderVal) {newValue in
-                            viewController.twoLinks.setLinkTwoOffsetFromNorm(
-                                value: linkTwoOffsetSliderVal
+                            
+                            TextSlider(
+                                title: "Link Two Offset",
+                                sliderState: $linkTwoOffsetSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkTwoOffsetFromNorm,
+                                update: updateSliders
                             )
-                            updateSliders()
                         }
-                    
-                    //Spacer()
+                    }
                 }
             }
         }
