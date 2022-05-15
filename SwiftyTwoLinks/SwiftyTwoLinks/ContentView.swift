@@ -18,9 +18,12 @@ struct ContentView: View {
     @State private var dimensionSlidersVisible: Bool = false
     @State private var linkOneLengthSliderVal: Double = 0.5
     @State private var linkOneOffsetSliderVal: Double = 0.5
+    @State private var pivotSliderVal: Double = 0.5
+    @State private var linkTwoLengthSliderVal: Double = 0.5
+    @State public var linkTwoOffsetSliderVal: Double = 0.5
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             // Add the 3D rendering view
             SceneView(
                 scene: viewController.scene,
@@ -35,7 +38,6 @@ struct ContentView: View {
                 VStack(alignment: .trailing) {
                     // Reset the pendulum to initial states
                     Button(action: {
-                        print("Reset button tapped!")
                         viewController.resetStates()
                     }) {
                         Image(systemName: "arrow.uturn.left.circle.fill")
@@ -46,7 +48,6 @@ struct ContentView: View {
                     
                     // Pause the simulation
                     Button(action: {
-                        print("Pause button tapped!")
                         viewController.pause()
                         isPaused = viewController.isPaused
                     }) {
@@ -61,49 +62,19 @@ struct ContentView: View {
                     
                 }
 
-                if (dimensionSlidersVisible) {
-                    VStack {
-                        Text("Link One Length")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            .frame(height: 6.0)
-                        Slider(value: $linkOneLengthSliderVal, in: 1...100)
-                            .frame(height: 6.0)
-                            .onChange(of: linkOneLengthSliderVal) {newValue in
-                                viewController.twoLinks.setLinkOneLengthFromNorm(
-                                    value: linkOneLengthSliderVal
-                                )
-                                updateSliders()
-                            }
-                        Text("Link One Offset")
-                            .font(.caption)
-                            .foregroundColor(Color.white)
-                            .frame(height: 6.0)
-                        Slider(value: $linkOneOffsetSliderVal, in: 1...100)
-                            .frame(height: 6.0)
-                            .onChange(of: linkOneOffsetSliderVal) {newValue in
-                                viewController.twoLinks.setLinkOneOffsetFromNorm(
-                                    value: linkOneOffsetSliderVal
-                                )
-                                updateSliders()
-                            }
-                        Spacer()
-                    }
-                    .padding(12)
-                } else {
-                    Spacer()
-                }
+                Spacer()
                 
                 // Hold the controls on the right side for link dimensions
                 VStack {
                     // Pause the simulation
                     Button(action: {
-                        print("Dimension button tapped!")
-                        dimensionSlidersVisible.toggle()
+                        withAnimation {
+                            dimensionSlidersVisible.toggle()
+                        }
                     }) {
                         Image(systemName: "scale.3d")
                             .resizable()
-                            .foregroundColor(.gray)
+                            .foregroundColor(dimensionSlidersVisible ? .white : .gray)
                             .frame(width: iconSize, height: iconSize)
                     }.onChange(of: dimensionSlidersVisible) {newValue in
                         if (newValue) {
@@ -115,12 +86,65 @@ struct ContentView: View {
 
             }
             .padding(stackPadding)
+            
+            // Holds the controls to modify lengths and connection points, uses custom TextSlider view
+            if dimensionSlidersVisible {
+                VStack {
+                    HStack {
+                        VStack {
+                            TextSlider(
+                                title: "Link One Length",
+                                sliderState: $linkOneLengthSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkOneLengthFromNorm,
+                                update: updateSliders
+                            )
+                            
+                            TextSlider(
+                                title: "Link One Offset",
+                                sliderState: $linkOneOffsetSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkOneOffsetFromNorm,
+                                update: updateSliders
+                            )
+                            
+                        }
+                        
+                        VStack {
+                            TextSlider(
+                                title: "Link Two Length",
+                                sliderState: $linkTwoLengthSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkTwoLengthFromNorm,
+                                update: updateSliders
+                            )
+                            
+                            TextSlider(
+                                title: "Link Two Offset",
+                                sliderState: $linkTwoOffsetSliderVal,
+                                onChangeFunction: viewController.twoLinks.setLinkTwoOffsetFromNorm,
+                                update: updateSliders
+                            )
+                        }
+                    }
+                    
+                    TextSlider(
+                        title: "Pivot",
+                        sliderState: $pivotSliderVal,
+                        onChangeFunction: viewController.twoLinks.setPivotFromNorm,
+                        update: updateSliders
+                    )
+                    .padding(.bottom, 8)
+                }
+                .transition(.move(edge: .bottom))
+                .zIndex(1)
+            }
         }
     }
     
     func updateSliders() {
         linkOneLengthSliderVal = viewController.twoLinks.linkOneLengthNorm
         linkOneOffsetSliderVal = viewController.twoLinks.linkOneOffsetNorm
+        pivotSliderVal = viewController.twoLinks.pivotNorm
+        linkTwoLengthSliderVal = viewController.twoLinks.linkTwoLengthNorm
+        linkTwoOffsetSliderVal = viewController.twoLinks.linkTwoOffsetNorm
     }
 }
 
