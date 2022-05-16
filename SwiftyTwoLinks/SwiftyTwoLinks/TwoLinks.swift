@@ -28,6 +28,7 @@ class TwoLinks {
     var thickness = [0.0064, 0.0064]
 
     var density = [800.0, 800.0]
+    var dampingRatio = 0.0
     var θ = [0.0, 0.0]
     var ω = [0.0, 0.0]
                      
