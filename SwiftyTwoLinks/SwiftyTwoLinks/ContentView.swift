@@ -10,18 +10,12 @@ import SceneKit
 
 struct ContentView: View {
     var viewController = ContentViewController()
-    var sceneViewOptions = SceneView.Options()
     let iconSize = 32.0
     let stackPadding = 12.0
     
     @State private var isPaused: Bool = false
     @State private var dimensionSlidersVisible: Bool = false
-    @State private var linkOneLengthSliderVal: Double = 0.5
-    @State private var linkOneOffsetSliderVal: Double = 0.5
-    @State private var pivotSliderVal: Double = 0.5
-    @State private var linkTwoLengthSliderVal: Double = 0.5
-    @State public var linkTwoOffsetSliderVal: Double = 0.5
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
             // Add the 3D rendering view
@@ -83,10 +77,6 @@ struct ContentView: View {
                             .resizable()
                             .foregroundColor(dimensionSlidersVisible ? .white : .gray)
                             .frame(width: iconSize, height: iconSize)
-                    }.onChange(of: dimensionSlidersVisible) {newValue in
-                        if (newValue) {
-                            updateSliders()
-                        }
                     }
                     Spacer()
                 }
@@ -96,62 +86,9 @@ struct ContentView: View {
             
             // Holds the controls to modify lengths and connection points, uses custom TextSlider view
             if dimensionSlidersVisible {
-                VStack {
-                    HStack {
-                        VStack {
-                            TextSlider(
-                                title: "Link One Length",
-                                sliderState: $linkOneLengthSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkOneLengthFromNorm,
-                                update: updateSliders
-                            )
-                            
-                            TextSlider(
-                                title: "Link One Offset",
-                                sliderState: $linkOneOffsetSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkOneOffsetFromNorm,
-                                update: updateSliders
-                            )
-                            
-                        }
-                        
-                        VStack {
-                            TextSlider(
-                                title: "Link Two Length",
-                                sliderState: $linkTwoLengthSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkTwoLengthFromNorm,
-                                update: updateSliders
-                            )
-                            
-                            TextSlider(
-                                title: "Link Two Offset",
-                                sliderState: $linkTwoOffsetSliderVal,
-                                onChangeFunction: viewController.twoLinks.setLinkTwoOffsetFromNorm,
-                                update: updateSliders
-                            )
-                        }
-                    }
-                    
-                    TextSlider(
-                        title: "Pivot",
-                        sliderState: $pivotSliderVal,
-                        onChangeFunction: viewController.twoLinks.setPivotFromNorm,
-                        update: updateSliders
-                    )
-                    .padding(.bottom, 8)
-                }
-                .transition(.move(edge: .bottom))
-                .zIndex(1)
+                DimensionSliders(viewController: viewController)
             }
         }
-    }
-    
-    func updateSliders() {
-        linkOneLengthSliderVal = viewController.twoLinks.linkOneLengthNorm
-        linkOneOffsetSliderVal = viewController.twoLinks.linkOneOffsetNorm
-        pivotSliderVal = viewController.twoLinks.pivotNorm
-        linkTwoLengthSliderVal = viewController.twoLinks.linkTwoLengthNorm
-        linkTwoOffsetSliderVal = viewController.twoLinks.linkTwoOffsetNorm
     }
 }
 
