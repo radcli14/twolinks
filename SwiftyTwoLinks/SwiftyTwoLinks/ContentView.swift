@@ -30,6 +30,13 @@ struct ContentView: View {
                 pointOfView: viewController.cameraNode,
                 options: [.allowsCameraControl, .rendersContinuously],
                 delegate: viewController
+            ).gesture(
+                TapGesture()
+                    .onEnded { _ in
+                        withAnimation {
+                            dimensionSlidersVisible = false
+                        }
+                    }
             )
             
             // Add the user controls
