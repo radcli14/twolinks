@@ -179,7 +179,7 @@ class TwoLinks {
     
     var linkOneLengthNorm: Double {
         get {
-            return 100.0 * (length[0] - minLength) / (maxLength - minLength)
+            return (length[0] - minLength) / (maxLength - minLength)
         }
     }
     
@@ -188,9 +188,9 @@ class TwoLinks {
         let offsetNorm = linkOneOffsetNorm
 
         // Adjust the physical distances
-        length[0] = minLength + 0.01 * value * (maxLength - minLength)
+        length[0] = minLength + value * (maxLength - minLength)
         _linkOneGeometry.width = length[0]
-        offset[0] = (1.0 - 0.01 * offsetNorm) * (0.5 * length[0] - minDistanceFromEdge)
+        offset[0] = (1.0 - offsetNorm) * (0.5 * length[0] - minDistanceFromEdge)
         pivot = min(pivot, maxPivot)
         
         // Call this to make sure the mass properties get re-calculated
@@ -200,12 +200,11 @@ class TwoLinks {
     var linkOneOffsetNorm: Double {
         get {
             let n = 1.0 - offset[0] / (0.5 * length[0] - minDistanceFromEdge)
-            return min(100.0, max(0.0, 100.0 * n))
+            return min(1.0, max(0.0, n))
         }
     }
     
-    func setLinkOneOffsetFromNorm(value: Double) {
-        let n = 0.01 * value
+    func setLinkOneOffsetFromNorm(n: Double) {
         offset[0] = (1.0 - n) * (0.5 * length[0] - minDistanceFromEdge)
         pivot = min(pivot, maxPivot)
 
@@ -221,13 +220,11 @@ class TwoLinks {
         
     var pivotNorm: Double {
         get {
-            let m = pivot / maxPivot
-            return min(100.0, max(0.0, 100.0 * m))
+            return min(1.0, max(0.0, pivot / maxPivot))
         }
     }
         
-    func setPivotFromNorm(value: Double) {
-        let m = 0.01 * value
+    func setPivotFromNorm(m: Double) {
         pivot = m * maxPivot
         
         // Call this to make sure the mass properties get re-calculated
@@ -236,18 +233,18 @@ class TwoLinks {
     
     var linkTwoLengthNorm: Double {
         get {
-            return 100.0 * (length[1] - minLength) / (maxLength - minLength)
+            return (length[1] - minLength) / (maxLength - minLength)
         }
     }
     
-    func setLinkTwoLengthFromNorm(value: Double) {
+    func setLinkTwoLengthFromNorm(n: Double) {
         // Get the norm values before adjusting, to avoid recursion
         let offsetNorm = linkTwoOffsetNorm
 
         // Adjust the physical distances
-        length[1] = minLength + 0.01 * value * (maxLength - minLength)
+        length[1] = minLength + n * (maxLength - minLength)
         _linkTwoGeometry.width = length[1]
-        offset[1] = (1.0 - 0.01 * offsetNorm) * (0.5 * length[1] - minDistanceFromEdge)
+        offset[1] = (1.0 - offsetNorm) * (0.5 * length[1] - minDistanceFromEdge)
 
         // Call this to make sure the mass properties get re-calculated
         nilify()
@@ -256,12 +253,11 @@ class TwoLinks {
     var linkTwoOffsetNorm: Double {
         get {
             let n = 1.0 - offset[1] / (0.5 * length[1] - minDistanceFromEdge)
-            return min(100.0, max(0.0, 100.0 * n))
+            return min(1.0, max(0.0, n))
         }
     }
     
-    func setLinkTwoOffsetFromNorm(value: Double) {
-        let n = 0.01 * value
+    func setLinkTwoOffsetFromNorm(n: Double) {
         offset[1] = (1.0 - n) * (0.5 * length[1] - minDistanceFromEdge)
 
         // Call this to make sure the mass properties get re-calculated

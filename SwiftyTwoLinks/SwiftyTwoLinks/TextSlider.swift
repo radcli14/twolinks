@@ -19,8 +19,8 @@ struct TextSlider: View {
             Text(title)
                 .font(.caption)
                 .frame(height: 6)
-                .padding(.top, 4)
-            Slider(value: $sliderState, in: 1...100)
+                .padding(.top, 6)
+            Slider(value: $sliderState, in: 0...1)
                 .onChange(of: sliderState) {newValue in
                     onChangeFunction(sliderState)
                     update()
