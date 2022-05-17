@@ -13,7 +13,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
-   sodipodi:docname="offsetDiagram.svg">
+   sodipodi:docname="offsetDiagram.svg"
+   inkscape:export-filename="/Users/radcli14/Documents/twolinks.nosync/assets/offsetDiagram.svg.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs2">
     <marker
@@ -65,18 +68,18 @@
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
-     inkscape:pageopacity="0.0"
+     inkscape:pageopacity="1"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.62"
-     inkscape:cx="406.02765"
-     inkscape:cy="620.18145"
+     inkscape:zoom="0.47"
+     inkscape:cx="426.02765"
+     inkscape:cy="571.1297"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
-     inkscape:window-width="1252"
-     inkscape:window-height="942"
-     inkscape:window-x="0"
+     inkscape:window-width="1278"
+     inkscape:window-height="762"
+     inkscape:window-x="26"
      inkscape:window-y="25"
      inkscape:window-maximized="0" />
   <metadata
@@ -87,7 +90,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
