@@ -15,6 +15,7 @@ struct ContentView: View {
     
     @State private var isPaused: Bool = false
     @State private var dimensionSlidersVisible: Bool = false
+    @State private var visualControlsVisible: Bool = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -28,7 +29,7 @@ struct ContentView: View {
                 TapGesture()
                     .onEnded { _ in
                         withAnimation {
-                            dimensionSlidersVisible = false
+                            removeControls()
                         }
                     }
             )
@@ -65,9 +66,9 @@ struct ContentView: View {
 
                 Spacer()
                 
-                // Hold the controls on the right side for link dimensions
+                // Hold the controls on the right side for link dimensions and visual properties
                 VStack {
-                    // Pause the simulation
+                    // Dimensions
                     Button(action: {
                         withAnimation {
                             dimensionSlidersVisible.toggle()
@@ -78,6 +79,19 @@ struct ContentView: View {
                             .foregroundColor(dimensionSlidersVisible ? .white : .gray)
                             .frame(width: iconSize, height: iconSize)
                     }
+                    
+                    // Visual characteristics
+                    Button(action: {
+                        withAnimation {
+                            visualControlsVisible.toggle()
+                        }
+                    }) {
+                        Image(systemName: "paintpalette")
+                            .resizable()
+                            .foregroundColor(visualControlsVisible ? .white : .gray)
+                            .frame(width: iconSize, height: iconSize)
+                    }
+                    
                     Spacer()
                 }
 
@@ -88,7 +102,17 @@ struct ContentView: View {
             if dimensionSlidersVisible {
                 DimensionSliders(viewController: viewController)
             }
+            
+            // Holds the controls to modify colors
+            if visualControlsVisible {
+                VisualControls()
+            }
         }
+    }
+    
+    func removeControls() {
+        dimensionSlidersVisible = false
+        visualControlsVisible = false
     }
 }
 

@@ -16,6 +16,7 @@
 		8A093575282840EF00B9A1A0 /* SwiftyTwoLinksUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A093574282840EF00B9A1A0 /* SwiftyTwoLinksUITestsLaunchTests.swift */; };
 		8A11B0FB282FE96E006C692C /* TextSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A11B0FA282FE96E006C692C /* TextSlider.swift */; };
 		8A21B11B2833271F00D6CE3B /* DimensionSliders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A21B11A2833271F00D6CE3B /* DimensionSliders.swift */; };
+		8A21B11D2833312400D6CE3B /* VisualControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A21B11C2833312400D6CE3B /* VisualControls.swift */; };
 		8A38FD2A282B27EB00673E97 /* ButtonSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A38FD29282B27EB00673E97 /* ButtonSlider.swift */; };
 		8A38FD2C282B420700673E97 /* CustomButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */; };
 		8AEBF9762829C65E00EABB52 /* TwoLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AEBF9752829C65E00EABB52 /* TwoLinks.swift */; };
@@ -52,6 +53,7 @@
 		8A093574282840EF00B9A1A0 /* SwiftyTwoLinksUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyTwoLinksUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8A11B0FA282FE96E006C692C /* TextSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSlider.swift; sourceTree = "<group>"; };
 		8A21B11A2833271F00D6CE3B /* DimensionSliders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionSliders.swift; sourceTree = "<group>"; };
+		8A21B11C2833312400D6CE3B /* VisualControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualControls.swift; sourceTree = "<group>"; };
 		8A38FD29282B27EB00673E97 /* ButtonSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSlider.swift; sourceTree = "<group>"; };
 		8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonStyles.swift; sourceTree = "<group>"; };
 		8AEBF9752829C65E00EABB52 /* TwoLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoLinks.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			children = (
 				8A093557282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift */,
 				8A093559282840EC00B9A1A0 /* ContentView.swift */,
+				8A21B11C2833312400D6CE3B /* VisualControls.swift */,
 				8A21B11A2833271F00D6CE3B /* DimensionSliders.swift */,
 				8AEBF9772829CA2600EABB52 /* ContentViewController.swift */,
 				8A09355B282840EE00B9A1A0 /* Assets.xcassets */,
@@ -282,6 +285,7 @@
 				8A09355A282840EC00B9A1A0 /* ContentView.swift in Sources */,
 				8A21B11B2833271F00D6CE3B /* DimensionSliders.swift in Sources */,
 				8A093558282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift in Sources */,
+				8A21B11D2833312400D6CE3B /* VisualControls.swift in Sources */,
 				8AEBF9762829C65E00EABB52 /* TwoLinks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
