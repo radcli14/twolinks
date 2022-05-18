@@ -105,7 +105,7 @@ struct ContentView: View {
             
             // Holds the controls to modify colors
             if visualControlsVisible {
-                VisualControls()
+                VisualControls(viewController: viewController)
             }
         }
     }

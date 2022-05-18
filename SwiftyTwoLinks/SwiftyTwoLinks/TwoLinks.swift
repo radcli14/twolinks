@@ -74,7 +74,7 @@ class TwoLinks {
         }
     }
     
-    private let _linkOneGeometry = SCNBox(
+    let _linkOneGeometry = SCNBox(
         width: 0.28,
         height: 0.05,
         length: 0.0064,
@@ -86,10 +86,27 @@ class TwoLinks {
         length: 0.0064,
         chamferRadius: 0.01
     )
+    
+    var linkOneColor: UIColor {
+        set {
+            _linkOneGeometry.materials.first?.diffuse.contents = newValue
+        }
+        get {
+            return _linkOneGeometry.materials.first?.diffuse.contents as! UIColor
+        }
+    }
+    
+    var linkTwoColor: UIColor {
+        set {
+            _linkTwoGeometry.materials.first?.diffuse.contents = newValue
+        }
+        get {
+            return _linkTwoGeometry.materials.first?.diffuse.contents as! UIColor
+        }
+    }
+    
     var geometry: [SCNBox] {
         get {
-            _linkOneGeometry.materials.first?.diffuse.contents = UIColor.brown
-            _linkTwoGeometry.materials.first?.diffuse.contents = UIColor.systemBrown
             return [_linkOneGeometry, _linkTwoGeometry]
         }
     }
