@@ -24,6 +24,26 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     var linkTwoNode: SCNNode!
     let twoLinks = TwoLinks()
     var isPaused: Bool = false
+    
+    var doorGeometry: SCNGeometry!
+    var doorColor: UIColor {
+        get {
+            doorGeometry.materials.first?.diffuse.contents as! UIColor
+        }
+        set {
+            doorGeometry.materials.first?.diffuse.contents = newValue
+        }
+    }
+    
+    var floorGeometry: SCNSphere!
+    var floorColor: UIColor {
+        get {
+            return floorGeometry.materials.first?.emission.contents as! UIColor
+        }
+        set {
+            floorGeometry.materials.first?.emission.contents = newValue
+        }
+    }
 
     override init() {
         super.init()
@@ -108,43 +128,32 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     
     func setupBackground() {
         // Create a floor to define the ground and horizon
-        let floorGeometry = SCNSphere(radius: 100)
+        floorGeometry = SCNSphere(radius: 100)
         floorGeometry.segmentCount = 128
         floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonTexture") // UIColor.darkGray
         floorGeometry.materials.first?.shininess = 0.25
-        floorGeometry.materials.first?.specular.contents = UIColor.white
+        floorColor = UIColor.gray
         let floorNode = SCNNode(geometry: floorGeometry)
         floorNode.position = SCNVector3(0, -1.015-100.0, 0)
         floorNode.orientation = SCNQuaternion(sin(Double.pi/8.0), 0, 0, cos(Double.pi/8.0))
         
         // Define a door that is behind the pendulum
-        let doorGeometry = SCNBox(
+        doorGeometry = SCNBox(
             width: 0.91,
             height: 2.03,
             length: 0.035,
             chamferRadius: 0.01
         )
-        doorGeometry.materials.first?.diffuse.contents = UIColor.black
+        doorColor = UIColor.black
         doorGeometry.materials.first?.shininess = 0.5
         doorGeometry.materials.first?.specular.contents = UIColor.white
         let doorNode = SCNNode(geometry: doorGeometry)
         doorNode.position = SCNVector3(0, 0, -0.015)
         doorNode.castsShadow = true
-        /*let handleGeometry = SCNTorus(
-            ringRadius: 0.02,
-            pipeRadius: 0.0225
-        )
-        handleGeometry.materials.first?.diffuse.contents = UIColor.lightGray
-        handleGeometry.materials.first?.shininess = 1.0
-        handleGeometry.materials.first?.specular.contents = UIColor.white
-        let handleNode = SCNNode(geometry: handleGeometry)
-        handleNode.position = SCNVector3(0.375, 0, 0.02)
-        handleNode.orientation = SCNQuaternion(sin(Double.pi/4.0), 0, 0, cos(Double.pi/4.0))*/
-        
+
         // Add the parts into the scene
         scene.rootNode.addChildNode(floorNode)
         scene.rootNode.addChildNode(doorNode)
-        //scene.rootNode.addChildNode(handleNode)
     }
     
     func setupLinks() {

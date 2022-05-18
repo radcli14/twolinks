@@ -49,15 +49,25 @@ struct VisualControls: View {
             }
             HStack {
                 // Control visuals for the big black door-looking thing
-                LinkVisualControl(heading: "Monolith", color: $monolithColor) { }
+                LinkVisualControl(heading: "Monolith", color: $monolithColor) {
+                    viewController.doorColor = monolithColor.uiColor()
+                }
                 
                 // Control visuals for the ground
-                LinkVisualControl(heading: "Moon", color: $moonColor) { }
+                LinkVisualControl(heading: "Moon", color: $moonColor) {
+                    viewController.floorColor = moonColor.uiColor()
+                }
             }
         }
         .transition(.move(edge: .bottom))
         .zIndex(1)
         .padding(.bottom, 8)
+        .onAppear {
+            linkOneColor = Color(viewController.twoLinks.linkOneColor)
+            linkTwoColor = Color(viewController.twoLinks.linkTwoColor)
+            monolithColor = Color(viewController.doorColor)
+            moonColor = Color(viewController.floorColor)
+        }
     }
 }
 
