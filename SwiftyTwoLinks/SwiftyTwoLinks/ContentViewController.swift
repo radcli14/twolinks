@@ -35,6 +35,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         }
     }
     
+    let moonRadius = 62.8
     var floorGeometry: SCNSphere!
     var floorColor: UIColor {
         get {
@@ -100,9 +101,12 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     func setupScene() {
         scene = SCNScene()
         
-        // Create the background color
-        scene.background.contents = UIColor.black // UIImage(named: "art.scnassets/moonTexture.png")
-
+        // Create the background skybox
+        scene.background.contents = UIImage(named: "starry")
+        /*scene.background.contentsTransform = SCNMatrix4MakeScale(20, 20, 20)
+        scene.background.wrapS = SCNWrapMode.repeat
+        scene.background.wrapT = SCNWrapMode.repeat*/
+        
         // create and add a light to the scene
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
@@ -128,13 +132,17 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     
     func setupBackground() {
         // Create a floor to define the ground and horizon
-        floorGeometry = SCNSphere(radius: 100)
-        floorGeometry.segmentCount = 128
-        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonTexture") // UIColor.darkGray
+        floorGeometry = SCNSphere(radius: moonRadius)
+        floorGeometry.isGeodesic = false
+        floorGeometry.segmentCount = 256
+        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonTexture")
+        floorGeometry.materials.first?.diffuse.contentsTransform = SCNMatrix4MakeScale(20, 20, 20)
+        floorGeometry.materials.first?.diffuse.wrapS = SCNWrapMode.repeat
+        floorGeometry.materials.first?.diffuse.wrapT = SCNWrapMode.repeat
         floorGeometry.materials.first?.shininess = 0.25
         floorColor = UIColor.gray
         let floorNode = SCNNode(geometry: floorGeometry)
-        floorNode.position = SCNVector3(0, -1.015-100.0, 0)
+        floorNode.position = SCNVector3(0, -1.015-moonRadius, 0)
         floorNode.orientation = SCNQuaternion(sin(Double.pi/8.0), 0, 0, cos(Double.pi/8.0))
         
         // Define a door that is behind the pendulum
