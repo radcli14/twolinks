@@ -33,7 +33,7 @@ class TwoLinks {
     var ω = [0.0, 0.0]
                      
     private var dt = 1.0 / 60.0
-    private let grav = 9.8
+    private let grav = 1.62  //9.8
     
     private let minLength = 0.12
     private let maxLength = 0.53

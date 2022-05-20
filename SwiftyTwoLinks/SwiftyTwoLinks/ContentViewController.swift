@@ -111,7 +111,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
             UIImage(named: "starry_front5")
         ]
 
-        // create and add a light to the scene
+        // Light is provided through sparks of energy of the mind that travel in rhyme form
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
@@ -120,11 +120,11 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
-        let ambientLightNode = SCNNode()
+        /*let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = UIColor.white
-        scene.rootNode.addChildNode(ambientLightNode)
+        scene.rootNode.addChildNode(ambientLightNode)*/
     }
 
     func setupCamera() {
