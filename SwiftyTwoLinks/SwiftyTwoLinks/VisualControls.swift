@@ -16,10 +16,16 @@ struct LinkVisualControl: View {
     var body: some View {
         VStack {
             Text(heading)
-            ColorPicker("Color", selection: $color).padding(.horizontal, 12)
+                .foregroundColor(.black)
+                .font(.caption)
+                .frame(height: 6)
+                .padding(.top, 6)
+            ColorPicker("Color", selection: $color)
+                .padding(.horizontal, 12)
+                .foregroundColor(.black)
         }
         .frame(width: 128)
-        .background(Color.white.opacity(0.7))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .onChange(of: color) { _ in
             onChange()
@@ -72,7 +78,7 @@ struct VisualControls: View {
 }
 
 /**
- I didn't make this ... not sure I trust it
+Used to obtain the equivalent UIColor from a swiftui Color
  */
 extension Color {
  

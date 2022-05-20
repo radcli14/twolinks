@@ -17,6 +17,7 @@ struct TextSlider: View {
     var body: some View {
         VStack {
             Text(title)
+                .foregroundColor(.black)
                 .font(.caption)
                 .frame(height: 6)
                 .padding(.top, 6)
@@ -27,7 +28,7 @@ struct TextSlider: View {
                 }
         }
         .frame(width: 128)
-        .background(Color.white.opacity(0.7))
+        .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

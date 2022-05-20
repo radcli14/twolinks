@@ -102,11 +102,15 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         scene = SCNScene()
         
         // Create the background skybox
-        scene.background.contents = UIImage(named: "starry")
-        /*scene.background.contentsTransform = SCNMatrix4MakeScale(20, 20, 20)
-        scene.background.wrapS = SCNWrapMode.repeat
-        scene.background.wrapT = SCNWrapMode.repeat*/
-        
+        scene.background.contents = [
+            UIImage(named: "starry_right1"),
+            UIImage(named: "starry_left2"),
+            UIImage(named: "starry_top3"),
+            UIImage(named: "starry_bottom4"),
+            UIImage(named: "starry_back6"),
+            UIImage(named: "starry_front5")
+        ]
+
         // create and add a light to the scene
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
@@ -195,11 +199,15 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         scene.rootNode.addChildNode(linkOneNode)
         scene.rootNode.addChildNode(pivotNode)
         scene.rootNode.addChildNode(linkTwoNode)
+        
+        // Specify initial colors of the links
+        twoLinks.linkOneColor = UIColor.random()
+        twoLinks.linkTwoColor = UIColor.random()
     }
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         // Update the link position and orientation
-        if (!isPaused) {
+        if !isPaused {
             twoLinks.update()
         }
         linkOneNode.orientation = twoLinks.orientation[0]
@@ -219,3 +227,13 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
     }
 }
 
+extension UIColor {
+    static func random() -> UIColor {
+        return UIColor(
+           red:   .random(in: 0...1),
+           green: .random(in: 0...1),
+           blue:  .random(in: 0...1),
+           alpha: 1.0
+        )
+    }
+}

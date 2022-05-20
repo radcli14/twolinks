@@ -71,6 +71,7 @@ struct ContentView: View {
                     // Dimensions
                     Button(action: {
                         withAnimation {
+                            visualControlsVisible = false
                             dimensionSlidersVisible.toggle()
                         }
                     }) {
@@ -83,6 +84,7 @@ struct ContentView: View {
                     // Visual characteristics
                     Button(action: {
                         withAnimation {
+                            dimensionSlidersVisible = false
                             visualControlsVisible.toggle()
                         }
                     }) {
