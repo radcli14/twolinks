@@ -9,7 +9,8 @@ import SwiftUI
 import SceneKit
 
 struct ContentView: View {
-    var viewController = ContentViewController()
+    var viewController: ContentViewController
+    //var delegate = SceneUpdateDelegate()
     let iconSize = 32.0
     let stackPadding = 12.0
     
@@ -24,15 +25,15 @@ struct ContentView: View {
                 scene: viewController.scene,
                 pointOfView: viewController.cameraNode,
                 options: [.allowsCameraControl, .rendersContinuously],
-                delegate: viewController
-            ).gesture(
+                delegate: SceneUpdateDelegate(viewController: viewController)
+            )/*.gesture(
                 TapGesture()
                     .onEnded { _ in
                         withAnimation {
                             removeControls()
                         }
                     }
-            )
+            )*/
             
             // Add the user controls
             HStack {
@@ -120,6 +121,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(viewController: ContentViewController())
     }
 }

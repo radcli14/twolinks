@@ -13,9 +13,9 @@ import SpriteKit
 import CoreMotion
 import SwiftUI
 
-class ContentViewController: NSObject, SCNSceneRendererDelegate {
+class ContentViewController {
 
-    let manager = CMMotionManager()
+    //let manager = CMMotionManager()
     var scene: SCNScene!
     var overlaySKScene: SKScene!
     var cameraNode: SCNNode!
@@ -35,7 +35,7 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         }
     }
     
-    let moonRadius = 62.8
+    let moonRadius = 31.4
     var floorGeometry: SCNSphere!
     var floorColor: UIColor {
         get {
@@ -46,57 +46,12 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         }
     }
 
-    override init() {
-        super.init()
+    init() {
         setupScene()
         setupCamera()
         setupBackground()
         setupLinks()
-        
-        /*
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
-         */
     }
-
-    /*
-    @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
-            
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
-            
-            material.emission.contents = UIColor.red
-            
-            SCNTransaction.commit()
-        }
-    }
-     */
 
     func setupScene() {
         scene = SCNScene()
@@ -120,34 +75,42 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
-        /*let ambientLightNode = SCNNode()
+        let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
         ambientLightNode.light!.color = UIColor.white
-        scene.rootNode.addChildNode(ambientLightNode)*/
+        scene.rootNode.addChildNode(ambientLightNode)
     }
 
     func setupCamera() {
-      cameraNode = SCNNode()
-      cameraNode.camera = SCNCamera()
+        cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        cameraNode.camera?.zFar = 10000.0
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 2.5)
-      scene.rootNode.addChildNode(cameraNode)
+        
+        // Constrain the camera to look at the center of the door
+        /*let lookAtConstraint = SCNLookAtConstraint(target: scene.rootNode)
+        lookAtConstraint.isGimbalLockEnabled = false
+        let distanceConstraint = SCNDistanceConstraint(target: scene.rootNode)
+        distanceConstraint.minimumDistance = 0
+        distanceConstraint.maximumDistance = 5
+        cameraNode.constraints = [lookAtConstraint, distanceConstraint]*/
+        
+        scene.rootNode.addChildNode(cameraNode)
     }
     
     func setupBackground() {
         // Create a floor to define the ground and horizon
         floorGeometry = SCNSphere(radius: moonRadius)
-        floorGeometry.isGeodesic = false
-        floorGeometry.segmentCount = 256
-        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonTexture")
-        floorGeometry.materials.first?.diffuse.contentsTransform = SCNMatrix4MakeScale(20, 20, 20)
-        floorGeometry.materials.first?.diffuse.wrapS = SCNWrapMode.repeat
-        floorGeometry.materials.first?.diffuse.wrapT = SCNWrapMode.repeat
+        //floorGeometry.isGeodesic = true
+        floorGeometry.segmentCount = 128
+        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonmap4k")
         floorGeometry.materials.first?.shininess = 0.25
-        floorColor = UIColor.gray
+        //floorColor = UIColor.gray
         let floorNode = SCNNode(geometry: floorGeometry)
         floorNode.position = SCNVector3(0, -1.015-moonRadius, 0)
-        floorNode.orientation = SCNQuaternion(sin(Double.pi/8.0), 0, 0, cos(Double.pi/8.0))
+        let moonAngle = 0.6 * Double.pi
+        floorNode.orientation = SCNQuaternion(sin(0.5 * moonAngle), 0, 0, cos(0.5 * moonAngle))
         
         // Define a door that is behind the pendulum
         doorGeometry = SCNBox(
@@ -162,10 +125,17 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         let doorNode = SCNNode(geometry: doorGeometry)
         doorNode.position = SCNVector3(0, 0, -0.015)
         doorNode.castsShadow = true
-
+        
+        // Define an Earth
+        /*let earthGeometry = SCNSphere(radius: 3.66 * moonRadius)
+        earthGeometry.materials.first?.diffuse.contents =  UIImage(named: "earthmap1k")
+        let earthNode = SCNNode(geometry: earthGeometry)
+        earthNode.position = SCNVector3(-moonRadius, moonRadius, -22*moonRadius)*/
+        
         // Add the parts into the scene
         scene.rootNode.addChildNode(floorNode)
         scene.rootNode.addChildNode(doorNode)
+        //scene.rootNode.addChildNode(earthNode)
     }
     
     func setupLinks() {
@@ -203,18 +173,6 @@ class ContentViewController: NSObject, SCNSceneRendererDelegate {
         // Specify initial colors of the links
         twoLinks.linkOneColor = UIColor.random()
         twoLinks.linkTwoColor = UIColor.random()
-    }
-    
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        // Update the link position and orientation
-        if !isPaused {
-            twoLinks.update()
-        }
-        linkOneNode.orientation = twoLinks.orientation[0]
-        linkOneNode.position = twoLinks.position[0]
-        pivotNode.position = twoLinks.pivotPosition
-        linkTwoNode.orientation = twoLinks.orientation[1]
-        linkTwoNode.position = twoLinks.position[1]
     }
     
     func resetStates() {

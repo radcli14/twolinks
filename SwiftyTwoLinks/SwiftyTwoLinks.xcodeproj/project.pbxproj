@@ -19,6 +19,7 @@
 		8A21B11D2833312400D6CE3B /* VisualControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A21B11C2833312400D6CE3B /* VisualControls.swift */; };
 		8A38FD2A282B27EB00673E97 /* ButtonSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A38FD29282B27EB00673E97 /* ButtonSlider.swift */; };
 		8A38FD2C282B420700673E97 /* CustomButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */; };
+		8A9CD30128404CF4001A8B45 /* SceneUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A9CD30028404CF3001A8B45 /* SceneUpdateDelegate.swift */; };
 		8AEBF9762829C65E00EABB52 /* TwoLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AEBF9752829C65E00EABB52 /* TwoLinks.swift */; };
 		8AEBF9782829CA2600EABB52 /* ContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AEBF9772829CA2600EABB52 /* ContentViewController.swift */; };
 /* End PBXBuildFile section */
@@ -56,6 +57,7 @@
 		8A21B11C2833312400D6CE3B /* VisualControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualControls.swift; sourceTree = "<group>"; };
 		8A38FD29282B27EB00673E97 /* ButtonSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonSlider.swift; sourceTree = "<group>"; };
 		8A38FD2B282B420600673E97 /* CustomButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonStyles.swift; sourceTree = "<group>"; };
+		8A9CD30028404CF3001A8B45 /* SceneUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneUpdateDelegate.swift; sourceTree = "<group>"; };
 		8AEBF9752829C65E00EABB52 /* TwoLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoLinks.swift; sourceTree = "<group>"; };
 		8AEBF9772829CA2600EABB52 /* ContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -113,6 +115,7 @@
 				8A21B11C2833312400D6CE3B /* VisualControls.swift */,
 				8A21B11A2833271F00D6CE3B /* DimensionSliders.swift */,
 				8AEBF9772829CA2600EABB52 /* ContentViewController.swift */,
+				8A9CD30028404CF3001A8B45 /* SceneUpdateDelegate.swift */,
 				8A09355B282840EE00B9A1A0 /* Assets.xcassets */,
 				8A09355D282840EE00B9A1A0 /* Preview Content */,
 				8AEBF9752829C65E00EABB52 /* TwoLinks.swift */,
@@ -282,6 +285,7 @@
 				8A11B0FB282FE96E006C692C /* TextSlider.swift in Sources */,
 				8A38FD2A282B27EB00673E97 /* ButtonSlider.swift in Sources */,
 				8A38FD2C282B420700673E97 /* CustomButtonStyles.swift in Sources */,
+				8A9CD30128404CF4001A8B45 /* SceneUpdateDelegate.swift in Sources */,
 				8A09355A282840EC00B9A1A0 /* ContentView.swift in Sources */,
 				8A21B11B2833271F00D6CE3B /* DimensionSliders.swift in Sources */,
 				8A093558282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift in Sources */,
@@ -459,7 +463,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = dcsimulationstudio.SwiftyTwoLinks;
 				PRODUCT_NAME = TwoLinks;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -490,7 +494,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = dcsimulationstudio.SwiftyTwoLinks;
 				PRODUCT_NAME = TwoLinks;
 				SWIFT_EMIT_LOC_STRINGS = YES;
