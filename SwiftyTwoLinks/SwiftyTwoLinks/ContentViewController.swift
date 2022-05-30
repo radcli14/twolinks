@@ -18,7 +18,11 @@ class ContentViewController {
     //let manager = CMMotionManager()
     var scene: SCNScene!
     var overlaySKScene: SKScene!
+    
     var cameraNode: SCNNode!
+    var cameraPosBefore = SCNVector3(x: 0, y: 0, z: 2.5)
+    
+    var originNode: SCNNode!
     var linkOneNode: SCNNode!
     var pivotNode: SCNNode!
     var linkTwoNode: SCNNode!
@@ -89,18 +93,19 @@ class ContentViewController {
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 2.5)
         
         // Constrain the camera to look at the center of the door
-        /*let lookAtConstraint = SCNLookAtConstraint(target: scene.rootNode)
-        lookAtConstraint.isGimbalLockEnabled = false
-        let distanceConstraint = SCNDistanceConstraint(target: scene.rootNode)
-        distanceConstraint.minimumDistance = 0
-        distanceConstraint.maximumDistance = 5
-        cameraNode.constraints = [lookAtConstraint, distanceConstraint]*/
+        let lookAtConstraint = SCNLookAtConstraint(target: scene.rootNode)
+        lookAtConstraint.isGimbalLockEnabled = true
+        cameraNode.constraints = [lookAtConstraint]
         
         scene.rootNode.addChildNode(cameraNode)
     }
     
     func setupBackground() {
-        // Create a floor to define the ground and horizon
+        let centerNode = SCNNode()
+        centerNode.position = SCNVector3(0, 0, 0)
+        scene.rootNode.addChildNode(centerNode)
+        
+        // Create the moon to define the ground and horizon
         floorGeometry = SCNSphere(radius: moonRadius)
         //floorGeometry.isGeodesic = true
         floorGeometry.segmentCount = 128
@@ -111,6 +116,7 @@ class ContentViewController {
         floorNode.position = SCNVector3(0, -1.015-moonRadius, 0)
         let moonAngle = 0.6 * Double.pi
         floorNode.orientation = SCNQuaternion(sin(0.5 * moonAngle), 0, 0, cos(0.5 * moonAngle))
+        //let moon = Planet(radius: moonRadius, y: -1.015-moonRadius, image: "moonmap4k")
         
         // Define a door that is behind the pendulum
         doorGeometry = SCNBox(
@@ -127,15 +133,16 @@ class ContentViewController {
         doorNode.castsShadow = true
         
         // Define an Earth
-        /*let earthGeometry = SCNSphere(radius: 3.66 * moonRadius)
+        let earthGeometry = SCNSphere(radius: 3.66 * moonRadius)
         earthGeometry.materials.first?.diffuse.contents =  UIImage(named: "earthmap1k")
         let earthNode = SCNNode(geometry: earthGeometry)
-        earthNode.position = SCNVector3(-moonRadius, moonRadius, -22*moonRadius)*/
+        earthNode.position = SCNVector3(3.14*moonRadius, -moonRadius, -22*moonRadius)
         
         // Add the parts into the scene
+        //scene.rootNode.addChildNode(moon.node)
         scene.rootNode.addChildNode(floorNode)
         scene.rootNode.addChildNode(doorNode)
-        //scene.rootNode.addChildNode(earthNode)
+        scene.rootNode.addChildNode(earthNode)
     }
     
     func setupLinks() {
@@ -145,10 +152,10 @@ class ContentViewController {
             height: 0.007
         )
         originGeometry.materials.first?.diffuse.contents = UIColor.darkGray
-        let originNode = SCNNode(geometry: originGeometry)
+        originNode = SCNNode(geometry: originGeometry)
         originNode.position = SCNVector3(0, 0, twoLinks.thickness[0])
         originNode.orientation = SCNQuaternion(sin(Double.pi/4.0), 0, 0, cos(Double.pi/4.0))
-
+        
         // Define the first pendulum link
         linkOneNode = SCNNode(geometry: twoLinks.geometry[0])
         
