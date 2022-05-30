@@ -61,7 +61,7 @@ struct VisualControls: View {
                 
                 // Control visuals for the ground
                 LinkVisualControl(heading: "Moon", color: $moonColor) {
-                    viewController.floorColor = moonColor.uiColor()
+                    viewController.moonColor = moonColor.uiColor()
                 }
             }
         }
@@ -72,7 +72,7 @@ struct VisualControls: View {
             linkOneColor = Color(viewController.twoLinks.linkOneColor)
             linkTwoColor = Color(viewController.twoLinks.linkTwoColor)
             monolithColor = Color(viewController.doorColor)
-            moonColor = Color(viewController.floorColor)
+            moonColor = Color(viewController.moonColor)
         }
     }
 }

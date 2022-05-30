@@ -39,14 +39,14 @@ class ContentViewController {
         }
     }
     
-    let moonRadius = 31.4
-    var floorGeometry: SCNSphere!
-    var floorColor: UIColor {
+    //let moonRadius = 31.4
+    var moon: Planet!
+    var moonColor: UIColor {
         get {
-            return floorGeometry.materials.first?.emission.contents as! UIColor
+            return moon.geometry.materials.first?.emission.contents as! UIColor
         }
         set {
-            floorGeometry.materials.first?.emission.contents = newValue
+            moon.geometry.materials.first?.emission.contents = newValue
         }
     }
 
@@ -106,17 +106,13 @@ class ContentViewController {
         scene.rootNode.addChildNode(centerNode)
         
         // Create the moon to define the ground and horizon
-        floorGeometry = SCNSphere(radius: moonRadius)
-        //floorGeometry.isGeodesic = true
-        floorGeometry.segmentCount = 128
-        floorGeometry.materials.first?.diffuse.contents = UIImage(named: "moonmap4k")
-        floorGeometry.materials.first?.shininess = 0.25
-        //floorColor = UIColor.gray
-        let floorNode = SCNNode(geometry: floorGeometry)
-        floorNode.position = SCNVector3(0, -1.015-moonRadius, 0)
-        let moonAngle = 0.6 * Double.pi
-        floorNode.orientation = SCNQuaternion(sin(0.5 * moonAngle), 0, 0, cos(0.5 * moonAngle))
-        //let moon = Planet(radius: moonRadius, y: -1.015-moonRadius, image: "moonmap4k")
+        moon = Planet(
+            radius: 31.4,
+            y: -32.415,
+            xAngle: 0.6 * Double.pi,
+            image: "moonmap4k",
+            segmentCount: 512
+        )
         
         // Define a door that is behind the pendulum
         doorGeometry = SCNBox(
@@ -132,17 +128,21 @@ class ContentViewController {
         doorNode.position = SCNVector3(0, 0, -0.015)
         doorNode.castsShadow = true
         
-        // Define an Earth
-        let earthGeometry = SCNSphere(radius: 3.66 * moonRadius)
-        earthGeometry.materials.first?.diffuse.contents =  UIImage(named: "earthmap1k")
-        let earthNode = SCNNode(geometry: earthGeometry)
-        earthNode.position = SCNVector3(3.14*moonRadius, -moonRadius, -22*moonRadius)
-        
+        // Define an Earth in the background
+        let earth = Planet(
+            radius: 3.66 * moon.radius,
+            x: 6.28 * moon.radius,
+            y: -2.0 * moon.radius,
+            z: -22.0 * moon.radius,
+            xAngle: 0.4,
+            yAngle: 0.5,
+            image: "earthmap1k"
+        )
+
         // Add the parts into the scene
-        //scene.rootNode.addChildNode(moon.node)
-        scene.rootNode.addChildNode(floorNode)
+        scene.rootNode.addChildNode(moon.node)
         scene.rootNode.addChildNode(doorNode)
-        scene.rootNode.addChildNode(earthNode)
+        scene.rootNode.addChildNode(earth.node)
     }
     
     func setupLinks() {
