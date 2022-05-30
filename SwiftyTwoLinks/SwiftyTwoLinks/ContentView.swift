@@ -10,7 +10,6 @@ import SceneKit
 
 struct ContentView: View {
     var viewController: ContentViewController
-    //var delegate = SceneUpdateDelegate()
     let iconSize = 32.0
     let stackPadding = 12.0
     
@@ -24,16 +23,37 @@ struct ContentView: View {
             SceneView(
                 scene: viewController.scene,
                 pointOfView: viewController.cameraNode,
-                options: [.allowsCameraControl, .rendersContinuously],
+                options: [.rendersContinuously],
                 delegate: SceneUpdateDelegate(viewController: viewController)
-            )/*.gesture(
+            ).gesture(
                 TapGesture()
                     .onEnded { _ in
                         withAnimation {
                             removeControls()
                         }
                     }
-            )*/
+                
+            ).gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        // Determine the total number of pixels that the user has dragged, relate it to an angle that the camera will traverse
+                        let x = Float(gesture.translation.width)
+                        let y = Float(gesture.translation.height)
+                        let nPixels = sqrt(x*x + y*y)
+                        let angle = 0.01 * nPixels
+                        
+                        // Pan the camera around the target
+                        viewController.cameraNode.position = viewController
+                            .cameraPosBefore
+                            .rotatedVector(
+                                axis: simd_float3(-y, -x, 0),
+                                angle: angle
+                            )
+                    }
+                    .onEnded { _ in
+                        viewController.cameraPosBefore = viewController.cameraNode.position
+                    }
+            )
             
             // Add the user controls
             HStack {
