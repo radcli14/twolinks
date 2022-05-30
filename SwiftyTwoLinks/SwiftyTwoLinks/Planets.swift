@@ -22,14 +22,46 @@ struct Planet {
         }
     }
     
-    // Positions of the planet relative to its parent node
-    private var _x = 0.0
-    private var _y = 0.0
-    private var _z = 0.0
+    // Orientation of the planet
+    private var _xAngle = 0.0
+    var xAngle: Double {
+        set {
+            _xAngle = newValue
+            updateOrientation()
+        }
+        get {
+            return _xAngle
+        }
+    }
     
-    // Angle of the planet, for now measured in radians about the X-axis
-    //private var _xAngle = 0.0
-    //private var _yAngle = 0.0
+    private var xQuat: simd_quatd {
+        get {
+            return simd_quatd(ix: sin(0.5 * xAngle), iy: 0, iz: 0, r: cos(0.5 * xAngle))
+        }
+    }
+    
+    private var _yAngle = 0.0
+    var yAngle: Double {
+        set {
+            _yAngle = newValue
+            updateOrientation()
+        }
+        get {
+            return _yAngle
+        }
+    }
+    
+    private var yQuat: simd_quatd {
+        get {
+            return simd_quatd(ix: 0, iy: sin(0.5 * yAngle), iz: 0, r: cos(0.5 * yAngle))
+        }
+    }
+    
+    private var quat: simd_quatd {
+        get {
+            return yQuat * xQuat
+        }
+    }
     
     // Image that gets super-imposed on the planet, argument provides as a string file name
     private var _image: UIImage? = nil
@@ -47,11 +79,8 @@ struct Planet {
          isGeodesic: Bool = false, segmentCount: Int? = nil, shininess: Double? = nil
     ) {
         // Unpack the arguments
-        //_radius = radius
-        _x = x
-        _y = y
-        _z = z
-        //_angle = angle
+        _xAngle = xAngle
+        _yAngle = yAngle
         if image != nil {
             _image = UIImage(named: image!)
         }
@@ -65,10 +94,11 @@ struct Planet {
         
         // Create the node that gets added to the scene
         node = SCNNode(geometry: geometry)
-        node.position = SCNVector3(_x, _y, _z)
-        let xQuat = simd_quatd(ix: sin(0.5 * xAngle), iy: 0, iz: 0, r: cos(0.5 * xAngle))
-        let yQuat = simd_quatd(ix: 0, iy: sin(0.5 * yAngle), iz: 0, r: cos(0.5 * yAngle))
-        let quat = xQuat * yQuat
-        node.orientation = SCNQuaternion(quat.vector)  //quat.ix, quat.iy, quat.iz, quat.r)
+        node.position = SCNVector3(x, y, z)
+        updateOrientation()
+    }
+    
+    func updateOrientation() {
+        node.orientation = SCNQuaternion(quat.vector)
     }
 }

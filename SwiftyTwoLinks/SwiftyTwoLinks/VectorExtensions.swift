@@ -24,4 +24,8 @@ extension SCNVector3 {
         
         return SCNVector3(simdVector)
     }
+    
+    func scaledBy(factor: Float) -> SCNVector3 {
+        return SCNVector3(x*factor, y*factor, z*factor)
+    }
 }
