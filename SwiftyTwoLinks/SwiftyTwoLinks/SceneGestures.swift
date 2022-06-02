@@ -34,18 +34,43 @@ func onDragToRotate(_ viewController: ContentViewController) -> _EndedGesture<_C
     let drag = DragGesture()
         .onChanged { gesture in
             // Determine the total number of pixels that the user has dragged, relate it to an angle that the camera will traverse
-            let xDrag = 0.9*xDrag + 0.1*Float(gesture.translation.width)
-            let yDrag = 0.9*yDrag + 0.1*Float(gesture.translation.height)
+            xDrag = Float(gesture.translation.width)
+            yDrag = Float(gesture.translation.height)
+            //print("gesture.translation = \(gesture.translation)")
+            //print("xdrag, ydrag = ", xDrag, yDrag)
             nPixels = sqrt(xDrag*xDrag + yDrag*yDrag)
-            let angle = 0.025 * nPixels
+            let angle = 0.001 * nPixels
+            
+            let position = viewController.cameraNode.position
+            let xzDist = sqrt(position.x*position.x + position.z * position.z)
+            let radius = position.length
+            let azSin = position.x / xzDist
+            let azCos = position.z / xzDist
+            let elSin = position.y / radius
+            let elCos = xzDist / radius
+            let axis = -simd_float3(
+                yDrag*azCos, //xDrag*azSin*elSin + yDrag*azCos,
+                xDrag, //xDrag*elCos,
+                -yDrag*azSin //xDrag*elSin*azCos - yDrag*azSin
+            )
+            print("\nxzDist =", xzDist,
+                  "\nradius = ", radius,
+                  "\nazCos = ", azCos,
+                  "\nazSin =", azSin,
+                  "\nelCos =", elCos,
+                  "\nelSin =", elSin, "\n\n")
+            //print(simd_normalize(axis))
+            //print(angle)
             
             // Pan the camera around the target
             viewController.cameraNode.position = viewController
-                .cameraPosBefore
+                //.cameraPosBefore
+                .cameraNode.position
                 .rotatedVector(
-                    axis: simd_float3(-yDrag, -xDrag, 0),
+                    axis: axis,
                     angle: angle
                 )
+            //print(viewController.cameraNode.position)
         }
         .onEnded { _ in
             viewController.cameraPosBefore = viewController.cameraNode.position
