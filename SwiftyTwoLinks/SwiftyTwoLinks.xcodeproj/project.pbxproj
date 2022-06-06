@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A067D732846F91F0054B735 /* SceneGestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A067D722846F91F0054B735 /* SceneGestures.swift */; };
 		8A093558282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A093557282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift */; };
 		8A09355A282840EC00B9A1A0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A093559282840EC00B9A1A0 /* ContentView.swift */; };
 		8A09355C282840EE00B9A1A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A09355B282840EE00B9A1A0 /* Assets.xcassets */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8A067D722846F91F0054B735 /* SceneGestures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneGestures.swift; sourceTree = "<group>"; };
 		8A093554282840EC00B9A1A0 /* TwoLinks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwoLinks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A093557282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyTwoLinksApp.swift; sourceTree = "<group>"; };
 		8A093559282840EC00B9A1A0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 			children = (
 				8A093557282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift */,
 				8A093559282840EC00B9A1A0 /* ContentView.swift */,
+				8A067D722846F91F0054B735 /* SceneGestures.swift */,
 				8A21B11C2833312400D6CE3B /* VisualControls.swift */,
 				8A21B11A2833271F00D6CE3B /* DimensionSliders.swift */,
 				8AEBF9772829CA2600EABB52 /* ContentViewController.swift */,
@@ -294,6 +297,7 @@
 				8A38FD2A282B27EB00673E97 /* ButtonSlider.swift in Sources */,
 				8A38FD2C282B420700673E97 /* CustomButtonStyles.swift in Sources */,
 				8A9CD30128404CF4001A8B45 /* SceneUpdateDelegate.swift in Sources */,
+				8A067D732846F91F0054B735 /* SceneGestures.swift in Sources */,
 				8A09355A282840EC00B9A1A0 /* ContentView.swift in Sources */,
 				8A21B11B2833271F00D6CE3B /* DimensionSliders.swift in Sources */,
 				8A093558282840EC00B9A1A0 /* SwiftyTwoLinksApp.swift in Sources */,

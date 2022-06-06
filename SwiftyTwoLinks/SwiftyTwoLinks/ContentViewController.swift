@@ -74,7 +74,9 @@ class ContentViewController {
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 6.28, y: 15, z: 25)
+        lightNode.light!.zFar = 100000.0
+        lightNode.light!.intensity = 2000
+        lightNode.position = SCNVector3(x: 360.0, y: 360.0, z: 1080.0)
         lightNode.light?.castsShadow = true
         scene.rootNode.addChildNode(lightNode)
         
@@ -82,7 +84,8 @@ class ContentViewController {
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.white
+        ambientLightNode.light!.intensity = 15.7
+        ambientLightNode.light!.color = UIColor.systemGreen
         scene.rootNode.addChildNode(ambientLightNode)
     }
 
@@ -114,20 +117,6 @@ class ContentViewController {
             segmentCount: 512
         )
         
-        // Define a door that is behind the pendulum
-        doorGeometry = SCNBox(
-            width: 0.91,
-            height: 2.03,
-            length: 0.035,
-            chamferRadius: 0.01
-        )
-        doorColor = UIColor.black
-        doorGeometry.materials.first?.shininess = 0.5
-        doorGeometry.materials.first?.specular.contents = UIColor.white
-        let doorNode = SCNNode(geometry: doorGeometry)
-        doorNode.position = SCNVector3(0, 0, -0.015)
-        doorNode.castsShadow = true
-        
         // Define an Earth in the background
         let earth = Planet(
             radius: 3.66 * moon.radius,
@@ -136,9 +125,26 @@ class ContentViewController {
             z: -22.0 * moon.radius,
             xAngle: 0.4,
             yAngle: 0.5,
-            image: "earthmap1k"
+            image: "earthmap1k"//,
+            //specular: "earthspec1k"
         )
-
+        
+        // Define a door that is behind the pendulum
+        doorGeometry = SCNBox(
+            width: 0.91,
+            height: 2.03,
+            length: 0.035,
+            chamferRadius: 0.01
+        )
+        doorColor = UIColor.black
+        //doorGeometry.materials.first?.lightingModel = SCNMaterial.LightingModel.physicallyBased
+        //doorGeometry.materials.first?.metalness = 1.0
+        //doorGeometry.materials.first?.shininess = 1.0
+        doorGeometry.materials.first?.specular.contents = UIColor.lightGray
+        let doorNode = SCNNode(geometry: doorGeometry)
+        doorNode.position = SCNVector3(0, 0, -0.015)
+        doorNode.castsShadow = true
+        
         // Add the parts into the scene
         scene.rootNode.addChildNode(moon.node)
         scene.rootNode.addChildNode(doorNode)

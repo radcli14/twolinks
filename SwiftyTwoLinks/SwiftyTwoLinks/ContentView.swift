@@ -8,10 +8,6 @@
 import SwiftUI
 import SceneKit
 
-var xDrag: Float = 0.0
-var yDrag: Float = 0.0
-var nPixels: Float = 0.0
-
 struct ContentView: View {
     var viewController: ContentViewController
     let iconSize = 32.0
@@ -31,47 +27,13 @@ struct ContentView: View {
                 delegate: SceneUpdateDelegate(viewController: viewController)
             )
             .gesture(
-                TapGesture()
-                    .onEnded { _ in
-                        withAnimation {
-                            removeControls()
-                        }
-                    }
+                onTap(removeControls)
             )
             .gesture(
-                DragGesture()
-                    .onChanged { gesture in
-                        // Determine the total number of pixels that the user has dragged, relate it to an angle that the camera will traverse
-                        // TODO: Move this into a Gestures class
-                        let xDrag = 0.9*xDrag + 0.1*Float(gesture.translation.width)
-                        let yDrag = 0.9*yDrag + 0.1*Float(gesture.translation.height)
-                        nPixels = sqrt(xDrag*xDrag + yDrag*yDrag)
-                        let angle = 0.025 * nPixels
-                        
-                        // Pan the camera around the target
-                        viewController.cameraNode.position = viewController
-                            .cameraPosBefore
-                            .rotatedVector(
-                                axis: simd_float3(-yDrag, -xDrag, 0),
-                                angle: angle
-                            )
-                    }
-                    .onEnded { _ in
-                        viewController.cameraPosBefore = viewController.cameraNode.position
-                        nPixels = 0
-                        xDrag = 0
-                        yDrag = 0
-                    }
+                onDragToRotate(viewController)
             )
             .gesture(
-                MagnificationGesture()
-                    .onChanged { gesture in
-                        viewController.cameraNode.position = viewController
-                            .cameraPosBefore.scaledBy(factor: Float(1.0 / gesture.magnitude))
-                    }
-                    .onEnded { _ in
-                        viewController.cameraPosBefore = viewController.cameraNode.position
-                    }
+                onMagnify(viewController)
             )
             
             // Add the user controls
