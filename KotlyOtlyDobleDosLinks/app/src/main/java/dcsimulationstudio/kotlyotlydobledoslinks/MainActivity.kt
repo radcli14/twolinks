@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
+import com.google.android.filament.utils.HDRLoader
 import io.github.sceneview.SceneView
+import io.github.sceneview.environment.loadEnvironment
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.node.ModelNode
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         // Load the SceneView, used for 3D rendering
         val sceneView = findViewById<SceneView>(R.id.sceneView)
 
+        // Demo from github below this line
         sceneView.camera.position = Position(x = 4.0f, y = -1.0f)
         sceneView.camera.rotation = Rotation(x = 0.0f, y = 80.0f)
 
@@ -32,12 +35,12 @@ class MainActivity : AppCompatActivity() {
         sceneView.addChild(modelNode)
 
         lifecycleScope.launchWhenCreated {
-            /*sceneView.environment = HDRLoader.loadEnvironment(
-                context = requireContext(),
+            sceneView.environment = HDRLoader.loadEnvironment(
+                context = this@MainActivity,
                 lifecycle = lifecycle,
                 hdrFileLocation = "environments/studio_small_09_2k.hdr",
                 specularFilter = false
-            )*/
+            )
 
             modelNode.loadModel(
                 context = this@MainActivity,
@@ -55,8 +58,6 @@ class MainActivity : AppCompatActivity() {
                 rotation = Rotation(x = -60.0f, y = -50.0f),
                 speed = 0.5f
             )
-
-            println("I Loaded sceneview ... ???")
         }
     }
 
