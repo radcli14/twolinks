@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KotlyOtlyDobleDosLinks</string>
+    <string name="app_name">Dos Links</string>
     <string name="restart_the_simulation">restart the simulation</string>
     <string name="play_or_pause_the_simulation">play or pause the simulation</string>
     <string name="edit_geometry">edit geometry</string>
