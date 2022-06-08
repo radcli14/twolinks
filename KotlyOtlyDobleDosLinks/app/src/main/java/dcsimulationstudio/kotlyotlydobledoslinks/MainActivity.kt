@@ -1,20 +1,24 @@
 package dcsimulationstudio.kotlyotlydobledoslinks
 
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color.BLACK
 import android.os.Bundle
+import android.webkit.CookieSyncManager.createInstance
 import android.widget.Button
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.graphics.scaleMatrix
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.filament.MaterialInstance
 import com.google.android.filament.utils.HDRLoader
-import com.google.android.filament.utils.scale
+import com.google.ar.sceneform.lullmodel.Color
+import com.google.ar.sceneform.rendering.Material
+import com.google.ar.sceneform.rendering.Texture
+import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.SceneView
 import io.github.sceneview.environment.loadEnvironment
+import io.github.sceneview.material.setBaseColor
+import io.github.sceneview.material.setMetallicFactor
 import io.github.sceneview.math.Position
-import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
 import io.github.sceneview.node.ModelNode
-import kotlinx.coroutines.delay
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sceneView: SceneView
@@ -36,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         colorButton.setOnClickListener { println("color???") }
 
         // Load the SceneView, used for 3D rendering
-        sceneView = findViewById<SceneView>(R.id.sceneView)
+        sceneView = findViewById(R.id.sceneView)
 
         // Demo from github below this line
         sceneView.camera.position = Position(x = 0.0f, y = 0.0f, z = 2.5f)
@@ -57,23 +61,34 @@ class MainActivity : AppCompatActivity() {
                 createSkybox = false
             )
 
+            // Load the sphere model to form the moon part of the background
             moonNode.loadModel(
                 context = this@MainActivity,
                 lifecycle = lifecycle,
-                glbFileLocation = "models/point.glb",
-                //centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
+                glbFileLocation = "models/sphere.glb",
+                centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            moonNode.position = Position(0.0f, -32.415f, 0.0f)
             moonNode.scale = Scale(31.4f, 31.4f, 31.4f)
+            moonNode.position = Position(0.0f, -32.415f, 0.0f)
 
+            // Set the visual properties of the moon
+            val moonMaterial = moonNode.modelInstance?.material?.filamentMaterialInstance
+            moonMaterial?.setBaseColor(Float4(0.5f, 0.5f, 0.5f, 1.0f))
+
+            // Load the box model to form the door part of the background
             doorNode.loadModel(
                 context = this@MainActivity,
                 lifecycle = lifecycle,
                 glbFileLocation = "models/box.glb",
-                //centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
+                centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            //doorNode.position = Position(0.0f, 0.0f, 0.0f)
+            doorNode.position = Position(0.0f, 0.0f, 0.0f)
             doorNode.scale = Scale(0.91f, 2.03f, 0.035f)
+
+            // Set the visual properties of the door
+            val doorMat = doorNode.modelInstance?.material?.filamentMaterialInstance
+            doorMat?.setBaseColor(Float4(0.0f, 0.0f, 0.0f, 1.0f))
+            doorMat?.setMetallicFactor(1.0f)
         }
     }
 }
