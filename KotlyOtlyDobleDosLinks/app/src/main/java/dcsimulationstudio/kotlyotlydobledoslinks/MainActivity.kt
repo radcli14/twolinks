@@ -1,16 +1,10 @@
 package dcsimulationstudio.kotlyotlydobledoslinks
 
-import android.graphics.Color.BLACK
 import android.os.Bundle
-import android.webkit.CookieSyncManager.createInstance
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.filament.MaterialInstance
 import com.google.android.filament.utils.HDRLoader
-import com.google.ar.sceneform.lullmodel.Color
-import com.google.ar.sceneform.rendering.Material
-import com.google.ar.sceneform.rendering.Texture
 import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.SceneView
 import io.github.sceneview.environment.loadEnvironment
