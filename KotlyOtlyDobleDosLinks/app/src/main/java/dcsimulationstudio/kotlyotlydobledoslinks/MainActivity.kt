@@ -44,12 +44,12 @@ class MainActivity : AppCompatActivity() {
         // Set the listeners
         restartButton.setOnClickListener {
             viewModel.resetStates()
-            Log.d(TAG, "restart!!! states = ${viewModel.twoLinks.θ}, $${viewModel.twoLinks.ω}")
+            Log.d(TAG, "restart!!! states = ${viewModel.twoLinks.theta}, $${viewModel.twoLinks.omega}")
         }
         playButton.setOnClickListener {
             viewModel.pause()
             val playIconId = if (viewModel.isPaused) R.drawable.pause else R.drawable.play
-            playButton.setCompoundDrawablesWithIntrinsicBounds(playIconId, 0, 0, 0);
+            playButton.setCompoundDrawablesWithIntrinsicBounds(playIconId, 0, 0, 0)
             Log.d(TAG, if (viewModel.isPaused) "pause..." else "play!!!")
             Log.d(TAG, "playIconId = $playIconId")
         }

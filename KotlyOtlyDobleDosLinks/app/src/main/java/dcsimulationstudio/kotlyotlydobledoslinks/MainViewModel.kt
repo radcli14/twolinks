@@ -19,8 +19,8 @@ class MainViewModel : ViewModel() {
      * Reset the link angles and angular rates to zero
      */
     fun resetStates() {
-        twoLinks.θ = floatArrayOf(0.0f, 0.0f)
-        twoLinks.ω = floatArrayOf(0.0f, 0.0f)
+        twoLinks.theta = floatArrayOf(0.0f, 0.0f)
+        twoLinks.omega = floatArrayOf(0.0f, 0.0f)
     }
 
     /**
@@ -38,7 +38,7 @@ class MainViewModel : ViewModel() {
         val pos = twoLinks.position
         linkOnePosition = pos[0]
         linkTwoPosition = pos[1]
-        linkOneRotation.z = twoLinks.θ[0] * 180f / Math.PI.toFloat()
-        linkTwoRotation.z = twoLinks.θ[1] * 180f / Math.PI.toFloat()
+        linkOneRotation.z = twoLinks.theta[0] * 180f / Math.PI.toFloat()
+        linkTwoRotation.z = twoLinks.theta[1] * 180f / Math.PI.toFloat()
     }
 }

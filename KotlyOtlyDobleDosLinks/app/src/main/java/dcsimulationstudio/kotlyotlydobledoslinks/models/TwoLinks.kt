@@ -9,14 +9,20 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
+// Used in rk4, calculate once for efficiency
+const val oneSixth = 1.0f / 6.0f
+
+/**
+ * Apply the 4th order Runge-Kutta integration routine for an equation that returns a Float4
+ */
 fun rk4(equation: (Float, Float4) -> Float4, t: Float, x: Float4, h: Float): Float4 {
-    // Apply the 4th order Runge-Kutta integration routine
+    // Obtain the solution increments at partial time steps
     val k1 = equation(t, x)
-    val k2 = equation(t, rk4xPlusHK(x, 0.5f*h, k1))  // x + 0.5 * h * k1)
-    val k3 = equation(t, rk4xPlusHK(x, 0.5f*h, k2))  // x + 0.5 * h * k2)
-    val k4 = equation(t, rk4xPlusHK(x, h, k3))  // x + h * k3)
-    //return x + 1.0/6.0 * h * (k1 + 2.0*k2 + 2.0*k3 + k4)
-    val oneSixth = 1.0f / 6.0f
+    val k2 = equation(t, rk4xPlusHK(x, 0.5f*h, k1))
+    val k3 = equation(t, rk4xPlusHK(x, 0.5f*h, k2))
+    val k4 = equation(t, rk4xPlusHK(x, h, k3))
+
+    // Calculate each state individually, and return as a Float4
     return Float4(
         x[0] + oneSixth * h * (k1[0] + 2.0f*k2[0] + 2.0f*k3[0] + k4[0]),
         x[1] + oneSixth * h * (k1[1] + 2.0f*k2[1] + 2.0f*k3[1] + k4[1]),
@@ -25,6 +31,9 @@ fun rk4(equation: (Float, Float4) -> Float4, t: Float, x: Float4, h: Float): Flo
     )
 }
 
+/**
+ * Utility function for the `rk4` implementation, to multiply the Float4 by a scalar
+ */
 fun rk4xPlusHK(x: Float4, h: Float, k: Float4): Float4 {
     return Float4(
         x[0] + h * k[0],
@@ -34,12 +43,20 @@ fun rk4xPlusHK(x: Float4, h: Float, k: Float4): Float4 {
     )
 }
 
+/**
+ * Invert a 2x2 matrix as an array of floatarrays
+ */
 fun invert2x2(matrix: Array<FloatArray>): Array<FloatArray> {
+    // Get components of the matrix, short names
     val a = matrix[0][0]
     val b = matrix[0][1]
     val c = matrix[1][0]
     val d = matrix[1][1]
+
+    // Determinant of the matrix
     val det = 1.0f / (a*d - b*c)
+
+    // Inverse of the 2x2 matrix
     return arrayOf(
         floatArrayOf(d * det, -b * det),
         floatArrayOf(-c * det, a * det)
@@ -56,8 +73,8 @@ class TwoLinks {
 
     var density = floatArrayOf(800.0f, 800.0f)
     //var dampingRatio = 0.0f
-    var θ = floatArrayOf(0.0f, 0.0f)
-    var ω = floatArrayOf(0.0f, 0.0f)
+    var theta = floatArrayOf(0.0f, 0.0f)
+    var omega = floatArrayOf(0.0f, 0.0f)
 
     private var dt = 1.0f / 60.0f
     private val grav = 1.62f  //9.8f
@@ -65,8 +82,6 @@ class TwoLinks {
     private val minLength = 0.12f
     private val maxLength = 0.53f
     private val minDistanceFromEdge = 0.03f
-
-    //private val manager = CMMotionManager()
 
     private var _mass: FloatArray? = null
     private var _moi: FloatArray? = null
@@ -76,53 +91,53 @@ class TwoLinks {
     val position: Array<Position>
         get() = arrayOf(
                 Position(
-                    offset[0] * cos(θ[0]),
-                    offset[0] * sin(θ[0]),
+                    offset[0] * cos(theta[0]),
+                    offset[0] * sin(theta[0]),
                     thickness[0]
             ),
                 Position(
-                    pivot * cos(θ[0]) + offset[1] * cos(θ[1]),
-                    pivot * sin(θ[0]) + offset[1] * sin(θ[1]),
+                    pivot * cos(theta[0]) + offset[1] * cos(theta[1]),
+                    pivot * sin(theta[0]) + offset[1] * sin(theta[1]),
                     thickness[0] + thickness[1]
                 )
             )
 
     val pivotPosition: Float3
         get() = Float3(
-                pivot * cos(θ[0]),
-                pivot * sin(θ[0]),
+                pivot * cos(theta[0]),
+                pivot * sin(theta[0]),
                 thickness[0] + 0.5f * thickness[1]
             )
 
-    val orientation: Array<Float4>
+    /*val orientation: Array<Float4>
         get() = arrayOf(
-                Float4(0f, 0f, sin(0.5f * θ[0]), cos(0.5f * θ[0])),
-                Float4(0f, 0f, sin(0.5f * θ[1]), cos(0.5f * θ[1]))
-            )
+                Float4(0f, 0f, sin(0.5f * theta[0]), cos(0.5f * theta[0])),
+                Float4(0f, 0f, sin(0.5f * theta[1]), cos(0.5f * theta[1]))
+            )*/
 
-    val mass: FloatArray
+    private val mass: FloatArray
         get() = _mass ?: floatArrayOf(
                 density[0] * length[0] * height[0] * thickness[0],
                 density[1] * length[1] * height[1] * thickness[1]
             )
 
-    val moi: FloatArray
+    private val moi: FloatArray
         get() = _moi ?: floatArrayOf(
                 1.0f/12.0f * mass[0] * (pow(length[0], 2f) + pow(height[0], 2f)),
                 1.0f/12.0f * mass[1] * (pow(length[1], 2f) + pow(height[1], 2f))
             )
 
-    val m11: Float
+    private val m11: Float
         get() = _m11 ?: (moi[0] + mass[0] * pow(offset[0], 2f) + mass[1] * pow(pivot, 2f))
 
-    val m22: Float
+    private val m22: Float
         get() = _m22 ?: (moi[1] + mass[1] * pow(offset[1], 2f))
 
-    fun m12(x: Float4): Float {
+    private fun m12(x: Float4): Float {
         return mass[1] * pivot * offset[1] * cos(x[0] - x[1])
     }
 
-    fun massMatrix(x: Float4): Array<FloatArray> {
+    private fun massMatrix(x: Float4): Array<FloatArray> {
         val _m12 = m12(x)
         return arrayOf(
             floatArrayOf(m11, _m12),
@@ -130,7 +145,7 @@ class TwoLinks {
         )
     }
 
-    fun forcing(x: Float4): FloatArray {
+    private fun forcing(x: Float4): FloatArray {
         val gx = 0.0f  // grav * (manager.accelerometerData?.acceleration.x ?? 0.0)
         val gy = -grav * 1.0f  // grav * (manager.accelerometerData?.acceleration.y ?? -1.0)
         val a = pivot
@@ -138,17 +153,17 @@ class TwoLinks {
         val c = offset[1]
         val m0 = mass[0]
         val m1 = mass[1]
-        val θ0 = x[0]
-        val θ1 = x[1]
-        val ω0 = x[2]
-        val ω1 = x[3]
+        //val θ0 = x[0]
+        //val θ1 = x[1]
+        //val ω0 = x[2]
+        //val ω1 = x[3]
         return floatArrayOf(
-            -a*c*m1*pow(ω1, 2f)*sin(θ0 - θ1) - a*gx*m1*sin(θ0) + a*gy*m1*cos(θ0) - b*gx*m0*sin(θ0) + b*gy*m0*cos(θ0),
-             c*m1*(a*pow(ω0, 2f)*sin(θ0 - θ1) - gx*sin(θ1) + gy*cos(θ1))
+            -a*c*m1*pow(x[3], 2f)*sin(x[0] - x[1]) - a*gx*m1*sin(x[0]) + a*gy*m1*cos(x[0]) - b*gx*m0*sin(x[0]) + b*gy*m0*cos(x[0]),
+             c*m1*(a*pow(x[2], 2f)*sin(x[0] - x[1]) - gx*sin(x[1]) + gy*cos(x[1]))
         )
     }
 
-    fun equationOfMotion(t: Float, x: Float4): Float4 {
+    private fun equationOfMotion(t: Float, x: Float4): Float4 {
         // Calculate the angular velocity and acceleration states given angle and angular velocity
         val invM = invert2x2(massMatrix(x))
         val f = forcing(x)
@@ -161,13 +176,13 @@ class TwoLinks {
 
     fun update(h: Float = dt) {
         // Calculate states at the next frame
-        val priorState = Float4(θ[0], θ[1], ω[0], ω[1])
+        val priorState = Float4(theta[0], theta[1], omega[0], omega[1])
         val newState = rk4({t, x -> equationOfMotion(t, x)}, 0.0f, priorState, h)
-        θ = floatArrayOf(newState[0], newState[1])
-        ω = floatArrayOf(newState[2], newState[3])
+        theta = floatArrayOf(newState[0], newState[1])
+        omega = floatArrayOf(newState[2], newState[3])
     }
 
-    fun nullify() {
+    private fun nullify() {
         // When a specified value changes, this makes sure the
         // properties below get re-calculated on next update
         _mass = null
@@ -185,7 +200,6 @@ class TwoLinks {
 
         // Adjust the physical distances
         length[0] = minLength + value * (maxLength - minLength)
-        //_linkOneGeometry.width = length[0]
         offset[0] = (1.0f - offsetNorm) * (0.5f * length[0] - minDistanceFromEdge)
         pivot = min(pivot, maxPivot)
 
