@@ -14,7 +14,6 @@ import io.github.sceneview.environment.loadEnvironment
 import io.github.sceneview.material.setBaseColor
 import io.github.sceneview.material.setMetallicFactor
 import io.github.sceneview.math.Position
-import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
 import io.github.sceneview.node.ModelNode
 
@@ -111,10 +110,6 @@ class MainActivity : AppCompatActivity() {
             doorMat?.setBaseColor(Float4(0.0f, 0.0f, 0.0f, 1.0f))
             doorMat?.setMetallicFactor(1.0f)
 
-            // Get the positions of the links
-            //val linkPositions = viewModel.twoLinks.position
-            //Log.d(TAG, "linkPositions = $linkPositions (${linkPositions[0].x}, ${linkPositions[0].y}, ${linkPositions[0].z})")
-
             // Define the first pendulum link
             linkOneNode.loadModel(
                 context = this@MainActivity,
@@ -122,7 +117,6 @@ class MainActivity : AppCompatActivity() {
                 glbFileLocation = "models/box.glb",
                 centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            linkOneNode.position = viewModel.linkOnePosition
             linkOneNode.scale = Scale(viewModel.twoLinks.length[0], viewModel.twoLinks.height[0], viewModel.twoLinks.thickness[0])
             val linkOneMaterial = linkOneNode.modelInstance?.material?.filamentMaterialInstance
             linkOneMaterial?.setBaseColor(Float4(1.0f, 0.0f, 0.0f, 1.0f))
@@ -134,7 +128,6 @@ class MainActivity : AppCompatActivity() {
                 glbFileLocation = "models/box.glb",
                 centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            linkTwoNode.position = viewModel.linkTwoPosition
             linkTwoNode.scale = Scale(viewModel.twoLinks.length[1], viewModel.twoLinks.height[1], viewModel.twoLinks.thickness[1])
             val linkTwoMaterial = linkTwoNode.modelInstance?.material?.filamentMaterialInstance
             linkTwoMaterial?.setBaseColor(Float4(0.0f, 1.0f, 0.0f, 1.0f))
@@ -151,23 +144,25 @@ class MainActivity : AppCompatActivity() {
         choreographer.removeFrameCallback(frameCallback)
     }
 
-    //var lastTime = 0f
+    var lastTime = 0f
 
     private val frameCallback = object : Choreographer.FrameCallback {
         override fun doFrame(currentTime: Long) {
-            //val currentSeconds = currentTime.toFloat() / 1_000_000_000
-            //val dt = if (lastTime == 0f) 0f else currentSeconds - lastTime
-            //Log.d(TAG, "frame currentTime = $currentTime lastTime = $lastTime dt = $dt")
+            // Obtain the timing data, dt is differential time
+            val currentSeconds = currentTime.toFloat() / 1_000_000_000
+            val dt = if (lastTime == 0f) 0f else currentSeconds - lastTime
 
+            // Make sure the scene is ready and not paused, then do the update
             if (sceneIsInitialized && !viewModel.isPaused) {
-                viewModel.update()
+                viewModel.update(dt)
                 linkOneNode.position = viewModel.linkOnePosition
-                linkOneNode.rotation = Rotation(0f, 0f, viewModel.linkOneAngle)
+                linkOneNode.rotation = viewModel.linkOneRotation
                 linkTwoNode.position = viewModel.linkTwoPosition
-                linkTwoNode.rotation = Rotation(0f, 0f, viewModel.linkTwoAngle)
+                linkTwoNode.rotation = viewModel.linkTwoRotation
             }
 
-            //lastTime = currentSeconds
+            // Set up the next frame update
+            lastTime = currentSeconds
             choreographer.postFrameCallback(this)
         }
     }

@@ -159,10 +159,10 @@ class TwoLinks {
         return Float4(x[2], x[3], dx[0], dx[1])
     }
 
-    fun update() {
+    fun update(h: Float = dt) {
         // Calculate states at the next frame
         val priorState = Float4(θ[0], θ[1], ω[0], ω[1])
-        val newState = rk4({t, x -> equationOfMotion(t, x)}, 0.0f, priorState, dt)
+        val newState = rk4({t, x -> equationOfMotion(t, x)}, 0.0f, priorState, h)
         θ = floatArrayOf(newState[0], newState[1])
         ω = floatArrayOf(newState[2], newState[3])
     }
