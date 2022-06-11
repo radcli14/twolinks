@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
         val doorNode = ModelNode()
         sceneView.addChild(doorNode)
 
+        val linkOneNode = ModelNode()
+        sceneView.addChild(linkOneNode)
+
         lifecycleScope.launchWhenCreated {
             sceneView.environment = HDRLoader.loadEnvironment(
                 context = this@MainActivity,
@@ -99,6 +102,20 @@ class MainActivity : AppCompatActivity() {
             val doorMat = doorNode.modelInstance?.material?.filamentMaterialInstance
             doorMat?.setBaseColor(Float4(0.0f, 0.0f, 0.0f, 1.0f))
             doorMat?.setMetallicFactor(1.0f)
+
+            // Define the first pendulum link
+            val pos = viewModel.twoLinks.position
+            Log.d(TAG, "pos = $pos (${pos[0]}, ${pos[1]}, ${pos[2]})")
+            linkOneNode.loadModel(
+                context = this@MainActivity,
+                lifecycle = lifecycle,
+                glbFileLocation = "models/box.glb",
+                centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
+            )
+            linkOneNode.position = Position(0.5f * viewModel.twoLinks.length[0], 0.0f, viewModel.twoLinks.thickness[0])
+            linkOneNode.scale = Scale(viewModel.twoLinks.length[0], viewModel.twoLinks.height[0], viewModel.twoLinks.thickness[0])
+            val linkOneMaterial = linkOneNode.modelInstance?.material?.filamentMaterialInstance
+            linkOneMaterial?.setBaseColor(Float4(1.0f, 1.0f, 1.0f, 1.0f))
         }
     }
 }

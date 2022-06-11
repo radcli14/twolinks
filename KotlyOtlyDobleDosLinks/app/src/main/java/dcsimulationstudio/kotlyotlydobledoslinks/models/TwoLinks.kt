@@ -3,6 +3,7 @@ package dcsimulationstudio.kotlyotlydobledoslinks.models
 import com.google.android.filament.utils.Float3
 import dev.romainguy.kotlin.math.Float4
 import dev.romainguy.kotlin.math.pow
+import io.github.sceneview.math.Position
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -72,14 +73,14 @@ class TwoLinks {
     private var _m11: Float? = null
     private var _m22: Float? = null
 
-    val position: Array<Float3>
+    val position: Array<Position>
         get() = arrayOf(
-                Float3(
+                Position(
                     offset[0] * cos(θ[0]),
                     offset[0] * sin(θ[0]),
                     thickness[0]
             ),
-                Float3(
+                Position(
                     pivot * cos(θ[0]) + offset[1] * cos(θ[1]),
                     pivot * sin(θ[0]) + offset[1] * sin(θ[1]),
                     thickness[0] + thickness[1]
