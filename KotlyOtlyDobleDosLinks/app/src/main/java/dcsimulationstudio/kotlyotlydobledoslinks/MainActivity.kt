@@ -1,7 +1,9 @@
 package dcsimulationstudio.kotlyotlydobledoslinks
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.filament.utils.HDRLoader
@@ -14,12 +16,17 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.math.Scale
 import io.github.sceneview.node.ModelNode
 
+const val TAG = "Main"
+
 class MainActivity : AppCompatActivity() {
     private lateinit var sceneView: SceneView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Get the view model
+        val viewModel: MainViewModel by viewModels()
 
         // Load the buttons that the user uses to control playback, or modify configuration
         val restartButton = findViewById<Button>(R.id.restart_button)
@@ -28,10 +35,19 @@ class MainActivity : AppCompatActivity() {
         val colorButton = findViewById<Button>(R.id.color_button)
 
         // Set the listeners
-        restartButton.setOnClickListener { println("restart!!!") }
-        playButton.setOnClickListener { println("play!!!") }
-        editButton.setOnClickListener { println("edit!!!") }
-        colorButton.setOnClickListener { println("color???") }
+        restartButton.setOnClickListener {
+            viewModel.resetStates()
+            Log.d(TAG, "restart!!! states = ${viewModel.twoLinks.θ}, $${viewModel.twoLinks.ω}")
+        }
+        playButton.setOnClickListener {
+            viewModel.pause()
+            val playIconId = if (viewModel.isPaused) R.drawable.pause else R.drawable.play
+            playButton.setCompoundDrawablesWithIntrinsicBounds(playIconId, 0, 0, 0);
+            Log.d(TAG, if (viewModel.isPaused) "pause..." else "play!!!")
+            Log.d(TAG, "playIconId = $playIconId")
+        }
+        editButton.setOnClickListener { Log.d(TAG, "edit!!!") }
+        colorButton.setOnClickListener { Log.d(TAG, "color???") }
 
         // Load the SceneView, used for 3D rendering
         sceneView = findViewById(R.id.sceneView)
