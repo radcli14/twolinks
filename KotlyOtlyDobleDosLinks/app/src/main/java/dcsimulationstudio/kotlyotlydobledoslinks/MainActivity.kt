@@ -2,6 +2,7 @@ package dcsimulationstudio.kotlyotlydobledoslinks
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Choreographer
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,8 @@ const val TAG = "Main"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sceneView: SceneView
+    private lateinit var linkOneNode: ModelNode
+    private lateinit var linkTwoNode: ModelNode
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +65,11 @@ class MainActivity : AppCompatActivity() {
         val doorNode = ModelNode()
         sceneView.addChild(doorNode)
 
-        val linkOneNode = ModelNode()
+        linkOneNode = ModelNode()
         sceneView.addChild(linkOneNode)
+
+        linkTwoNode = ModelNode()
+        sceneView.addChild(linkTwoNode)
 
         lifecycleScope.launchWhenCreated {
             sceneView.environment = HDRLoader.loadEnvironment(
@@ -95,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 glbFileLocation = "models/box.glb",
                 centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            doorNode.position = Position(0.0f, 0.0f, 0.0f)
+            doorNode.position = Position(0.0f, 0.0f, -0.0175f)  //-0.0175f)
             doorNode.scale = Scale(0.91f, 2.03f, 0.035f)
 
             // Set the visual properties of the door
@@ -103,19 +109,46 @@ class MainActivity : AppCompatActivity() {
             doorMat?.setBaseColor(Float4(0.0f, 0.0f, 0.0f, 1.0f))
             doorMat?.setMetallicFactor(1.0f)
 
+            // Get the positions of the links
+            val linkPositions = viewModel.twoLinks.position
+            Log.d(TAG, "linkPositions = $linkPositions (${linkPositions[0].x}, ${linkPositions[0].y}, ${linkPositions[0].z})")
+
             // Define the first pendulum link
-            val pos = viewModel.twoLinks.position
-            Log.d(TAG, "pos = $pos (${pos[0]}, ${pos[1]}, ${pos[2]})")
             linkOneNode.loadModel(
                 context = this@MainActivity,
                 lifecycle = lifecycle,
                 glbFileLocation = "models/box.glb",
                 centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            linkOneNode.position = Position(0.5f * viewModel.twoLinks.length[0], 0.0f, viewModel.twoLinks.thickness[0])
+            linkOneNode.position = linkPositions[0]
             linkOneNode.scale = Scale(viewModel.twoLinks.length[0], viewModel.twoLinks.height[0], viewModel.twoLinks.thickness[0])
             val linkOneMaterial = linkOneNode.modelInstance?.material?.filamentMaterialInstance
-            linkOneMaterial?.setBaseColor(Float4(1.0f, 1.0f, 1.0f, 1.0f))
+            linkOneMaterial?.setBaseColor(Float4(1.0f, 0.0f, 0.0f, 1.0f))
+
+            // Define the second pendulum link
+            linkTwoNode.loadModel(
+                context = this@MainActivity,
+                lifecycle = lifecycle,
+                glbFileLocation = "models/box.glb",
+                centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
+            )
+            linkTwoNode.position = linkPositions[1]
+            linkTwoNode.scale = Scale(viewModel.twoLinks.length[1], viewModel.twoLinks.height[1], viewModel.twoLinks.thickness[1])
+            val linkTwoMaterial = linkTwoNode.modelInstance?.material?.filamentMaterialInstance
+            linkTwoMaterial?.setBaseColor(Float4(0.0f, 1.0f, 0.0f, 1.0f))
+
+            //sceneView.onFrame
         }
     }
+
+    /*private val frameCallback = object : Choreographer.FrameCallback {
+        override fun doFrame(currentTime: Long) {
+            Log.d(TAG, "frame currentTime: $currentTime")
+        }
+    }*/
+
+    private val sceneIsInitialized: Boolean
+        get() {
+            return this::sceneView.isInitialized && this::linkOneNode.isInitialized && this::linkTwoNode.isInitialized
+        }
 }
