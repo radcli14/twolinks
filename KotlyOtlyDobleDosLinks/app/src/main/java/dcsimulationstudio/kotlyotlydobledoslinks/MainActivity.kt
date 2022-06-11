@@ -14,6 +14,7 @@ import io.github.sceneview.environment.loadEnvironment
 import io.github.sceneview.material.setBaseColor
 import io.github.sceneview.material.setMetallicFactor
 import io.github.sceneview.math.Position
+import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
 import io.github.sceneview.node.ModelNode
 
@@ -21,15 +22,19 @@ const val TAG = "Main"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sceneView: SceneView
-    private lateinit var linkOneNode: ModelNode
-    private lateinit var linkTwoNode: ModelNode
+    private lateinit var choreographer: Choreographer
+    val linkOneNode = ModelNode()
+    val linkTwoNode = ModelNode()
+
+    // Get the view model
+    val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Get the view model
-        val viewModel: MainViewModel by viewModels()
+        // Get the choreographer, so that we can get callbacks each frame
+        choreographer = Choreographer.getInstance()
 
         // Load the buttons that the user uses to control playback, or modify configuration
         val restartButton = findViewById<Button>(R.id.restart_button)
@@ -65,10 +70,7 @@ class MainActivity : AppCompatActivity() {
         val doorNode = ModelNode()
         sceneView.addChild(doorNode)
 
-        linkOneNode = ModelNode()
         sceneView.addChild(linkOneNode)
-
-        linkTwoNode = ModelNode()
         sceneView.addChild(linkTwoNode)
 
         lifecycleScope.launchWhenCreated {
@@ -110,8 +112,8 @@ class MainActivity : AppCompatActivity() {
             doorMat?.setMetallicFactor(1.0f)
 
             // Get the positions of the links
-            val linkPositions = viewModel.twoLinks.position
-            Log.d(TAG, "linkPositions = $linkPositions (${linkPositions[0].x}, ${linkPositions[0].y}, ${linkPositions[0].z})")
+            //val linkPositions = viewModel.twoLinks.position
+            //Log.d(TAG, "linkPositions = $linkPositions (${linkPositions[0].x}, ${linkPositions[0].y}, ${linkPositions[0].z})")
 
             // Define the first pendulum link
             linkOneNode.loadModel(
@@ -120,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                 glbFileLocation = "models/box.glb",
                 centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            linkOneNode.position = linkPositions[0]
+            linkOneNode.position = viewModel.linkOnePosition
             linkOneNode.scale = Scale(viewModel.twoLinks.length[0], viewModel.twoLinks.height[0], viewModel.twoLinks.thickness[0])
             val linkOneMaterial = linkOneNode.modelInstance?.material?.filamentMaterialInstance
             linkOneMaterial?.setBaseColor(Float4(1.0f, 0.0f, 0.0f, 1.0f))
@@ -132,23 +134,46 @@ class MainActivity : AppCompatActivity() {
                 glbFileLocation = "models/box.glb",
                 centerOrigin = Position(x = 0.0f, y = 0.0f, z = 0.0f)
             )
-            linkTwoNode.position = linkPositions[1]
+            linkTwoNode.position = viewModel.linkTwoPosition
             linkTwoNode.scale = Scale(viewModel.twoLinks.length[1], viewModel.twoLinks.height[1], viewModel.twoLinks.thickness[1])
             val linkTwoMaterial = linkTwoNode.modelInstance?.material?.filamentMaterialInstance
             linkTwoMaterial?.setBaseColor(Float4(0.0f, 1.0f, 0.0f, 1.0f))
-
-            //sceneView.onFrame
         }
     }
 
-    /*private val frameCallback = object : Choreographer.FrameCallback {
+    override fun onResume() {
+        super.onResume()
+        choreographer.postFrameCallback(frameCallback)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        choreographer.removeFrameCallback(frameCallback)
+    }
+
+    //var lastTime = 0f
+
+    private val frameCallback = object : Choreographer.FrameCallback {
         override fun doFrame(currentTime: Long) {
-            Log.d(TAG, "frame currentTime: $currentTime")
+            //val currentSeconds = currentTime.toFloat() / 1_000_000_000
+            //val dt = if (lastTime == 0f) 0f else currentSeconds - lastTime
+            //Log.d(TAG, "frame currentTime = $currentTime lastTime = $lastTime dt = $dt")
+
+            if (sceneIsInitialized && !viewModel.isPaused) {
+                viewModel.update()
+                linkOneNode.position = viewModel.linkOnePosition
+                linkOneNode.rotation = Rotation(0f, 0f, viewModel.linkOneAngle)
+                linkTwoNode.position = viewModel.linkTwoPosition
+                linkTwoNode.rotation = Rotation(0f, 0f, viewModel.linkTwoAngle)
+            }
+
+            //lastTime = currentSeconds
+            choreographer.postFrameCallback(this)
         }
-    }*/
+    }
 
     private val sceneIsInitialized: Boolean
         get() {
-            return this::sceneView.isInitialized && this::linkOneNode.isInitialized && this::linkTwoNode.isInitialized
+            return this::sceneView.isInitialized
         }
 }
