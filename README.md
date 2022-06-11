@@ -10,6 +10,10 @@ SwiftyTwoLinks and KotlyOtlyDobleDosLinks
 
 ## Android Files and Functionality
 
+- `MainActivity.kt` is the layout and scene manipulation features
+- `MainViewModel.kt` controls resetting, pausing, or updating states 
+- `TwoLinks.kt` models the physical behavior of the double pendulum
+
 ## Calculating Offsets and Pivot Points
 
 There are five normalized values that define dimensions of the two link pendulum system. 
