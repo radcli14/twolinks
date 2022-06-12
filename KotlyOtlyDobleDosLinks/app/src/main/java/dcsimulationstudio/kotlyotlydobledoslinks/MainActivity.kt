@@ -3,11 +3,15 @@ package dcsimulationstudio.kotlyotlydobledoslinks
 import android.os.Bundle
 import android.util.Log
 import android.view.Choreographer
+import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.filament.utils.HDRLoader
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.SceneView
 import io.github.sceneview.environment.loadEnvironment
@@ -27,8 +31,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var linkOne: ModelNode
     private lateinit var linkTwo: ModelNode
     private lateinit var pivot: ModelNode
+    private lateinit var playButton: Button
 
-    // Get the view model
     val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,26 +42,14 @@ class MainActivity : AppCompatActivity() {
         // Get the choreographer, so that we can get callbacks each frame
         choreographer = Choreographer.getInstance()
 
-        // Load the buttons that the user uses to control playback, or modify configuration
-        val restartButton = findViewById<Button>(R.id.restart_button)
-        val playButton = findViewById<Button>(R.id.play_button)
-        val editButton = findViewById<Button>(R.id.edit_button)
-        val colorButton = findViewById<Button>(R.id.color_button)
+        // The playButton must be persistent in the class so that we can modify its icon
+        playButton = findViewById(R.id.play_button)
 
         // Set the listeners
-        restartButton.setOnClickListener {
-            viewModel.resetStates()
-            Log.d(TAG, "restart!!! states = ${viewModel.twoLinks.theta}, $${viewModel.twoLinks.omega}")
-        }
-        playButton.setOnClickListener {
-            viewModel.pause()
-            val playIconId = if (viewModel.isPaused) R.drawable.pause else R.drawable.play
-            playButton.setCompoundDrawablesWithIntrinsicBounds(playIconId, 0, 0, 0)
-            Log.d(TAG, if (viewModel.isPaused) "pause..." else "play!!!")
-            Log.d(TAG, "playIconId = $playIconId")
-        }
-        editButton.setOnClickListener { Log.d(TAG, "edit!!!") }
-        colorButton.setOnClickListener { Log.d(TAG, "color???") }
+        findViewById<Button>(R.id.restart_button).setOnClickListener { restart() }
+        playButton.setOnClickListener { play() }
+        findViewById<Button>(R.id.edit_button).setOnClickListener { edit() }
+        findViewById<Button>(R.id.color_button).setOnClickListener { color() }
 
         // Load the SceneView, used for 3D rendering
         sceneView = findViewById(R.id.sceneView)
@@ -128,6 +120,64 @@ class MainActivity : AppCompatActivity() {
             sceneView.addChild(linkTwo)
 
         }
+    }
+
+    private fun restart() {
+        viewModel.resetStates()
+        Log.d(TAG, "restart!!! states = ${viewModel.twoLinks.theta}, $${viewModel.twoLinks.omega}")
+    }
+
+    private fun play() {
+        viewModel.pause()
+        val playIconId = if (viewModel.isPaused) R.drawable.pause else R.drawable.play
+        playButton.setCompoundDrawablesWithIntrinsicBounds(playIconId, 0, 0, 0)
+        Log.d(TAG, if (viewModel.isPaused) "pause..." else "play!!!")
+        Log.d(TAG, "playIconId = $playIconId")
+    }
+
+    private fun edit() {
+        Log.d(TAG, "edit!!!")
+        // Initialize the bottom dialog
+        val dialog = BottomSheetDialog(this)
+        val bottomLayout = layoutInflater.inflate(R.layout.bottom_layout, null)
+
+        // Get the three lines, which are each linear layouts containing two sliders
+        val lineOne = bottomLayout.findViewById<LinearLayout>(R.id.lineOne)
+        val lineTwo = bottomLayout.findViewById<LinearLayout>(R.id.lineTwo)
+        val lineThree = bottomLayout.findViewById<LinearLayout>(R.id.lineThree)
+
+        // Create sliders for each of the dimensions
+        val linkOneLengthSlider = View.inflate(this, R.layout.text_slider, null)
+        val linkTwoLengthSlider = View.inflate(this, R.layout.text_slider, null)
+        val linkOneOffsetSlider = View.inflate(this, R.layout.text_slider, null)
+        val linkTwoOffsetSlider = View.inflate(this, R.layout.text_slider, null)
+        val pivotSlider = View.inflate(this, R.layout.text_slider, null)
+
+        // Add the text labels to the sliders
+        linkOneLengthSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.link_one_length)
+        linkTwoLengthSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.link_two_length)
+        linkOneOffsetSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.link_one_offset)
+        linkTwoOffsetSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.link_two_offset)
+        pivotSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.pivot)
+
+        // Set sliders to the normalized values
+
+        // Add the bindings to the sliders
+
+        // Add the sliders to the view
+        lineOne.addView(linkOneLengthSlider)
+        lineOne.addView(linkTwoLengthSlider)
+        lineTwo.addView(linkOneOffsetSlider)
+        lineTwo.addView(linkTwoOffsetSlider)
+        lineThree.addView(pivotSlider)
+
+        // Show the bottom dialog
+        dialog.setContentView(bottomLayout)
+        dialog.show()
+    }
+
+    private fun color() {
+        Log.d(TAG, "color???")
     }
 
     /**

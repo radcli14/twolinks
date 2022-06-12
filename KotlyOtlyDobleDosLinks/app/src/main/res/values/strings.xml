@@ -4,4 +4,9 @@
     <string name="play_or_pause_the_simulation">play or pause the simulation</string>
     <string name="edit_geometry">edit geometry</string>
     <string name="edit_colors">edit colors</string>
+    <string name="link_one_length">Link One Length</string>
+    <string name="link_two_length">Link Two Length</string>
+    <string name="link_one_offset">Link One Offset</string>
+    <string name="link_two_offset">Link Two Offset</string>
+    <string name="pivot">Pivot</string>
 </resources>

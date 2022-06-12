@@ -3,16 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="128dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">>
+        app:layout_constraintTop_toTopOf="parent">>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,13 +24,14 @@
                 android:id="@+id/slider_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:padding="4dp"
                 android:textAlignment="center" />
 
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
 
         </LinearLayout>
 
