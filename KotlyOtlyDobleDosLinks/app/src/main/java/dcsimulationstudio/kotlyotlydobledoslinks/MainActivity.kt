@@ -6,6 +6,7 @@ import android.view.Choreographer
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var linkTwo: ModelNode
     private lateinit var pivot: ModelNode
     private lateinit var playButton: Button
+
+    private lateinit var linkOneLengthSlider: View
+    private lateinit var linkTwoLengthSlider: View
+    private lateinit var linkOneOffsetSlider: View
+    private lateinit var linkTwoOffsetSlider: View
+    private lateinit var pivotSlider: View
 
     val viewModel: MainViewModel by viewModels()
 
@@ -124,7 +131,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun restart() {
         viewModel.resetStates()
-        Log.d(TAG, "restart!!! states = ${viewModel.twoLinks.theta}, $${viewModel.twoLinks.omega}")
     }
 
     private fun play() {
@@ -136,10 +142,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun edit() {
-        Log.d(TAG, "edit!!!")
         // Initialize the bottom dialog
         val dialog = BottomSheetDialog(this)
-        val bottomLayout = layoutInflater.inflate(R.layout.bottom_layout, null)
+        val bottomLayout = View.inflate(this, R.layout.bottom_layout, null)
 
         // Get the three lines, which are each linear layouts containing two sliders
         val lineOne = bottomLayout.findViewById<LinearLayout>(R.id.lineOne)
@@ -147,11 +152,11 @@ class MainActivity : AppCompatActivity() {
         val lineThree = bottomLayout.findViewById<LinearLayout>(R.id.lineThree)
 
         // Create sliders for each of the dimensions
-        val linkOneLengthSlider = View.inflate(this, R.layout.text_slider, null)
-        val linkTwoLengthSlider = View.inflate(this, R.layout.text_slider, null)
-        val linkOneOffsetSlider = View.inflate(this, R.layout.text_slider, null)
-        val linkTwoOffsetSlider = View.inflate(this, R.layout.text_slider, null)
-        val pivotSlider = View.inflate(this, R.layout.text_slider, null)
+        linkOneLengthSlider = View.inflate(this, R.layout.text_slider, null)
+        linkTwoLengthSlider = View.inflate(this, R.layout.text_slider, null)
+        linkOneOffsetSlider = View.inflate(this, R.layout.text_slider, null)
+        linkTwoOffsetSlider = View.inflate(this, R.layout.text_slider, null)
+        pivotSlider = View.inflate(this, R.layout.text_slider, null)
 
         // Add the text labels to the sliders
         linkOneLengthSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.link_one_length)
@@ -161,8 +166,10 @@ class MainActivity : AppCompatActivity() {
         pivotSlider.findViewById<TextView>(R.id.slider_text).text = getString(R.string.pivot)
 
         // Set sliders to the normalized values
+        setSlidersToNorm()
 
         // Add the bindings to the sliders
+        setSliderBindings()
 
         // Add the sliders to the view
         lineOne.addView(linkOneLengthSlider)
@@ -174,6 +181,97 @@ class MainActivity : AppCompatActivity() {
         // Show the bottom dialog
         dialog.setContentView(bottomLayout)
         dialog.show()
+    }
+
+    private fun setSlidersToNorm() {
+        linkOneLengthSlider.findViewById<SeekBar>(R.id.seekBar).progress = viewModel.linkOneLengthNorm
+        linkTwoLengthSlider.findViewById<SeekBar>(R.id.seekBar).progress = viewModel.linkTwoLengthNorm
+        linkOneOffsetSlider.findViewById<SeekBar>(R.id.seekBar).progress = viewModel.linkOneOffsetNorm
+        linkTwoOffsetSlider.findViewById<SeekBar>(R.id.seekBar).progress = viewModel.linkTwoOffsetNorm
+        pivotSlider.findViewById<SeekBar>(R.id.seekBar).progress = viewModel.pivotNorm
+    }
+
+    /**
+     * Modifies the pendulum settings when the user adjusts the sliders
+     */
+    private fun setSliderBindings() {
+        // Link One Length
+        linkOneLengthSlider.findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        viewModel.setLinkOneLengthFromNorm(progress)
+                        linkOne.scale.x = viewModel.twoLinks.length[0]
+                        setSlidersToNorm()
+                    }
+                }
+
+                override fun onStartTrackingTouch(seek: SeekBar) { /* unused */ }
+                override fun onStopTrackingTouch(seek: SeekBar) { /* unused */}
+            }
+        )
+
+        // Link Two Length
+        linkTwoLengthSlider.findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        viewModel.setLinkTwoLengthFromNorm(progress)
+                        linkTwo.scale.x = viewModel.twoLinks.length[1]
+                    }
+                }
+
+                override fun onStartTrackingTouch(seek: SeekBar) { /* unused */ }
+                override fun onStopTrackingTouch(seek: SeekBar) { /* unused */}
+            }
+        )
+
+        // Link One Offset
+        linkOneOffsetSlider.findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        viewModel.setLinkOneOffsetFromNorm(progress)
+                    }
+                }
+
+                override fun onStartTrackingTouch(seek: SeekBar) { /* unused */ }
+                override fun onStopTrackingTouch(seek: SeekBar) { /* unused */}
+            }
+        )
+
+        // Link Two Offset
+        linkTwoOffsetSlider.findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        viewModel.setLinkTwoOffsetFromNorm(progress)
+                    }
+                }
+
+                override fun onStartTrackingTouch(seek: SeekBar) { /* unused */ }
+                override fun onStopTrackingTouch(seek: SeekBar) { /* unused */}
+            }
+        )
+
+        // Link Two Offset
+        pivotSlider.findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        viewModel.setPivotFromNorm(progress)
+                    }
+                }
+
+                override fun onStartTrackingTouch(seek: SeekBar) { /* unused */ }
+                override fun onStopTrackingTouch(seek: SeekBar) { /* unused */}
+            }
+        )
     }
 
     private fun color() {
