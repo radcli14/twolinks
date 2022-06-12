@@ -27,10 +27,9 @@
         android:id="@+id/play_button"
         android:layout_width="56dp"
         android:layout_height="64dp"
-        app:cornerRadius="32dp"
         android:backgroundTint="@android:color/darker_gray"
         android:contentDescription="@string/play_or_pause_the_simulation"
-        app:icon="@drawable/play"
+        app:cornerRadius="32dp"
         app:layout_constraintStart_toStartOf="@+id/restart_button"
         app:layout_constraintTop_toBottomOf="@+id/restart_button" />
 

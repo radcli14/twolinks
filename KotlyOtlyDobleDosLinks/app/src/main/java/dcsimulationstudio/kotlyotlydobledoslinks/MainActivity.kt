@@ -13,6 +13,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.filament.utils.HDRLoader
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.madrapps.pikolo.ColorPicker
+import com.madrapps.pikolo.HSLColorPicker
+import com.madrapps.pikolo.RGBColorPicker
+import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
 import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.SceneView
 import io.github.sceneview.environment.loadEnvironment
@@ -23,6 +27,7 @@ import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
 import io.github.sceneview.node.ModelNode
 import kotlin.random.Random
+
 
 const val TAG = "Main"
 
@@ -51,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         // The playButton must be persistent in the class so that we can modify its icon
         playButton = findViewById(R.id.play_button)
+        playButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pause, 0, 0, 0)
 
         // Set the listeners
         findViewById<Button>(R.id.restart_button).setOnClickListener { restart() }
@@ -135,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun play() {
         viewModel.pause()
-        val playIconId = if (viewModel.isPaused) R.drawable.pause else R.drawable.play
+        val playIconId = if (viewModel.isPaused) R.drawable.play else R.drawable.pause
         playButton.setCompoundDrawablesWithIntrinsicBounds(playIconId, 0, 0, 0)
         Log.d(TAG, if (viewModel.isPaused) "pause..." else "play!!!")
         Log.d(TAG, "playIconId = $playIconId")
@@ -149,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         // Get the three lines, which are each linear layouts containing two sliders
         val lineOne = bottomLayout.findViewById<LinearLayout>(R.id.lineOne)
         val lineTwo = bottomLayout.findViewById<LinearLayout>(R.id.lineTwo)
-        val lineThree = bottomLayout.findViewById<LinearLayout>(R.id.lineThree)
+        val lineThree = bottomLayout.findViewById<LinearLayout>(R.id.vertical_layout)
 
         // Create sliders for each of the dimensions
         linkOneLengthSlider = View.inflate(this, R.layout.text_slider, null)
@@ -276,6 +282,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun color() {
         Log.d(TAG, "color???")
+
+        // Initialize the bottom dialog
+        val dialog = BottomSheetDialog(this)
+        val bottomLayout = View.inflate(this, R.layout.bottom_layout, null)
+
+        // Get the three lines, which are each linear layouts containing two sliders
+        val lineOne = bottomLayout.findViewById<LinearLayout>(R.id.lineOne)
+        val lineTwo = bottomLayout.findViewById<LinearLayout>(R.id.lineTwo)
+        val lineThree = bottomLayout.findViewById<LinearLayout>(R.id.vertical_layout)
+
+        val colorPicker = HSLColorPicker(this) //= findViewById(R.id.colorPicker)
+        colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
+            override fun onColorSelected(color: Int) {
+                // Do whatever you want with the color
+                // imageView.getBackground().setColorFilter(color, PorterDuff.Mode.MULTIPLY)
+            }
+        })
+        lineThree.addView(colorPicker)
+
+        // Show the bottom dialog
+        dialog.setContentView(bottomLayout)
+        dialog.show()
     }
 
     /**
@@ -300,7 +328,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Load the box model for a pre-existing node
+     * Load the box representing the door or links
      */
     private suspend fun makeBox(x: Float = 0f, y: Float = 0f, z: Float = 0f,
                                 scaleX: Float = 1f, scaleY: Float = 1f, scaleZ: Float = 1f,
