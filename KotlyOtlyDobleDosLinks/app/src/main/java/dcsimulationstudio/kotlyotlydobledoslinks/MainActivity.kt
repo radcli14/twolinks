@@ -1,5 +1,6 @@
 package dcsimulationstudio.kotlyotlydobledoslinks
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Choreographer
@@ -11,12 +12,10 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.flask.colorpicker.ColorPickerView
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.google.android.filament.utils.HDRLoader
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.madrapps.pikolo.ColorPicker
-import com.madrapps.pikolo.HSLColorPicker
-import com.madrapps.pikolo.RGBColorPicker
-import com.madrapps.pikolo.listeners.SimpleColorSelectionListener
 import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.SceneView
 import io.github.sceneview.environment.loadEnvironment
@@ -121,13 +120,17 @@ class MainActivity : AppCompatActivity() {
                 scaleX = viewModel.twoLinks.length[0],
                 scaleY = viewModel.twoLinks.height[0],
                 scaleZ = viewModel.twoLinks.thickness[0],
-                randomColor = true
+                red = viewModel.linkOneColor.x,
+                green = viewModel.linkOneColor.y,
+                blue = viewModel.linkOneColor.z
             )
             linkTwo = makeBox(
                 scaleX = viewModel.twoLinks.length[1],
                 scaleY = viewModel.twoLinks.height[1],
                 scaleZ = viewModel.twoLinks.thickness[1],
-                randomColor = true
+                red = viewModel.linkTwoColor.x,
+                green = viewModel.linkTwoColor.y,
+                blue = viewModel.linkTwoColor.z
             )
             sceneView.addChild(linkOne)
             sceneView.addChild(linkTwo)
@@ -183,6 +186,39 @@ class MainActivity : AppCompatActivity() {
         lineTwo.addView(linkOneOffsetSlider)
         lineTwo.addView(linkTwoOffsetSlider)
         lineThree.addView(pivotSlider)
+
+        // Show the bottom dialog
+        dialog.setContentView(bottomLayout)
+        dialog.show()
+    }
+
+
+    /**
+     * Modifies the color of the two links, Moon, or Earth
+     */
+    private fun color() {
+        // Initialize the bottom dialog
+        val dialog = BottomSheetDialog(this)
+        val bottomLayout = View.inflate(this, R.layout.color_layout, null)
+
+        // Get the buttons that select which component is being re-colored
+        val linkOneButton = bottomLayout.findViewById<Button>(R.id.link_one_color)
+        val linkTwoButton = bottomLayout.findViewById<Button>(R.id.link_two_color)
+
+        // Set the initial colors of the buttons
+        linkOneButton.setBackgroundColor(viewModel.linkOneColor.colorInt())
+        linkTwoButton.setBackgroundColor(viewModel.linkTwoColor.colorInt())
+
+        // Get the color picker
+        val colorPicker = bottomLayout.findViewById<ColorPickerView>(R.id.color_picker_view)
+        colorPicker.setDensity(6)
+        colorPicker.setInitialColor(viewModel.linkOneColor.colorInt(), false)
+        colorPicker.addOnColorChangedListener { selectedColor ->
+            Log.d(TAG, "selectedColor = $selectedColor ${Integer.toHexString(selectedColor)}")
+            Log.d(TAG, "  red = ${Color.red(selectedColor)}")
+            Log.d(TAG, "  green = ${Color.green(selectedColor)}")
+            Log.d(TAG, "  blue = ${Color.blue(selectedColor)}")
+        }
 
         // Show the bottom dialog
         dialog.setContentView(bottomLayout)
@@ -278,32 +314,6 @@ class MainActivity : AppCompatActivity() {
                 override fun onStopTrackingTouch(seek: SeekBar) { /* unused */}
             }
         )
-    }
-
-    private fun color() {
-        Log.d(TAG, "color???")
-
-        // Initialize the bottom dialog
-        val dialog = BottomSheetDialog(this)
-        val bottomLayout = View.inflate(this, R.layout.bottom_layout, null)
-
-        // Get the three lines, which are each linear layouts containing two sliders
-        val lineOne = bottomLayout.findViewById<LinearLayout>(R.id.lineOne)
-        val lineTwo = bottomLayout.findViewById<LinearLayout>(R.id.lineTwo)
-        val lineThree = bottomLayout.findViewById<LinearLayout>(R.id.vertical_layout)
-
-        val colorPicker = HSLColorPicker(this) //= findViewById(R.id.colorPicker)
-        colorPicker.setColorSelectionListener(object : SimpleColorSelectionListener() {
-            override fun onColorSelected(color: Int) {
-                // Do whatever you want with the color
-                // imageView.getBackground().setColorFilter(color, PorterDuff.Mode.MULTIPLY)
-            }
-        })
-        lineThree.addView(colorPicker)
-
-        // Show the bottom dialog
-        dialog.setContentView(bottomLayout)
-        dialog.show()
     }
 
     /**
@@ -424,4 +434,8 @@ class MainActivity : AppCompatActivity() {
                     this::linkTwo.isInitialized &&
                     this::pivot.isInitialized
         }
+}
+
+fun Float4.colorInt() : Int {
+    return Color.argb(1f, this.x, this.y, this.z)
 }

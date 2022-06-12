@@ -8,5 +8,7 @@
     <string name="link_two_length">Link Two Length</string>
     <string name="link_one_offset">Link One Offset</string>
     <string name="link_two_offset">Link Two Offset</string>
+    <string name="link_one_color">Link One Color</string>
+    <string name="link_two_color">Link Two Color</string>
     <string name="pivot">Pivot</string>
 </resources>

@@ -2,6 +2,7 @@ package dcsimulationstudio.kotlyotlydobledoslinks
 
 import androidx.lifecycle.ViewModel
 import dcsimulationstudio.kotlyotlydobledoslinks.models.TwoLinks
+import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.math.Rotation
 import kotlin.random.Random
 
@@ -15,6 +16,9 @@ class MainViewModel : ViewModel() {
     var linkTwoPosition = twoLinks.position[1]
     var linkOneRotation = Rotation(0.0f, 0.0f, 0.0f)
     var linkTwoRotation = Rotation(0.0f, 0.0f, 0.0f)
+
+    var linkOneColor = Float4(1f, 0f, 0f, 1f)
+    var linkTwoColor = Float4(0f, 1f, 0f, 1f)
 
     val linkOneLengthNorm: Int
         get() = (100f * twoLinks.linkOneLengthNorm).toInt()
@@ -63,7 +67,7 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Randomize the initial dimensions
+     * Randomize the initial dimensions and colors
      */
     private fun shuffle() {
         twoLinks.setLinkOneLengthFromNorm(Random.nextFloat())
@@ -71,6 +75,12 @@ class MainViewModel : ViewModel() {
         twoLinks.setLinkOneOffsetFromNorm(Random.nextFloat())
         twoLinks.setLinkTwoOffsetFromNorm(Random.nextFloat())
         twoLinks.setPivotFromNorm(Random.nextFloat())
+        linkOneColor.x = Random.nextFloat()
+        linkOneColor.y = Random.nextFloat()
+        linkOneColor.z = Random.nextFloat()
+        linkTwoColor.x = Random.nextFloat()
+        linkTwoColor.y = Random.nextFloat()
+        linkTwoColor.z = Random.nextFloat()
     }
 
     fun setLinkOneLengthFromNorm(n: Int) {
