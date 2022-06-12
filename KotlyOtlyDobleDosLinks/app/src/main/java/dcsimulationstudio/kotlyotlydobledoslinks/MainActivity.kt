@@ -1,6 +1,7 @@
 package dcsimulationstudio.kotlyotlydobledoslinks
 
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Choreographer
@@ -10,10 +11,11 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.flask.colorpicker.ColorPickerView
-import com.flask.colorpicker.builder.ColorPickerDialogBuilder
+import com.flask.colorpicker.slider.LightnessSlider
 import com.google.android.filament.utils.HDRLoader
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.romainguy.kotlin.math.Float4
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     val viewModel: MainViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -196,6 +199,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Modifies the color of the two links, Moon, or Earth
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun color() {
         // Initialize the bottom dialog
         val dialog = BottomSheetDialog(this)
@@ -204,6 +208,10 @@ class MainActivity : AppCompatActivity() {
         // Get the buttons that select which component is being re-colored
         val linkOneButton = bottomLayout.findViewById<Button>(R.id.link_one_color)
         val linkTwoButton = bottomLayout.findViewById<Button>(R.id.link_two_color)
+        linkOneButton.isSelected = true
+        linkTwoButton.isSelected = false
+        val colorText = bottomLayout.findViewById<TextView>(R.id.component_color)
+        colorText.text = getString(R.string.link_one_color)
 
         // Set the initial colors of the buttons
         linkOneButton.setBackgroundColor(viewModel.linkOneColor.colorInt())
@@ -211,13 +219,42 @@ class MainActivity : AppCompatActivity() {
 
         // Get the color picker
         val colorPicker = bottomLayout.findViewById<ColorPickerView>(R.id.color_picker_view)
+        val lightnessSlider = bottomLayout.findViewById<LightnessSlider>(R.id.color_picker_slider)
+        colorPicker.setLightnessSlider(lightnessSlider)
+
         colorPicker.setDensity(6)
         colorPicker.setInitialColor(viewModel.linkOneColor.colorInt(), false)
         colorPicker.addOnColorChangedListener { selectedColor ->
-            Log.d(TAG, "selectedColor = $selectedColor ${Integer.toHexString(selectedColor)}")
-            Log.d(TAG, "  red = ${Color.red(selectedColor)}")
-            Log.d(TAG, "  green = ${Color.green(selectedColor)}")
-            Log.d(TAG, "  blue = ${Color.blue(selectedColor)}")
+            // Determine which node is active based on which button is selected
+            val activeButton = if (linkOneButton.isSelected) { linkOneButton } else { linkTwoButton }
+            val activeColor = if (linkOneButton.isSelected) { viewModel.linkOneColor } else { viewModel.linkTwoColor }
+            val activeLink = if (linkOneButton.isSelected) { linkOne } else { linkTwo }
+
+            // Update the color in the view model
+            activeColor.x = Color.red(selectedColor).toFloat() / 255f
+            activeColor.y = Color.green(selectedColor).toFloat() / 255f
+            activeColor.z = Color.blue(selectedColor). toFloat() / 255f
+
+            // Update the color of the button
+            activeButton.setBackgroundColor(selectedColor)
+
+            // Update the color in the 3D graphic
+            val material = activeLink.modelInstance?.material?.filamentMaterialInstance
+            material?.setBaseColor(activeColor)
+        }
+
+        // Create the bindings to select a component when the button is tapped
+        linkOneButton.setOnClickListener {
+            linkOneButton.isSelected = true
+            linkTwoButton.isSelected = false
+            colorPicker.setColor(viewModel.linkOneColor.colorInt(), false)
+            colorText.text = getString(R.string.link_one_color)
+        }
+        linkTwoButton.setOnClickListener {
+            linkOneButton.isSelected = false
+            linkTwoButton.isSelected = true
+            colorPicker.setColor(viewModel.linkTwoColor.colorInt(), false)
+            colorText.text = getString(R.string.link_two_color)
         }
 
         // Show the bottom dialog
@@ -436,6 +473,7 @@ class MainActivity : AppCompatActivity() {
         }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun Float4.colorInt() : Int {
     return Color.argb(1f, this.x, this.y, this.z)
 }
