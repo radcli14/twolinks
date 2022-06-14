@@ -146,13 +146,8 @@ class TwoLinks {
      * Right hand side of the equation of motion
      */
     private fun forcing(x: Float4): FloatArray {
-        val gx = 0.0f  // grav * (manager.accelerometerData?.acceleration.x ?? 0.0)
-        val gy = -grav * 1.0f  // grav * (manager.accelerometerData?.acceleration.y ?? -1.0)
-        /*val a = pivot
-        val b = offset[0]
-        val c = offset[1]
-        val m0 = mass[0]
-        val m1 = mass[1]*/
+        val gx = 0.0f
+        val gy = -grav * 1.0f
         return floatArrayOf(
             -pivot*offset[1]*mass[1]*pow(x[3], 2f)*sin(x[0] - x[1])
                     - pivot*gx*mass[1]*sin(x[0])
@@ -168,12 +163,19 @@ class TwoLinks {
      * Calculate the angular velocity and acceleration states given angle and angular velocity
      */
     private fun equationOfMotion(x: Float4): Float4 {
+        // Inverse of the 2x2 mass matrix, left hand side of equation
         val invM = invert2x2(massMatrix(x))
+
+        // Forcing vector, right hand side of the equation
         val f = forcing(x)
+
+        // Derivatives of the angles and angular rates
         val dx = floatArrayOf(
             invM[0][0]*f[0] + invM[0][1]*f[1],
             invM[1][0]*f[0] + invM[1][1]*f[1]
         )
+
+        // Derivatives of the state vector in 1st order form
         return Float4(x[2], x[3], dx[0], dx[1])
     }
 
@@ -181,9 +183,11 @@ class TwoLinks {
      * Simulate a single time step, and update the theta and omega state variables
      */
     fun update(h: Float = dt) {
-        // Calculate states at the next frame
+        // Calculate states at the next frame based on current states
         val priorState = Float4(theta[0], theta[1], omega[0], omega[1])
         val newState = rk4({x -> equationOfMotion(x)}, priorState, h)
+
+        // Update the state variables
         theta = floatArrayOf(newState[0], newState[1])
         omega = floatArrayOf(newState[2], newState[3])
     }
@@ -192,7 +196,6 @@ class TwoLinks {
      * When a specified value changes, this makes sure the properties below get re-calculated on next update
      */
     private fun nullify() {
-
         _mass = null
         _moi = null
         _m11 = null
