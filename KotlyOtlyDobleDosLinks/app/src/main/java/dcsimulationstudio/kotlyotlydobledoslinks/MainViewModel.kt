@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import dcsimulationstudio.kotlyotlydobledoslinks.models.TwoLinks
 import dev.romainguy.kotlin.math.Float4
 import io.github.sceneview.math.Rotation
+import java.util.*
 import kotlin.random.Random
 
 class MainViewModel : ViewModel() {
@@ -70,17 +71,26 @@ class MainViewModel : ViewModel() {
      * Randomize the initial dimensions and colors
      */
     private fun shuffle() {
-        twoLinks.setLinkOneLengthFromNorm(Random.nextFloat())
-        twoLinks.setLinkTwoLengthFromNorm(Random.nextFloat())
-        twoLinks.setLinkOneOffsetFromNorm(Random.nextFloat())
-        twoLinks.setLinkTwoOffsetFromNorm(Random.nextFloat())
-        twoLinks.setPivotFromNorm(Random.nextFloat())
-        linkOneColor.x = Random.nextFloat()
-        linkOneColor.y = Random.nextFloat()
-        linkOneColor.z = Random.nextFloat()
-        linkTwoColor.x = Random.nextFloat()
-        linkTwoColor.y = Random.nextFloat()
-        linkTwoColor.z = Random.nextFloat()
+        // Create a random number generator, seeded with the current time
+        val msec = Calendar.getInstance().get(Calendar.MILLISECOND)
+        val second = Calendar.getInstance().get(Calendar.SECOND)
+        val minute = Calendar.getInstance().get(Calendar.MINUTE)
+        val random = Random(msec + second + minute)
+
+        // Create the randomized link dimensions
+        twoLinks.setLinkOneLengthFromNorm(random.nextFloat())
+        twoLinks.setLinkTwoLengthFromNorm(random.nextFloat())
+        twoLinks.setLinkOneOffsetFromNorm(random.nextFloat())
+        twoLinks.setLinkTwoOffsetFromNorm(random.nextFloat())
+        twoLinks.setPivotFromNorm(random.nextFloat())
+
+        // Create the randomized colors
+        linkOneColor.x = random.nextFloat()
+        linkOneColor.y = random.nextFloat()
+        linkOneColor.z = random.nextFloat()
+        linkTwoColor.x = random.nextFloat()
+        linkTwoColor.y = random.nextFloat()
+        linkTwoColor.z = random.nextFloat()
     }
 
     fun setLinkOneLengthFromNorm(n: Int) {
