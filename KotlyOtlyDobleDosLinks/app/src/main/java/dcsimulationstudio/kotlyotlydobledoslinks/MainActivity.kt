@@ -16,17 +16,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.slider.LightnessSlider
+import com.google.android.filament.Colors
+import com.google.android.filament.LightManager
 import com.google.android.filament.utils.HDRLoader
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
+import dev.romainguy.kotlin.math.lookAt
 import io.github.sceneview.SceneView
 import io.github.sceneview.environment.loadEnvironment
+import io.github.sceneview.light.Light
+import io.github.sceneview.light.build
 import io.github.sceneview.material.setBaseColor
+import io.github.sceneview.material.setBaseTexture
 import io.github.sceneview.material.setMetallicFactor
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
+import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.ModelNode
+import io.github.sceneview.texture.TextureLoader
 import kotlin.random.Random
 
 
@@ -72,8 +81,37 @@ class MainActivity : AppCompatActivity() {
         // Build the scene
         lifecycleScope.launchWhenCreated {
             // Create the camera, initially at a position in front of the door, orbits around it
-            sceneView.camera.position = Position(x = 0.0f, y = 0.0f, z = 2.5f)
-            //sceneView.camera.rotation = Rotation(z = 180f)
+            sceneView.camera.transform = lookAt(
+                eye = Position(x = 0.0f, y = 0.0f, z = 2.5f),
+                target = Position(x = 0.0f, y = 0.0f, z = 0.0f),
+                up = Float3(y = 1.0f)
+            )
+            //sceneView.gestureDetector.cameraManipulator
+
+            // Create a light
+            //val (r, g, b) = Colors.cct(6_500.0f)
+            /*val light = Light.builder(Light.Type.POINT)
+                //.setColor(r, g, b)
+                .setColor(1f)
+                .setIntensity(100_000f)
+                .setShadowCastingEnabled(true)
+                .setFalloffRadius(20f)
+                .build()
+            val lightNode = LightNode(lifecycle, light)
+            lightNode.position = Position(1f, 1f, 0.5f)
+             */
+            //sceneView.addChild(lightNode)
+            //val light = LightManager
+            //sceneView.mainLight = light
+            /*val mainLight = LightManager.Builder(LightManager.Type.SPOT).apply {
+                val (r, g, b) = Colors.cct(6_500.0f)
+                color(r, g, b)
+                intensity(100_000.0f)
+                direction(0.28f, -0.6f, -0.76f)
+                castShadows(true)
+                position(0f, 1f, 2f)
+            }.build(lifecycle)
+            sceneView.mainLight = mainLight*/
 
             // The environment defines the image based lighting
             sceneView.environment = HDRLoader.loadEnvironment(
@@ -371,6 +409,16 @@ class MainActivity : AppCompatActivity() {
         node.position = Position(x, y, z)
         val material = node.modelInstance?.material?.filamentMaterialInstance
         material?.setBaseColor(Float4(red, green, blue, 1.0f))
+
+        val texture = TextureLoader.loadTexture(this, lifecycle,
+            textureFileLocation = "textures/moonmap4k.jpg",
+            type = TextureLoader.TextureType.NORMAL
+        )
+        if (texture != null) {
+            material?.setBaseTexture(texture)
+        }
+
+        println("texture = ${texture}")
         return node
     }
 
