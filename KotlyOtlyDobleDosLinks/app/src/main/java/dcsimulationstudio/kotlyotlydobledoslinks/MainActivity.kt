@@ -364,7 +364,7 @@ class MainActivity : AppCompatActivity() {
         node.loadModel(
             context = this@MainActivity,
             lifecycle = lifecycle,
-            glbFileLocation = "models/sphere.glb",
+            glbFileLocation = "models/isosphere.glb",
             centerOrigin = Position(x = 0f, y = 0f, z = 0f)
         )
         node.scale = Scale(radius, radius, radius)
