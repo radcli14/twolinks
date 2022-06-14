@@ -15,12 +15,12 @@ const val oneSixth = 1.0f / 6.0f
 /**
  * Apply the 4th order Runge-Kutta integration routine for an equation that returns a Float4
  */
-fun rk4(equation: (Float, Float4) -> Float4, t: Float, x: Float4, h: Float): Float4 {
+fun rk4(equation: (Float4) -> Float4, x: Float4, h: Float): Float4 {
     // Obtain the solution increments at partial time steps
-    val k1 = equation(t, x)
-    val k2 = equation(t, rk4xPlusHK(x, 0.5f*h, k1))
-    val k3 = equation(t, rk4xPlusHK(x, 0.5f*h, k2))
-    val k4 = equation(t, rk4xPlusHK(x, h, k3))
+    val k1 = equation(x)
+    val k2 = equation(rk4xPlusHK(x, 0.5f*h, k1))
+    val k3 = equation(rk4xPlusHK(x, 0.5f*h, k2))
+    val k4 = equation(rk4xPlusHK(x, h, k3))
 
     // Calculate each state individually, and return as a Float4
     return Float4(
@@ -44,7 +44,7 @@ fun rk4xPlusHK(x: Float4, h: Float, k: Float4): Float4 {
 }
 
 /**
- * Invert a 2x2 matrix as an array of floatarrays
+ * Invert a 2x2 matrix as an array of float arrays
  */
 fun invert2x2(matrix: Array<FloatArray>): Array<FloatArray> {
     // Get components of the matrix, short names
@@ -65,13 +65,13 @@ fun invert2x2(matrix: Array<FloatArray>): Array<FloatArray> {
 
 class TwoLinks {
     var length = floatArrayOf(0.28f, 0.23f)
-    var offset = floatArrayOf(0.125f, 0.1f)
-    var pivot = 0.11f
+    private var offset = floatArrayOf(0.125f, 0.1f)
+    private var pivot = 0.11f
 
     var height = floatArrayOf(0.05f, 0.05f)
     var thickness = floatArrayOf(0.0064f, 0.0064f)
 
-    var density = floatArrayOf(800.0f, 800.0f)
+    private var density = floatArrayOf(800.0f, 800.0f)
     //var dampingRatio = 0.0f
     var theta = floatArrayOf(0.0f, 0.0f)
     var omega = floatArrayOf(0.0f, 0.0f)
@@ -109,12 +109,6 @@ class TwoLinks {
                 thickness[0] + 0.5f * thickness[1]
             )
 
-    /*val orientation: Array<Float4>
-        get() = arrayOf(
-                Float4(0f, 0f, sin(0.5f * theta[0]), cos(0.5f * theta[0])),
-                Float4(0f, 0f, sin(0.5f * theta[1]), cos(0.5f * theta[1]))
-            )*/
-
     private val mass: FloatArray
         get() = _mass ?: floatArrayOf(
                 density[0] * length[0] * height[0] * thickness[0],
@@ -137,34 +131,43 @@ class TwoLinks {
         return mass[1] * pivot * offset[1] * cos(x[0] - x[1])
     }
 
+    /**
+     * Left hand side of the equation of motion is this times the angular accelerations
+     */
     private fun massMatrix(x: Float4): Array<FloatArray> {
-        val _m12 = m12(x)
+        val m12 = m12(x)
         return arrayOf(
-            floatArrayOf(m11, _m12),
-            floatArrayOf(_m12, m22)
+            floatArrayOf(m11, m12),
+            floatArrayOf(m12, m22)
         )
     }
 
+    /**
+     * Right hand side of the equation of motion
+     */
     private fun forcing(x: Float4): FloatArray {
         val gx = 0.0f  // grav * (manager.accelerometerData?.acceleration.x ?? 0.0)
         val gy = -grav * 1.0f  // grav * (manager.accelerometerData?.acceleration.y ?? -1.0)
-        val a = pivot
+        /*val a = pivot
         val b = offset[0]
         val c = offset[1]
         val m0 = mass[0]
-        val m1 = mass[1]
-        //val θ0 = x[0]
-        //val θ1 = x[1]
-        //val ω0 = x[2]
-        //val ω1 = x[3]
+        val m1 = mass[1]*/
         return floatArrayOf(
-            -a*c*m1*pow(x[3], 2f)*sin(x[0] - x[1]) - a*gx*m1*sin(x[0]) + a*gy*m1*cos(x[0]) - b*gx*m0*sin(x[0]) + b*gy*m0*cos(x[0]),
-             c*m1*(a*pow(x[2], 2f)*sin(x[0] - x[1]) - gx*sin(x[1]) + gy*cos(x[1]))
+            -pivot*offset[1]*mass[1]*pow(x[3], 2f)*sin(x[0] - x[1])
+                    - pivot*gx*mass[1]*sin(x[0])
+                    + pivot*gy*mass[1]*cos(x[0])
+                    - offset[0]*gx*mass[0]*sin(x[0])
+                    + offset[0]*gy*mass[0]*cos(x[0]),
+            offset[1]*mass[1]*(pivot*pow(x[2], 2f)*sin(x[0] - x[1])
+                    - gx*sin(x[1]) + gy*cos(x[1]))
         )
     }
 
-    private fun equationOfMotion(t: Float, x: Float4): Float4 {
-        // Calculate the angular velocity and acceleration states given angle and angular velocity
+    /**
+     * Calculate the angular velocity and acceleration states given angle and angular velocity
+     */
+    private fun equationOfMotion(x: Float4): Float4 {
         val invM = invert2x2(massMatrix(x))
         val f = forcing(x)
         val dx = floatArrayOf(
@@ -174,17 +177,22 @@ class TwoLinks {
         return Float4(x[2], x[3], dx[0], dx[1])
     }
 
+    /**
+     * Simulate a single time step, and update the theta and omega state variables
+     */
     fun update(h: Float = dt) {
         // Calculate states at the next frame
         val priorState = Float4(theta[0], theta[1], omega[0], omega[1])
-        val newState = rk4({t, x -> equationOfMotion(t, x)}, 0.0f, priorState, h)
+        val newState = rk4({x -> equationOfMotion(x)}, priorState, h)
         theta = floatArrayOf(newState[0], newState[1])
         omega = floatArrayOf(newState[2], newState[3])
     }
 
+    /**
+     * When a specified value changes, this makes sure the properties below get re-calculated on next update
+     */
     private fun nullify() {
-        // When a specified value changes, this makes sure the
-        // properties below get re-calculated on next update
+
         _mass = null
         _moi = null
         _m11 = null
@@ -194,6 +202,9 @@ class TwoLinks {
     val linkOneLengthNorm: Float
         get() = (length[0] - minLength) / (maxLength - minLength)
 
+    /**
+     * Given a normalized length (0f to 1f) update the link one length, offset, and pivot
+     */
     fun setLinkOneLengthFromNorm(value: Float) {
         // Get the norm values before adjusting, to avoid recursion
         val offsetNorm = linkOneOffsetNorm
@@ -213,6 +224,9 @@ class TwoLinks {
             return min(1.0f, max(0.0f, n))
         }
 
+    /**
+     * Given a normalized offset (0f to 1f) update the link one offset
+     */
     fun setLinkOneOffsetFromNorm(n: Float) {
         offset[0] = (1.0f - n) * (0.5f * length[0] - minDistanceFromEdge)
         pivot = min(pivot, maxPivot)
@@ -221,12 +235,15 @@ class TwoLinks {
         nullify()
     }
 
-    val maxPivot: Float
+    private val maxPivot: Float
         get() = 0.5f * length[0] - minDistanceFromEdge + offset[0]
 
     val pivotNorm: Float
         get() = min(1.0f, max(0.0f, pivot / maxPivot))
 
+    /**
+     * Given a normalized offset (0f to 1f) update the pivot location
+     */
     fun setPivotFromNorm(m: Float) {
         pivot = m * maxPivot
 
@@ -237,6 +254,9 @@ class TwoLinks {
     val linkTwoLengthNorm: Float
         get() = (length[1] - minLength) / (maxLength - minLength)
 
+    /**
+     * Given a normalized length (0f to 1f) update the link two length, offset, and pivot
+     */
     fun setLinkTwoLengthFromNorm(n: Float) {
         // Get the norm values before adjusting, to avoid recursion
         val offsetNorm = linkTwoOffsetNorm
@@ -256,6 +276,9 @@ class TwoLinks {
             return min(1.0f, max(0.0f, n))
         }
 
+    /**
+     * Given a normalized offset (0f to 1f) update the link two offset
+     */
     fun setLinkTwoOffsetFromNorm(n: Float) {
         offset[1] = (1.0f - n) * (0.5f * length[1] - minDistanceFromEdge)
 
