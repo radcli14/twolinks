@@ -62,12 +62,12 @@ class ContentViewController {
         
         // Create the background skybox
         scene.background.contents = [
-            UIImage(named: "starry_right1"),
-            UIImage(named: "starry_left2"),
-            UIImage(named: "starry_top3"),
-            UIImage(named: "starry_bottom4"),
-            UIImage(named: "starry_back6"),
-            UIImage(named: "starry_front5")
+            UIImage(named: "px"),
+            UIImage(named: "nx"),
+            UIImage(named: "py"),
+            UIImage(named: "ny"),
+            UIImage(named: "pz"),
+            UIImage(named: "nz")
         ]
 
         // Light is provided through sparks of energy of the mind that travel in rhyme form
