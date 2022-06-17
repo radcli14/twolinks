@@ -394,31 +394,45 @@ class MainActivity : AppCompatActivity() {
     /**
      * Load a sphere representing a planet
      */
-    private suspend fun makePlanet(x: Float = 0f, y: Float = 0f, z: Float = 0f,
-                                   radius: Float = 1f,
-                                   red: Float = 0f, green: Float = 0f, blue: Float = 0f
+    private suspend fun makePlanet(image: String? = null,
+        x: Float = 0f, y: Float = 0f, z: Float = 0f,
+        radius: Float = 1f,
+        red: Float = 0f, green: Float = 0f, blue: Float = 0f,
+        roll: Float = -69f, pitch: Float = -2f, yaw: Float = 0f
     ) : ModelNode {
         val node = ModelNode()
         node.loadModel(
             context = this@MainActivity,
             lifecycle = lifecycle,
-            glbFileLocation = "models/isosphere.glb",
+            glbFileLocation = "models/sphere.glb",
             centerOrigin = Position(x = 0f, y = 0f, z = 0f)
         )
         node.scale = Scale(radius, radius, radius)
         node.position = Position(x, y, z)
+        node.rotation = Rotation(roll, pitch, yaw)
+
+        // Here I am loading the material of my ModelNode and setting its color
+        // using predefined floats for red, green, and blue
         val material = node.modelInstance?.material?.filamentMaterialInstance
         material?.setBaseColor(Float4(red, green, blue, 1.0f))
 
-        val texture = TextureLoader.loadTexture(this, lifecycle,
-            textureFileLocation = "textures/moonmap4k.jpg",
-            type = TextureLoader.TextureType.NORMAL
-        )
+        // Here I am loading a texture using an image file in my assets folder
+        val texture = if (image != null) {
+            TextureLoader.loadTexture(
+                this, lifecycle,
+                textureFileLocation = "textures/$image.jpg",
+                type = TextureLoader.TextureType.NORMAL
+            )
+        } else {
+            null
+        }
+
+        // If the texture loaded correctly, then add it to the body
         if (texture != null) {
+            node.modelInstance?.material?.setInt("baseColorIndex", 0);
             material?.setBaseTexture(texture)
         }
 
-        println("texture = ${texture}")
         return node
     }
 
