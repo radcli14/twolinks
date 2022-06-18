@@ -18,12 +18,16 @@ import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.slider.LightnessSlider
 import com.google.android.filament.Colors
 import com.google.android.filament.LightManager
+import com.google.android.filament.Texture
 import com.google.android.filament.utils.HDRLoader
+import com.google.android.filament.utils.KTXLoader
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
 import dev.romainguy.kotlin.math.lookAt
+import io.github.sceneview.Filament
 import io.github.sceneview.SceneView
+import io.github.sceneview.environment.HDREnvironment
 import io.github.sceneview.environment.loadEnvironment
 import io.github.sceneview.light.Light
 import io.github.sceneview.light.build
@@ -36,6 +40,7 @@ import io.github.sceneview.math.Scale
 import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.texture.TextureLoader
+import java.lang.Float.max
 import kotlin.random.Random
 
 
@@ -99,10 +104,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
             val lightNode = LightNode(lifecycle, light)
             lightNode.position = Position(1f, 1f, 0.5f)
-             */
-            //sceneView.addChild(lightNode)
-            //val light = LightManager
-            //sceneView.mainLight = light
+            sceneView.addChild(lightNode)*/
             /*val mainLight = LightManager.Builder(LightManager.Type.SPOT).apply {
                 val (r, g, b) = Colors.cct(6_500.0f)
                 color(r, g, b)
@@ -113,13 +115,12 @@ class MainActivity : AppCompatActivity() {
             }.build(lifecycle)
             sceneView.mainLight = mainLight*/
 
-            // The environment defines the image based lighting
-            sceneView.environment = HDRLoader.loadEnvironment(
+            // The environment defines the image based lighting and skybox (background graphic)
+            sceneView.environment = KTXLoader.loadEnvironment(
                 context = this@MainActivity,
                 lifecycle = lifecycle,
-                hdrFileLocation = "environments/studio_small_09_2k.hdr",
-                //specularFilter = false,
-                createSkybox = false
+                iblKtxFileLocation = "environments/starmap_512_ibl.ktx",
+                skyboxKtxFileLocation = "environments/starmap_512_skybox.ktx"
             )
 
             // Load the sphere model to form the moon part of the background
@@ -504,7 +505,7 @@ class MainActivity : AppCompatActivity() {
         override fun doFrame(currentTime: Long) {
             // Obtain the timing data, dt is differential time
             val currentSeconds = currentTime.toFloat() / 1_000_000_000
-            val dt = if (lastTime == 0f) 0f else currentSeconds - lastTime
+            val dt = if (lastTime == 0f) 0f else max(currentSeconds - lastTime, 0.1f)
 
             // Make sure the scene is ready and not paused, then do the update
             if (sceneIsInitialized && !viewModel.isPaused) {
