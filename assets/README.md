@@ -40,6 +40,11 @@ sceneView.environment = KTXLoader.loadEnvironment(
 )
 ```
 
+Further information is provided on the 
+[Filament github page](https://google.github.io/filament/webgl/tutorial_suzanne.html)
+or the
+[Readme for `cmgen`](https://github.com/google/filament/tree/main/tools/cmgen).
+
 A similar loader using an HDR file is:
 
 ```
@@ -50,5 +55,10 @@ sceneView.environment = HDRLoader.loadEnvironment(
     createSkybox = true
 )
 ```
+
+The HDR files can be created from the equirectangular downloads from
+[NASA](https://svs.gsfc.nasa.gov/3895)
+using an
+[online tool](https://convertio.co/jpg-hdr/).
 
 As of writing, I find the KTX version to be slightly smaller file size.
