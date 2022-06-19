@@ -35,8 +35,8 @@ class TwoLinks {
     private var dt = 1.0 / 60.0
     private let grav = 1.62  //9.8
     
-    private let minLength = 0.12
-    private let maxLength = 0.53
+    let minLength = 0.12
+    let maxLength = 0.53
     private let minDistanceFromEdge = 0.03
     
     private let manager = CMMotionManager()

@@ -15,7 +15,6 @@ import SwiftUI
 
 class ContentViewController {
 
-    //let manager = CMMotionManager()
     var scene: SCNScene!
     var overlaySKScene: SKScene!
     
@@ -196,6 +195,15 @@ class ContentViewController {
     func pause() {
         isPaused.toggle()
     }
+    
+    func shuffle() {
+        twoLinks.setLinkOneLengthFromNorm(value: Double.random(in: 0...1))
+        twoLinks.setLinkTwoLengthFromNorm(n: Double.random(in: 0...1))
+        twoLinks.setPivotFromNorm(m: Double.random(in: 0...1))
+        twoLinks.setLinkOneOffsetFromNorm(n: Double.random(in: 0...1))
+        twoLinks.setLinkTwoOffsetFromNorm(n: Double.random(in: 0...1))
+    }
+    
 }
 
 extension UIColor {
