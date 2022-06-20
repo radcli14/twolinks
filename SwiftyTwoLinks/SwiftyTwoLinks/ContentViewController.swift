@@ -50,6 +50,7 @@ class ContentViewController {
     }
 
     init() {
+        shuffle()
         setupScene()
         setupCamera()
         setupBackground()
@@ -187,6 +188,9 @@ class ContentViewController {
         twoLinks.linkTwoColor = UIColor.random()
     }
     
+    /**
+     Reset the angles and angular rates to zero
+     */
     func resetStates() {
         twoLinks.θ = [0.0, 0.0]
         twoLinks.ω = [0.0, 0.0]
@@ -196,17 +200,25 @@ class ContentViewController {
         isPaused.toggle()
     }
     
+    /**
+     Randomize the dimensions and colors of the links
+     */
     func shuffle() {
         twoLinks.setLinkOneLengthFromNorm(value: Double.random(in: 0...1))
         twoLinks.setLinkTwoLengthFromNorm(n: Double.random(in: 0...1))
         twoLinks.setPivotFromNorm(m: Double.random(in: 0...1))
         twoLinks.setLinkOneOffsetFromNorm(n: Double.random(in: 0...1))
         twoLinks.setLinkTwoOffsetFromNorm(n: Double.random(in: 0...1))
+        twoLinks.linkOneColor = UIColor.random()
+        twoLinks.linkTwoColor = UIColor.random()
     }
     
 }
 
 extension UIColor {
+    /**
+     Generate a UIColor with red, green, and blue values randomly selected between 0 and 1
+     */
     static func random() -> UIColor {
         return UIColor(
            red:   .random(in: 0...1),
