@@ -10,6 +10,9 @@ import CoreMotion
 import simd
 import SceneKit
 
+/**
+Apply the 4th order Runge-Kutta integration routine for an equation that returns a `simd_double4`
+ */
 func rk4(equation: (Double, simd_double4) -> simd_double4, t: Double, x: simd_double4, h: Double) -> simd_double4 {
     // Apply the 4th order Runge-Kutta integration routine
     let k1 = equation(t, x)
@@ -146,11 +149,17 @@ class TwoLinks {
         return mass[1] * pivot * offset[1] * cos(x[0] - x[1])
     }
     
+    /**
+     Left hand side of the equation of motion is this times the angular accelerations
+     */
     func massMatrix(x: simd_double4) -> simd_double2x2 {
         let _m12 = m12(x: x)
         return simd_double2x2([simd_double2(m11, _m12), simd_double2(_m12, m22)])
     }
     
+    /**
+     Right hand side of the equation of motion
+     */
     func forcing(x: simd_double4) -> simd_double2 {
         let g_x = grav * (manager.accelerometerData?.acceleration.x ?? 0.0)
         let g_y = grav * (manager.accelerometerData?.acceleration.y ?? -1.0)
@@ -169,22 +178,30 @@ class TwoLinks {
         )
     }
     
+    /**
+     Calculate the angular velocity and acceleration states given angle and angular velocity
+     */
     func equationOfMotion(t: Double, x: simd_double4) -> simd_double4 {
-        // Calculate the angular velocity and acceleration states given angle and angular velocity
         let invM = massMatrix(x: x).inverse
         let F = forcing(x: x)
         let dx = simd_mul(invM, F)
         return simd_double4(x[2], x[3], dx[0], dx[1])
     }
     
+    /**
+     Simulate a single time step, and update the theta and omega state variables
+     */
     func update() {
-        // Calculate states at the next frame
+        // Calculate states at the next frame based on current states
         let priorState = simd_double4(θ[0], θ[1], ω[0], ω[1])
         let newState = rk4(equation: equationOfMotion, t: 0.0, x: priorState, h: dt)
         θ = [newState[0], newState[1]]
         ω = [newState[2], newState[3]]
     }
     
+    /**
+     When a specified value changes, this makes sure the properties below get re-calculated on next update
+     */
     func nilify() {
         // When a specified value changes, this makes sure the
         // properties below get re-calculated on next update
@@ -200,6 +217,9 @@ class TwoLinks {
         }
     }
     
+    /**
+     Given a normalized length (0.0 to 1.0) update the link one length, offset, and pivot
+     */
     func setLinkOneLengthFromNorm(value: Double) {
         // Get the norm values before adjusting, to avoid recursion
         let offsetNorm = linkOneOffsetNorm
@@ -221,6 +241,9 @@ class TwoLinks {
         }
     }
     
+    /**
+     Given a normalized offset (0.0 to 1.0) update the link one offset
+     */
     func setLinkOneOffsetFromNorm(n: Double) {
         offset[0] = (1.0 - n) * (0.5 * length[0] - minDistanceFromEdge)
         pivot = min(pivot, maxPivot)
@@ -241,6 +264,9 @@ class TwoLinks {
         }
     }
         
+    /**
+     Given a normalized pivot (0.0 to 1.0) update the pivot location
+     */
     func setPivotFromNorm(m: Double) {
         pivot = m * maxPivot
         
@@ -254,6 +280,9 @@ class TwoLinks {
         }
     }
     
+    /**
+     Given a normalized length (0.0 to 1.0) update the link two length and offset
+     */
     func setLinkTwoLengthFromNorm(n: Double) {
         // Get the norm values before adjusting, to avoid recursion
         let offsetNorm = linkTwoOffsetNorm
@@ -274,6 +303,9 @@ class TwoLinks {
         }
     }
     
+    /**
+     Given a normalized offset (0.0 to 1.0) update the link two offset
+     */
     func setLinkTwoOffsetFromNorm(n: Double) {
         offset[1] = (1.0 - n) * (0.5 * length[1] - minDistanceFromEdge)
 

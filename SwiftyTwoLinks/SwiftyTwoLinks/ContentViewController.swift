@@ -38,7 +38,6 @@ class ContentViewController {
         }
     }
     
-    //let moonRadius = 31.4
     var moon: Planet!
     var moonColor: UIColor {
         get {
@@ -57,6 +56,9 @@ class ContentViewController {
         setupLinks()
     }
 
+    /**
+     Creates the `SCNScene` object, its background skybox, and lighting
+     */
     func setupScene() {
         scene = SCNScene()
         
@@ -89,6 +91,9 @@ class ContentViewController {
         scene.rootNode.addChildNode(ambientLightNode)
     }
 
+    /**
+     Creates a `SCNNode` with a `SCNCamera` attached, and specifies and constraint that it will always look at the root node at (0, 0, 0)
+     */
     func setupCamera() {
         cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -103,6 +108,9 @@ class ContentViewController {
         scene.rootNode.addChildNode(cameraNode)
     }
     
+    /**
+     Adds the stationary objects, including the moon and Earth as `Planet` objects, and a `SCNBox` representing the door.
+     */
     func setupBackground() {
         let centerNode = SCNNode()
         centerNode.position = SCNVector3(0, 0, 0)
@@ -151,6 +159,9 @@ class ContentViewController {
         scene.rootNode.addChildNode(earth.node)
     }
     
+    /**
+     Adds the bodies representing the origin and pivot hinges as cylinders, and each of the two links as boxes to the scene
+     */
     func setupLinks() {
         // Define a cylinder to represent the origin about which the first link rotates
         let originGeometry = SCNCylinder(
@@ -196,6 +207,9 @@ class ContentViewController {
         twoLinks.ω = [0.0, 0.0]
     }
     
+    /**
+     Toggle the `isPaused` variable, which will stop simulation updates when true
+     */
     func pause() {
         isPaused.toggle()
     }
