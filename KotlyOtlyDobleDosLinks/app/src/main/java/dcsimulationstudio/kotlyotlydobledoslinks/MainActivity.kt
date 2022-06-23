@@ -1,5 +1,7 @@
 package dcsimulationstudio.kotlyotlydobledoslinks
 
+//import io.github.sceneview.light.Light
+
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -16,33 +18,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.slider.LightnessSlider
-import com.google.android.filament.Colors
-import com.google.android.filament.LightManager
-import com.google.android.filament.Texture
-import com.google.android.filament.utils.HDRLoader
 import com.google.android.filament.utils.KTXLoader
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
 import dev.romainguy.kotlin.math.lookAt
-import io.github.sceneview.Filament
 import io.github.sceneview.SceneView
-import io.github.sceneview.environment.HDREnvironment
 import io.github.sceneview.environment.loadEnvironment
-import io.github.sceneview.light.Light
-import io.github.sceneview.light.build
 import io.github.sceneview.material.setBaseColor
 import io.github.sceneview.material.setBaseTexture
 import io.github.sceneview.material.setMetallicFactor
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Rotation
 import io.github.sceneview.math.Scale
-import io.github.sceneview.node.LightNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.texture.TextureLoader
-import java.lang.Float.max
+import java.lang.Float.min
 import kotlin.random.Random
-
 
 const val TAG = "Main"
 
@@ -91,40 +83,18 @@ class MainActivity : AppCompatActivity() {
                 target = Position(x = 0.0f, y = 0.0f, z = 0.0f),
                 up = Float3(y = 1.0f)
             )
-            //sceneView.gestureDetector.cameraManipulator
-
-            // Create a light
-            //val (r, g, b) = Colors.cct(6_500.0f)
-            /*val light = Light.builder(Light.Type.POINT)
-                //.setColor(r, g, b)
-                .setColor(1f)
-                .setIntensity(100_000f)
-                .setShadowCastingEnabled(true)
-                .setFalloffRadius(20f)
-                .build()
-            val lightNode = LightNode(lifecycle, light)
-            lightNode.position = Position(1f, 1f, 0.5f)
-            sceneView.addChild(lightNode)*/
-            /*val mainLight = LightManager.Builder(LightManager.Type.SPOT).apply {
-                val (r, g, b) = Colors.cct(6_500.0f)
-                color(r, g, b)
-                intensity(100_000.0f)
-                direction(0.28f, -0.6f, -0.76f)
-                castShadows(true)
-                position(0f, 1f, 2f)
-            }.build(lifecycle)
-            sceneView.mainLight = mainLight*/
 
             // The environment defines the image based lighting and skybox (background graphic)
             sceneView.environment = KTXLoader.loadEnvironment(
                 context = this@MainActivity,
                 lifecycle = lifecycle,
-                iblKtxFileLocation = "environments/starmap_512_ibl.ktx",
+                iblKtxFileLocation = "environments/lightroom_14b_ibl.ktx",
                 skyboxKtxFileLocation = "environments/starmap_512_skybox.ktx"
             )
 
             // Load the sphere model to form the moon part of the background
             val moon = makePlanet(
+                image = "moonmap4k",
                 y = -32.415f,
                 radius = 31.4f,
                 red = 0.5f,
@@ -430,7 +400,7 @@ class MainActivity : AppCompatActivity() {
 
         // If the texture loaded correctly, then add it to the body
         if (texture != null) {
-            node.modelInstance?.material?.setInt("baseColorIndex", 0);
+            node.modelInstance?.material?.setInt("baseColorIndex", 0)
             material?.setBaseTexture(texture)
         }
 
@@ -461,6 +431,7 @@ class MainActivity : AppCompatActivity() {
         }
         material?.setBaseColor(color)
         material?.setMetallicFactor(metallic)
+        //material?.setEmissiveColor(Float4(red, green, blue, 1f))
         return node
     }
 
@@ -505,7 +476,7 @@ class MainActivity : AppCompatActivity() {
         override fun doFrame(currentTime: Long) {
             // Obtain the timing data, dt is differential time
             val currentSeconds = currentTime.toFloat() / 1_000_000_000
-            val dt = if (lastTime == 0f) 0f else max(currentSeconds - lastTime, 0.1f)
+            val dt = if (lastTime == 0f) 0f else min(currentSeconds - lastTime, 0.1f)
 
             // Make sure the scene is ready and not paused, then do the update
             if (sceneIsInitialized && !viewModel.isPaused) {

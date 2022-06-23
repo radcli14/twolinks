@@ -245,7 +245,7 @@ class TwoLinks {
         get() = min(1.0f, max(0.0f, pivot / maxPivot))
 
     /**
-     * Given a normalized offset (0f to 1f) update the pivot location
+     * Given a normalized pivot (0f to 1f) update the pivot location
      */
     fun setPivotFromNorm(m: Float) {
         pivot = m * maxPivot
@@ -258,7 +258,7 @@ class TwoLinks {
         get() = (length[1] - minLength) / (maxLength - minLength)
 
     /**
-     * Given a normalized length (0f to 1f) update the link two length, offset, and pivot
+     * Given a normalized length (0f to 1f) update the link two length and offset
      */
     fun setLinkTwoLengthFromNorm(n: Float) {
         // Get the norm values before adjusting, to avoid recursion
@@ -266,7 +266,6 @@ class TwoLinks {
 
         // Adjust the physical distances
         length[1] = minLength + n * (maxLength - minLength)
-        //_linkTwoGeometry.width = length[1]
         offset[1] = (1.0f - offsetNorm) * (0.5f * length[1] - minDistanceFromEdge)
 
         // Call this to make sure the mass properties get re-calculated
