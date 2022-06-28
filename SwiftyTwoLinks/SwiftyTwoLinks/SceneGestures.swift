@@ -22,11 +22,6 @@ func onTap(_ removeControls:@escaping () -> Void) -> _EndedGesture<TapGesture> {
     return tap
 }
 
-// These variables are used from within the DragGesture to calculate the extent of rotation
-var xDrag: Float = 0.0
-var yDrag: Float = 0.0
-var nPixels: Float = 0.0
-
 /**
  From the content view, if the user drags the view will rotate around the double pendulum
  */
@@ -34,49 +29,44 @@ func onDragToRotate(_ viewController: ContentViewController) -> _EndedGesture<_C
     let drag = DragGesture()
         .onChanged { gesture in
             // Determine the total number of pixels that the user has dragged, relate it to an angle that the camera will traverse
-            xDrag = Float(gesture.translation.width)
-            yDrag = Float(gesture.translation.height)
-            //print("gesture.translation = \(gesture.translation)")
-            //print("xdrag, ydrag = ", xDrag, yDrag)
-            nPixels = sqrt(xDrag*xDrag + yDrag*yDrag)
-            let angle = 0.001 * nPixels
+            let xDrag = Float(gesture.translation.width)
+            let yDrag = Float(gesture.translation.height)
+            let nPixels = sqrt(xDrag*xDrag + yDrag*yDrag)
+            let angle = 0.00314 * nPixels
             
-            let position = viewController.cameraNode.position
-            let xzDist = sqrt(position.x*position.x + position.z * position.z)
+            // From the position of the camera prior to initiating the drag, get the radius
+            // in the horizontal plane, `xzDist`, and the `radius` in spherical coords.
+            let position = viewController.cameraPosBefore
+            let xzDist = sqrt(position.x*position.x + position.z*position.z)
             let radius = position.length
+            
+            // Calculate the azimuthal and elevation angle sines and cosines
             let azSin = position.x / xzDist
             let azCos = position.z / xzDist
             let elSin = position.y / radius
             let elCos = xzDist / radius
-            let axis = -simd_float3(
-                yDrag*azCos, //xDrag*azSin*elSin + yDrag*azCos,
-                xDrag, //xDrag*elCos,
-                -yDrag*azSin //xDrag*elSin*azCos - yDrag*azSin
-            )
-            print("\nxzDist =", xzDist,
-                  "\nradius = ", radius,
-                  "\nazCos = ", azCos,
-                  "\nazSin =", azSin,
-                  "\nelCos =", elCos,
-                  "\nelSin =", elSin, "\n\n")
-            //print(simd_normalize(axis))
-            //print(angle)
             
+            // The axis of rotation is set in accordance to how much distance the user has
+            // dragged in the left-right axis `xDrag`, which will result in rotation about
+            // the local up-axis, and the up-down axis `yDrag` which will result in rotation
+            // about the local horizontal axis. The components are determined based on a
+            // 2-component Euler sequence.
+            let axis = -simd_float3(
+                xDrag*azSin*elSin + yDrag*azCos,
+                xDrag*elCos,
+                xDrag*elSin*azCos - yDrag*azSin
+            )
+
             // Pan the camera around the target
             viewController.cameraNode.position = viewController
-                //.cameraPosBefore
-                .cameraNode.position
+                .cameraPosBefore
                 .rotatedVector(
                     axis: axis,
                     angle: angle
                 )
-            //print(viewController.cameraNode.position)
         }
         .onEnded { _ in
             viewController.cameraPosBefore = viewController.cameraNode.position
-            nPixels = 0
-            xDrag = 0
-            yDrag = 0
         }
     
     return drag
