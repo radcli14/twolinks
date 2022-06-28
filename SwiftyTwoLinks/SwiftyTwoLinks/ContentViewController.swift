@@ -51,8 +51,8 @@ class ContentViewController {
     init() {
         shuffle()
         setupScene()
-        setupCamera()
         setupBackground()
+        setupCamera()
         setupLinks()
     }
 
@@ -103,7 +103,12 @@ class ContentViewController {
         // Constrain the camera to look at the center of the door
         let lookAtConstraint = SCNLookAtConstraint(target: scene.rootNode)
         lookAtConstraint.isGimbalLockEnabled = true
-        cameraNode.constraints = [lookAtConstraint]
+        let stayOutOfMoonConstraint = SCNDistanceConstraint(target: moon.node)
+        stayOutOfMoonConstraint.minimumDistance = moon.radius
+        cameraNode.constraints = [
+            lookAtConstraint,
+            //stayOutOfMoonConstraint
+        ]
         
         scene.rootNode.addChildNode(cameraNode)
     }

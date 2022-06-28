@@ -64,6 +64,20 @@ func onDragToRotate(_ viewController: ContentViewController) -> _EndedGesture<_C
                     axis: axis,
                     angle: angle
                 )
+            
+            /*
+            let halfSine = 0.314 * sin(0.5 * angle)
+            let quaternion = SCNQuaternion(
+                halfSine * axis[0] / nPixels,
+                halfSine * axis[1] / nPixels,
+                halfSine * axis[2] / nPixels,
+                cos(0.5 * angle)
+            )
+            viewController.cameraNode.rotate(
+                by: quaternion,
+                aroundTarget: viewController.originNode.position
+            )
+             */
         }
         .onEnded { _ in
             viewController.cameraPosBefore = viewController.cameraNode.position
