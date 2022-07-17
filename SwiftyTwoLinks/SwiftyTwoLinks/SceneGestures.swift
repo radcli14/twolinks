@@ -22,41 +22,75 @@ func onTap(_ removeControls:@escaping () -> Void) -> _EndedGesture<TapGesture> {
     return tap
 }
 
+
+//var xDrag = 0.0
+var yDrag = Float(0)
+var lastYdrag: Float? = nil
+
 /**
  From the content view, if the user drags the view will rotate around the double pendulum
  */
 func onDragToRotate(_ viewController: ContentViewController) -> _EndedGesture<_ChangedGesture<DragGesture>> {
     let drag = DragGesture()
         .onChanged { gesture in
-            // Determine the total number of pixels that the user has dragged, relate it to an angle that the camera will traverse
-            let xDrag = Float(gesture.translation.width)
-            let yDrag = Float(gesture.translation.height)
-            let nPixels = sqrt(xDrag*xDrag + yDrag*yDrag)
-            let angle = 0.00314 * nPixels
+
+            // If this is the first touch, initialize the prior vertical position variable
+            if (lastYdrag == nil) {
+                lastYdrag = Float(gesture.translation.height)
+            }
             
             // From the position of the camera prior to initiating the drag, get the radius
             // in the horizontal plane, `xzDist`, and the `radius` in spherical coords.
             let position = viewController.cameraPosBefore
             let xzDist = sqrt(position.x*position.x + position.z*position.z)
-            let radius = position.length
-            
+
             // Calculate the azimuthal and elevation angle sines and cosines
             let azSin = position.x / xzDist
             let azCos = position.z / xzDist
-            let elSin = position.y / radius
-            let elCos = xzDist / radius
+
+            // The two error functions, verticalErf and moonErf, will downscale the amount of yDrag distance if the camera is too high or low
+            // Determine if the camera is located above the door.
+            let cameraPosition = viewController.cameraNode.position
+            var verticalErf = erfc(cameraPosition.y / cameraPosition.length - 0.9)
+            if (verticalErf.isNaN) {
+                verticalErf = 1.0
+            }
             
+            // Determine distance from the moon, and whether the camera is touching it
+            let moonPosition = viewController.moon.node.position
+            let moonX = cameraPosition.x - moonPosition.x
+            let moonY = cameraPosition.y - moonPosition.y
+            let moonZ = cameraPosition.z - moonPosition.z
+            let moonDistance = sqrt(moonX*moonX + moonY*moonY + moonZ*moonZ)
+            let distFromSurface = moonDistance - Float(viewController.moon.geometry.radius)
+            var moonErf = erfc(0.5 - distFromSurface)
+            if (moonErf.isNaN) {
+                moonErf = 1.0
+            }
+            
+            // Determine the total number of pixels that the user has dragged, relate it to an angle that the camera will traverse. If camera is either touching the moon, or too close to vertical, then set the yDrag to zero.
+            let xDrag = Float(gesture.translation.width)
+            let dy = Float(gesture.translation.height) - (lastYdrag ?? Float(0))
+            if (moonErf < 1.0) {
+                yDrag += max(moonErf * dy, 0.0)
+            } else if (verticalErf < 1.0) {
+                yDrag += min(verticalErf * dy, 0.0)
+            } else {
+                yDrag += dy
+            }
+            let nPixels = sqrt(xDrag*xDrag + yDrag*yDrag)
+            let angle = 0.00314 * nPixels
+
             // The axis of rotation is set in accordance to how much distance the user has
             // dragged in the left-right axis `xDrag`, which will result in rotation about
             // the local up-axis, and the up-down axis `yDrag` which will result in rotation
-            // about the local horizontal axis. The components are determined based on a
-            // 2-component Euler sequence.
+            // about the local horizontal axis.
             let axis = -simd_float3(
-                xDrag*azSin*elSin + yDrag*azCos,
-                xDrag*elCos,
-                xDrag*elSin*azCos - yDrag*azSin
+                yDrag*azCos,
+                xDrag,
+                -yDrag*azSin
             )
-
+            
             // Pan the camera around the target
             viewController.cameraNode.position = viewController
                 .cameraPosBefore
@@ -64,23 +98,14 @@ func onDragToRotate(_ viewController: ContentViewController) -> _EndedGesture<_C
                     axis: axis,
                     angle: angle
                 )
-            
-            /*
-            let halfSine = 0.314 * sin(0.5 * angle)
-            let quaternion = SCNQuaternion(
-                halfSine * axis[0] / nPixels,
-                halfSine * axis[1] / nPixels,
-                halfSine * axis[2] / nPixels,
-                cos(0.5 * angle)
-            )
-            viewController.cameraNode.rotate(
-                by: quaternion,
-                aroundTarget: viewController.originNode.position
-            )
-             */
+
+            // Set the last position where the user dragged in vertical direction
+            lastYdrag = Float(gesture.translation.height)
         }
         .onEnded { _ in
             viewController.cameraPosBefore = viewController.cameraNode.position
+            yDrag = Float(0)
+            lastYdrag = nil
         }
     
     return drag
