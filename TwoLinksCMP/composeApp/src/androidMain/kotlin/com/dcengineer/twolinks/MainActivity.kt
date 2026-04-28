@@ -18,19 +18,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val assetFileLocation = "composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
 
         setContent {
-            //App()
-            Column {
-                Text("SceneView")
-                SceneView(modifier = Modifier.fillMaxSize()) {
-                    rememberModelInstance(modelLoader, assetFileLocation)?.let {
-                        ModelNode(modelInstance = it, scaleToUnits = 1.0f, autoAnimate = true)
-                    }
-                }
-            }
-
+            App()
         }
     }
 }
