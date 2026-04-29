@@ -5,3 +5,21 @@ html, body {
     padding: 0;
     overflow: hidden;
 }
+
+#scene-target {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+}
+
+#compose-target {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 10vh;
+    z-index: 1;
+}

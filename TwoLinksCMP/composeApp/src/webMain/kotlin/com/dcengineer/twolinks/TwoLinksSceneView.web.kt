@@ -1,11 +1,12 @@
 package com.dcengineer.twolinks
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import kotlinx.browser.document
 import org.w3c.dom.HTMLCanvasElement
 import kotlin.js.ExperimentalWasmJsInterop
@@ -35,7 +36,9 @@ actual fun TwoLinksSceneView() {
         }
     }
 
-    Text("This is compose")
+    Box(modifier = Modifier.background(Color.LightGray)) {
+        Text("This is compose")
+    }
 }
 
 @OptIn(ExperimentalWasmJsInterop::class)
