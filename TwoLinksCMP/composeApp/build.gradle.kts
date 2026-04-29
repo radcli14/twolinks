@@ -55,6 +55,12 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlin.math)
         }
+        webMain.dependencies {
+            // TODO: add WASM, currently see error :composeApp:wasmJsMain: Could not find io.github.sceneview:sceneview-web:4.0.0.
+            //implementation("io.github.sceneview:sceneview-web:4.0.0")
+            implementation(libs.kotlinx.browser)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
