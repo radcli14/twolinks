@@ -14,6 +14,7 @@ junit = "4.13.2"
 kotlin = "2.3.20"
 material3 = "1.10.0-alpha05"
 sceneview = "4.0.1"
+kotlin-math = "1.8.0"
 
 [libraries]
 arsceneview = { module = "io.github.sceneview:arsceneview", version.ref = "sceneview" }
@@ -35,6 +36,7 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMul
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
+kotlin-math = { module = "dev.romainguy:kotlin-math", version.ref = "kotlin-math" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
