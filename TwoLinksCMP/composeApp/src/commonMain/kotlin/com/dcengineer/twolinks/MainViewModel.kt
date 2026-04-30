@@ -20,6 +20,7 @@ class MainViewModel : ViewModel() {
     var isPaused = false
 
     var lastFrameTime: Long? = null
+    var elapsedTime: Float = 0f
 
     val modelPath = "composeResources/twolinkscmp.composeapp.generated.resources/files/models"
     val moonFile = "moon.glb"
@@ -60,6 +61,8 @@ class MainViewModel : ViewModel() {
      * Reset the link angles and angular rates to zero
      */
     fun resetStates() {
+        elapsedTime = 0f
+        lastFrameTime = null
         twoLinks.links[0].updateState(newTheta = 0f, newOmega = 0f)
         twoLinks.links[1].updateState(newTheta = 0f, newOmega = 0f)
     }
@@ -77,6 +80,7 @@ class MainViewModel : ViewModel() {
      */
     fun update(h: Float) {
         twoLinks.update(h)
+        elapsedTime += h
     }
 
     /**
@@ -88,7 +92,7 @@ class MainViewModel : ViewModel() {
             if (!isPaused) {
                 update(h = deltaFrameTime)
             }
-            println("deltaFrameTime = $deltaFrameTime, $linkOnePosition")
+            println("deltaFrameTime = $deltaFrameTime, elapsedTime = $elapsedTime")
         }
         lastFrameTime = frameTime
     }
