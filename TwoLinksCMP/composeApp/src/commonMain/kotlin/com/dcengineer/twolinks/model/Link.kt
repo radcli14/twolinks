@@ -1,5 +1,6 @@
 package com.dcengineer.twolinks.model
 
+import dev.romainguy.kotlin.math.Float3
 import kotlin.collections.get
 import kotlin.math.cos
 import kotlin.math.max
@@ -33,6 +34,9 @@ class Link(
     }
 
 }
+
+val Link.size: Float3
+    get() = Float3(length, height, thickness)
 
 val Link.mass: Float
     get() = _mass ?: (density * length * height * thickness)

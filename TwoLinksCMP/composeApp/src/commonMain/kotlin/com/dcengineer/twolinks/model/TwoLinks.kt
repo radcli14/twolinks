@@ -14,7 +14,7 @@ typealias Position = Float3
 
 class TwoLinks {
     var links = arrayOf(Link.first, Link.second)
-    private var pivot = 0.11f
+    var pivot = 0.11f
 
     private var dt = 1.0f / 60.0f
     private val grav = 1.62f  //9.8f
