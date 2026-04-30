@@ -1,6 +1,7 @@
 package com.dcengineer.twolinks
 
 import androidx.lifecycle.ViewModel
+import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.Position
 import com.dcengineer.twolinks.model.TwoLinks
 import com.dcengineer.twolinks.model.lengthNorm
@@ -22,9 +23,12 @@ class MainViewModel : ViewModel() {
     var lastFrameTime: Long? = null
     var elapsedTime: Float = 0f
 
+    val doorSize = Float3(0.91f, 2.03f, 0.035f)
+
     val modelPath = "composeResources/twolinkscmp.composeapp.generated.resources/files/models"
-    val moonFile = "moon.glb"
-    val moonFileLocation = "$modelPath/$moonFile"
+    fun fileLocation(planet: Planet): String {
+        return "$modelPath/${planet.file}"
+    }
 
     val linkOnePosition: Position
         get() = twoLinks.links[0].position()
@@ -92,7 +96,6 @@ class MainViewModel : ViewModel() {
             if (!isPaused) {
                 update(h = deltaFrameTime)
             }
-            println("deltaFrameTime = $deltaFrameTime, elapsedTime = $elapsedTime")
         }
         lastFrameTime = frameTime
     }
