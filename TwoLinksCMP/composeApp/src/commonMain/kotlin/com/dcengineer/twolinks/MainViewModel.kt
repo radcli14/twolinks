@@ -19,6 +19,12 @@ class MainViewModel : ViewModel() {
 
     var isPaused = false
 
+    var lastFrameTime: Long? = null
+
+    val modelPath = "composeResources/twolinkscmp.composeapp.generated.resources/files/models"
+    val moonFile = "moon.glb"
+    val moonFileLocation = "$modelPath/$moonFile"
+
     val linkOnePosition: Position
         get() = twoLinks.links[0].position()
     val linkTwoPosition: Position
@@ -62,6 +68,7 @@ class MainViewModel : ViewModel() {
      * Pause the animation
      */
     fun pause() {
+        lastFrameTime = null
         isPaused = !isPaused
     }
 
@@ -70,6 +77,20 @@ class MainViewModel : ViewModel() {
      */
     fun update(h: Float) {
         twoLinks.update(h)
+    }
+
+    /**
+     * Update the link positions and rotations, with an absolute unix time specified in the current frame
+     */
+    fun updateOnFrame(frameTime: Long) {
+        lastFrameTime?.let {
+            val deltaFrameTime: Float = (frameTime - it).toFloat() / 1_000_000_000
+            if (!isPaused) {
+                update(h = deltaFrameTime)
+            }
+            println("deltaFrameTime = $deltaFrameTime, $linkOnePosition")
+        }
+        lastFrameTime = frameTime
     }
 
     /**

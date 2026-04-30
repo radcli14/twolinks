@@ -8,11 +8,12 @@ import io.github.sceneview.rememberModelInstance
 
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
-    val assetFileLocation = "composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
-
-    SceneView(modifier = Modifier.fillMaxSize()) {
-        rememberModelInstance(modelLoader, assetFileLocation)?.let {
-            ModelNode(modelInstance = it, scaleToUnits = 1.0f, autoAnimate = true)
+    SceneView(
+        modifier = Modifier.fillMaxSize(),
+        onFrame = viewModel::updateOnFrame,
+    ) {
+        rememberModelInstance(modelLoader, viewModel.moonFileLocation)?.let {
+            ModelNode(modelInstance = it, scaleToUnits = 0.27f, autoAnimate = true)
         }
     }
 }
