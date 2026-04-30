@@ -9,41 +9,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
-import io.github.sceneview.model.ModelInstance
-import io.github.sceneview.model.model
-import io.github.sceneview.node.ModelNode
-import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberModelInstance
-import io.github.sceneview.rememberModelLoader
-import io.github.sceneview.rememberScene
 import kotlin.math.sin
 
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
-    val engine = rememberEngine()
-    val modelLoader = rememberModelLoader(engine)
-
-    val moonInstance = rememberModelInstance(modelLoader, viewModel.moonFileLocation)
-
-    val moonNode = remember(moonInstance) {
-        moonInstance?.let {
-            ModelNode(modelInstance = it, scaleToUnits = 0.27f)
-        }
-    }
-
     var scale by remember { mutableStateOf(1f) }
 
     SceneView(
         modifier = Modifier.fillMaxSize(),
-        engine = engine,
-        modelLoader = modelLoader,
         onFrame = {
             viewModel.updateOnFrame(it)
             scale = sin(viewModel.elapsedTime)
         },
     ) {
-        moonInstance?.let {
-            ModelNode(modelInstance = it, scaleToUnits = scale)
+        rememberModelInstance(modelLoader, viewModel.moonFileLocation)?.let {
+            ModelNode(
+                modelInstance = it,
+                scale = Float3(scale) // note: don't try to update scaleToUnits, this conflicts, and doesn't allow updates on each frame
+            )
         }
     }
 }
