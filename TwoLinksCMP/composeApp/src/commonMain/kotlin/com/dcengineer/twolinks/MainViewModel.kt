@@ -1,6 +1,12 @@
 package com.dcengineer.twolinks
 
 import androidx.lifecycle.ViewModel
+import com.dcengineer.twolinks.model.Position
+import com.dcengineer.twolinks.model.TwoLinks
+import com.dcengineer.twolinks.model.lengthNorm
+import com.dcengineer.twolinks.model.offsetNorm
+import com.dcengineer.twolinks.model.position
+import com.dcengineer.twolinks.model.updateState
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
 import kotlin.math.PI
@@ -13,25 +19,29 @@ class MainViewModel : ViewModel() {
 
     var isPaused = false
 
-    var linkOnePosition = twoLinks.position[0]
-    var linkTwoPosition = twoLinks.position[1]
-    var linkOneRotation = Float3(0.0f, 0.0f, 0.0f)
-    var linkTwoRotation = Float3(0.0f, 0.0f, 0.0f)
+    val linkOnePosition: Position
+        get() = twoLinks.links[0].position()
+    val linkTwoPosition: Position
+        get() = twoLinks.links[1].position(zOffset = twoLinks.links[0].thickness)
+    val linkOneRotation: Float3
+        get() = Float3(0.0f, 0.0f,  twoLinks.links[0].theta * 180f / PI.toFloat())
+    val linkTwoRotation: Float3
+        get() = Float3(0.0f, 0.0f, twoLinks.links[1].theta * 180f / PI.toFloat())
 
     var linkOneColor = Float4(1f, 0f, 0f, 1f)
     var linkTwoColor = Float4(0f, 1f, 0f, 1f)
 
     val linkOneLengthNorm: Int
-        get() = (100f * twoLinks.linkOneLengthNorm).toInt()
+        get() = (100f * twoLinks.links[0].lengthNorm).toInt()
 
     val linkTwoLengthNorm: Int
-        get() = (100f * twoLinks.linkTwoLengthNorm).toInt()
+        get() = (100f * twoLinks.links[1].lengthNorm).toInt()
 
     val linkOneOffsetNorm: Int
-        get() = (100f * twoLinks.linkOneOffsetNorm).toInt()
+        get() = (100f * twoLinks.links[0].offsetNorm).toInt()
 
     val linkTwoOffsetNorm: Int
-        get() = (100f * twoLinks.linkTwoOffsetNorm).toInt()
+        get() = (100f * twoLinks.links[1].offsetNorm).toInt()
 
     val pivotNorm: Int
         get() = (100f * twoLinks.pivotNorm).toInt()
@@ -44,8 +54,8 @@ class MainViewModel : ViewModel() {
      * Reset the link angles and angular rates to zero
      */
     fun resetStates() {
-        twoLinks.theta = floatArrayOf(0.0f, 0.0f)
-        twoLinks.omega = floatArrayOf(0.0f, 0.0f)
+        twoLinks.links[0].updateState(newTheta = 0f, newOmega = 0f)
+        twoLinks.links[1].updateState(newTheta = 0f, newOmega = 0f)
     }
 
     /**
@@ -60,11 +70,6 @@ class MainViewModel : ViewModel() {
      */
     fun update(h: Float) {
         twoLinks.update(h)
-        val pos = twoLinks.position
-        linkOnePosition = pos[0]
-        linkTwoPosition = pos[1]
-        linkOneRotation.z = twoLinks.theta[0] * 180f / PI.toFloat()
-        linkTwoRotation.z = twoLinks.theta[1] * 180f / PI.toFloat()
     }
 
     /**

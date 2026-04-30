@@ -6,8 +6,8 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
+fun App(viewModel: MainViewModel = MainViewModel()) {
     MaterialTheme {
-        TwoLinksSceneView()
+        TwoLinksSceneView(viewModel)
     }
 }

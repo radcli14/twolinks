@@ -7,7 +7,7 @@ import io.github.sceneview.SceneView
 import io.github.sceneview.rememberModelInstance
 
 @Composable
-actual fun TwoLinksSceneView() {
+actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val assetFileLocation = "composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
 
     SceneView(modifier = Modifier.fillMaxSize()) {

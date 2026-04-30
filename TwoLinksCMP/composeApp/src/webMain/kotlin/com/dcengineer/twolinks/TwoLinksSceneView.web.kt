@@ -13,7 +13,7 @@ import kotlin.js.ExperimentalWasmJsInterop
 
 @OptIn(ExperimentalWasmJsInterop::class)
 @Composable
-actual fun TwoLinksSceneView() {
+actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     // The path relative to the web server root
     val modelPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
 
