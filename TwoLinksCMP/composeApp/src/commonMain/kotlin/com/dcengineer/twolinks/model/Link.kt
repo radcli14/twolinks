@@ -8,7 +8,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
-class Link(
+data class Link(
     var length: Float,
     var offset: Float,
     var height: Float = 0.05f,

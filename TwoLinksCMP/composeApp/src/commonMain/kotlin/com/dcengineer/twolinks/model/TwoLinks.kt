@@ -12,8 +12,9 @@ import kotlin.math.sin
 
 typealias Position = Float3
 
-class TwoLinks {
-    var links = arrayOf(Link.first, Link.second)
+data class TwoLinks(
+    var links: Array<Link> = arrayOf(Link.first, Link.second)
+) {
     var pivot = 0.11f
 
     private var dt = 1.0f / 60.0f
