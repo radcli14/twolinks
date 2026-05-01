@@ -17,6 +17,7 @@ import com.google.android.filament.Skybox
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
 import io.github.sceneview.createEnvironment
+import io.github.sceneview.environment.Environment
 import io.github.sceneview.loaders.MaterialLoader
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
@@ -39,29 +40,24 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     }
     val materialLoader = rememberMaterialLoader(engine)
 
-    // TODO: trying to get directional light up and running
-    /*val mainLightNode = rememberMainLightNode(engine) {
-        isShadowCaster = true
-        rotation = Float3(x = 45f, y = 0f, z = 45f)
-    }
     val environmentLoader = rememberEnvironmentLoader(engine)
     val environment = rememberEnvironment(environmentLoader) {
         environmentLoader.createHDREnvironment(
-            file = File("composeResources/twolinkscmp.composeapp.generated.resources/files/environments/golden_gate_hills_1k.hdr")
-        )!!
-        //createEnvironment(engine, indirectLight = null, skybox = Skybox.Builder().color(0f, 0f, 0f, 0f).intensity(0f).build(engine))
+            assetFileLocation = "${viewModel.environmentsPath}/NightSkyHDRI009_2K_HDR.hdr"
+        ) ?: environmentLoader.createEnvironment()
     }
-    environment.indirectLight?.intensity = 0f
-    //environment.skybox?.intensity = 0f
-    println("environment ${environment.indirectLight?.intensity}, ${environment.skybox?.intensity}")
-    */
+    val mainLightNode = rememberMainLightNode(engine) {
+        isShadowCaster = true
+        rotation = Float3(x = 45f, y = 0f, z = 45f)
+    }
 
     SceneView(
         modifier = Modifier.fillMaxSize(),
         engine = engine,
         modelLoader = modelLoader,
         cameraNode = cameraNode,
-        //mainLightNode = mainLightNode,
+        environment = environment,
+        mainLightNode = mainLightNode,
         onFrame = {
             viewModel.updateOnFrame(it)
         },
@@ -87,7 +83,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                     }
                 )
 
-                // The center
+                // The center about which the first link rotates
                 CylinderNode(
                     radius = 0.01f,
                     height = 0.025f,
@@ -96,35 +92,41 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                     materialInstance = materialLoader.createColorInstance(color = Color.GRAY)
                 )
 
-                // The first link
+                // The first link, empty node parent used to hold the translation to the door surface
                 CubeNode(
-                    size = state.links[0].size,
-                    center = Float3(state.links[0].offset, 0f, 0f),
-                    position = Float3(0f, 0f, 0.5f * (viewModel.doorSize.z + state.links[0].thickness)),
-                    rotation = Float3(0f, 0f, state.links[0].theta * rad2deg),
-                    materialInstance = materialLoader.createColorInstance(color = Color.RED)
+                    size = Float3(0.001f), // Very small, doesn't need to be seen
+                    position = Float3(0f, 0f, 0.5f * viewModel.doorSize.z)
                 ) {
-                    // The pivot
-                    CylinderNode(
-                        radius = 0.01f,
-                        height = 0.025f,
-                        position = Float3(state.pivot, 0f, 0.5f * state.links[0].thickness),
-                        rotation = Float3(90f, 0f, 0f),
-                        materialInstance = materialLoader.createColorInstance(color = Color.GREEN)
-                    )
-
-                    // The second link, empty node parent used to hold the pivot translation, but not rotation
+                    // The first link
                     CubeNode(
-                        size = Float3(0.001f), // Very small, doesn't need to be seen
-                        position = Float3(state.pivot, 0f, 0.5f * state.links[0].thickness)
+                        size = state.links[0].size,
+                        center = Float3(state.links[0].offset, 0f, 0f),
+                        position = Float3(0f, 0f, 0.5f * state.links[0].thickness),
+                        rotation = Float3(0f, 0f, state.links[0].theta * rad2deg),
+                        materialInstance = materialLoader.createColorInstance(color = Color.RED)
                     ) {
-                        CubeNode(
-                            size = state.links[1].size,
-                            center = Float3(state.links[1].offset, 0f, 0f),
-                            position = Float3(0f, 0f,0.5f * state.links[1].thickness),
-                            rotation = Float3(0f, 0f, state.links[1].theta * rad2deg),
-                            materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
+                        // The pivot
+                        CylinderNode(
+                            radius = 0.01f,
+                            height = 0.025f,
+                            position = Float3(state.pivot, 0f, state.links[0].thickness),
+                            rotation = Float3(90f, 0f, 0f),
+                            materialInstance = materialLoader.createColorInstance(color = Color.GREEN)
                         )
+
+                        // The second link, empty node parent used to hold the pivot translation, but not rotation
+                        CubeNode(
+                            size = Float3(0.001f), // Very small, doesn't need to be seen
+                            position = Float3(state.pivot, 0f, 0.5f * state.links[0].thickness)
+                        ) {
+                            CubeNode(
+                                size = state.links[1].size,
+                                center = Float3(state.links[1].offset, 0f, 0f),
+                                position = Float3(0f, 0f,0.5f * state.links[1].thickness),
+                                rotation = Float3(0f, 0f, (state.links[1].theta - state.links[0].theta) * rad2deg),
+                                materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
+                            )
+                        }
                     }
                 }
             }

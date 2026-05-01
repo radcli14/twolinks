@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.math.PI
+import kotlin.math.min
 import kotlin.random.Random
 import kotlin.time.Clock
 
@@ -27,13 +28,16 @@ class MainViewModel : ViewModel() {
 
     var lastFrameTime: Long? = null
 
-    private val _elapsedTimeState = MutableStateFlow(0f) //: Float = 0f
+    private val _elapsedTimeState = MutableStateFlow(0f)
     val elapsedTimeState = _elapsedTimeState.asStateFlow()
     val elapsedTime: Float get() = elapsedTimeState.value
+    val maxFrameTime = 0.03f  // Limit to prevent simulation crashing from over-stepping
 
     val doorSize = Float3(0.91f, 2.03f, 0.035f)
 
-    val modelPath = "composeResources/twolinkscmp.composeapp.generated.resources/files/models"
+    val filesPath = "composeResources/twolinkscmp.composeapp.generated.resources/files"
+    val environmentsPath = "$filesPath/environments"
+    val modelPath = "$filesPath/models"
     fun fileLocation(planet: Planet): String {
         return "$modelPath/${planet.file}"
     }
@@ -106,7 +110,7 @@ class MainViewModel : ViewModel() {
      */
     fun updateOnFrame(frameTime: Long) {
         lastFrameTime?.let {
-            val deltaFrameTime: Float = (frameTime - it).toFloat() / 1_000_000_000
+            val deltaFrameTime: Float = min(maxFrameTime, (frameTime - it).toFloat() / 1_000_000_000)
             if (!isPaused) {
                 update(h = deltaFrameTime)
             }

@@ -23,9 +23,6 @@ data class TwoLinks(
     private var _m11: Float? = null
     private var _m22: Float? = null
 
-    //val position: Array<Position>
-    //    get() = arrayOf(links[0].position(), links[1].position(zOffset = links[0].thickness))
-
     val pivotPosition: Float3
         get() = Float3(
                 pivot * cos(links[0].theta),
