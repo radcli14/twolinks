@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposableInferredTarget
 import androidx.compose.runtime.InternalComposeApi
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.dcengineer.twolinks.functions.rad2deg
 import com.dcengineer.twolinks.model.Link
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.size
@@ -27,12 +30,14 @@ import java.io.File
 
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
+    val state by viewModel.twoLinksState.collectAsState()
+
     val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
     val cameraNode = rememberCameraNode(engine) {
         position = Float3(0f, 0f, 5f)
     }
-    var materialLoader = rememberMaterialLoader(engine)
+    val materialLoader = rememberMaterialLoader(engine)
 
     // TODO: trying to get directional light up and running
     /*val mainLightNode = rememberMainLightNode(engine) {
@@ -84,15 +89,16 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
 
                 // The first link
                 CubeNode(
-                    size = viewModel.twoLinks.links[0].size,
-                    position = Float3(viewModel.twoLinks.links[0].offset, 0f, 0.5f * (viewModel.doorSize.z + viewModel.twoLinks.links[0].thickness)),
+                    size = state.links[0].size,
+                    position = Float3(state.links[0].offset, 0f, 0.5f * (viewModel.doorSize.z + state.links[0].thickness)),
+                    rotation = Float3(0f, 0f, state.links[0].theta * rad2deg),
                     materialInstance = materialLoader.createColorInstance(color = Color.RED)
                 ) {
                     // The pivot
                     CylinderNode(
                         radius = 0.01f,
                         height = 0.025f,
-                        position = Float3(viewModel.twoLinks.pivot, 0f, 0.5f * viewModel.twoLinks.links[0].thickness),
+                        position = Float3(state.pivot, 0f, 0.5f * state.links[0].thickness),
                         rotation = Float3(90f, 0f, 0f),
                         materialInstance = materialLoader.createColorInstance(color = Color.GREEN)
                     )
@@ -100,12 +106,12 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                     // The second link, empty node parent used to hold the pivot translation, but not rotation
                     CubeNode(
                         size = Float3(0.001f), // Very small, doesn't need to be seen
-                        position = Float3(viewModel.twoLinks.pivot, 0f, 0.5f * viewModel.twoLinks.links[0].thickness)
+                        position = Float3(state.pivot, 0f, 0.5f * state.links[0].thickness)
                     ) {
                         CubeNode(
-                            size = viewModel.twoLinks.links[1].size,
-                            position = Float3(viewModel.twoLinks.links[1].offset, 0f, 0.5f * viewModel.twoLinks.links[1].thickness),
-                            rotation = Float3(0f, 0f, 0f),
+                            size = state.links[1].size,
+                            position = Float3(state.links[1].offset, 0f, 0.5f * state.links[1].thickness),
+                            rotation = Float3(0f, 0f, state.links[1].theta * rad2deg),
                             materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
                         )
                     }

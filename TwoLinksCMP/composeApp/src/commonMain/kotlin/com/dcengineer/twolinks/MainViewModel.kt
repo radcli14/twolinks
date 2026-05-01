@@ -26,7 +26,10 @@ class MainViewModel : ViewModel() {
     var isPaused = false
 
     var lastFrameTime: Long? = null
-    var elapsedTime: Float = 0f
+
+    private val _elapsedTimeState = MutableStateFlow(0f) //: Float = 0f
+    val elapsedTimeState = _elapsedTimeState.asStateFlow()
+    val elapsedTime: Float get() = elapsedTimeState.value
 
     val doorSize = Float3(0.91f, 2.03f, 0.035f)
 
@@ -70,7 +73,7 @@ class MainViewModel : ViewModel() {
      * Reset the link angles and angular rates to zero
      */
     fun resetStates() {
-        elapsedTime = 0f
+        _elapsedTimeState.value = 0f
         lastFrameTime = null
         _twoLinksState.update { current ->
             current.links[0].updateState(newTheta = 0f, newOmega = 0f)
@@ -95,7 +98,7 @@ class MainViewModel : ViewModel() {
             current.update(h)
             current.copy(links = current.links.copyOf())
         }
-        elapsedTime += h
+        _elapsedTimeState.value += h
     }
 
     /**

@@ -1,10 +1,12 @@
 package com.dcengineer.twolinks.functions
 
 import dev.romainguy.kotlin.math.Float4
+import kotlin.math.PI
 
 
 // Used in rk4, calculate once for efficiency
 const val oneSixth = 1.0f / 6.0f
+const val rad2deg = 180.0f / PI.toFloat()
 
 /**
  * Apply the 4th order Runge-Kutta integration routine for an equation that returns a Float4
