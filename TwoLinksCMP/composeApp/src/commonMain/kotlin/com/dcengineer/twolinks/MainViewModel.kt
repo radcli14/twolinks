@@ -1,5 +1,6 @@
 package com.dcengineer.twolinks
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.TwoLinks
@@ -19,7 +20,7 @@ class MainViewModel : ViewModel() {
     val twoLinksState = _twoLinksState.asStateFlow()
     val twoLinks: TwoLinks get() = twoLinksState.value
 
-    var isPaused = false
+    var isPaused = mutableStateOf(false)
 
     var lastFrameTime: Long? = null
 
@@ -86,7 +87,7 @@ class MainViewModel : ViewModel() {
      */
     fun pause() {
         lastFrameTime = null
-        isPaused = !isPaused
+        isPaused.value = !isPaused.value
     }
 
     /**
@@ -106,7 +107,7 @@ class MainViewModel : ViewModel() {
     fun updateOnFrame(frameTime: Long) {
         lastFrameTime?.let {
             val deltaFrameTime: Float = min(maxFrameTime, (frameTime - it).toFloat() / 1_000_000_000)
-            if (!isPaused) {
+            if (!isPaused.value) {
                 update(h = deltaFrameTime)
             }
         }
