@@ -1,5 +1,6 @@
 package com.dcengineer.twolinks.model
 
+import com.dcengineer.twolinks.functions.rad2deg
 import dev.romainguy.kotlin.math.Float3
 import kotlin.collections.get
 import kotlin.math.cos
@@ -58,12 +59,12 @@ val Link.offsetNorm: Float
 val Link.maxPivot: Float
     get() = 0.5f * length - minDistanceFromEdge + offset
 
-fun Link.position(zOffset: Float = 0f): Position {
-    return Position(
-        offset * cos(theta),
-        offset * sin(theta),
-        thickness + zOffset
-    )
+val Link.center: Float3
+    get() = Float3(offset, 0f, 0.5f * thickness)
+
+fun Link.rotation(relativeTo: Link? = null): Float3 {
+    val radians = theta - (relativeTo?.theta ?: 0f)
+    return Float3(0f, 0f, radians * rad2deg)
 }
 
 fun Link.updateState(newTheta: Float = 0f, newOmega: Float) {

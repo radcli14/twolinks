@@ -24,11 +24,7 @@ data class TwoLinks(
     private var _m22: Float? = null
 
     val pivotPosition: Float3
-        get() = Float3(
-                pivot * cos(links[0].theta),
-                pivot * sin(links[0].theta),
-                links[0].thickness + 0.5f * links[1].thickness
-            )
+        get() = Float3(pivot, 0f, links[0].thickness)
 
     private val m11: Float
         get() = links[0].moi + links[0].moiRelOffset // _m11 ?: (moi[0] + mass[0] * offset[0].pow(2f) + mass[1] * pivot.pow(2f))

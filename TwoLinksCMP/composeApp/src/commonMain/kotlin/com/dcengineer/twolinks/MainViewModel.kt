@@ -2,18 +2,13 @@ package com.dcengineer.twolinks
 
 import androidx.lifecycle.ViewModel
 import com.dcengineer.twolinks.model.Planet
-import com.dcengineer.twolinks.model.Position
 import com.dcengineer.twolinks.model.TwoLinks
-import com.dcengineer.twolinks.model.lengthNorm
-import com.dcengineer.twolinks.model.offsetNorm
-import com.dcengineer.twolinks.model.position
 import com.dcengineer.twolinks.model.updateState
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.math.PI
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.time.Clock

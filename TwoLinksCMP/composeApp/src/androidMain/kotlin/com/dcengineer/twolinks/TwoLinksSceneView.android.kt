@@ -3,22 +3,16 @@ package com.dcengineer.twolinks
 import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposableInferredTarget
-import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.dcengineer.twolinks.functions.rad2deg
-import com.dcengineer.twolinks.model.Link
 import com.dcengineer.twolinks.model.Planet
+import com.dcengineer.twolinks.model.center
+import com.dcengineer.twolinks.model.rotation
 import com.dcengineer.twolinks.model.size
-import com.google.android.filament.MaterialInstance
-import com.google.android.filament.Skybox
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.SceneView
-import io.github.sceneview.createEnvironment
-import io.github.sceneview.environment.Environment
-import io.github.sceneview.loaders.MaterialLoader
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberEnvironment
@@ -27,7 +21,6 @@ import io.github.sceneview.rememberMainLightNode
 import io.github.sceneview.rememberMaterialLoader
 import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
-import java.io.File
 
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
@@ -66,6 +59,14 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             // Base node is the door, the camera orbits around the door
             CubeNode(
                 size = viewModel.doorSize,
+                // Offset backwards so the door surface is at zero
+                center = Float3(0f, 0f, -0.5f * viewModel.doorSize.z),
+                materialInstance = materialLoader.createColorInstance(
+                    color = Color.GRAY,
+                    roughness = 0f,
+                    metallic = 1f,
+                    reflectance = 1f
+                ),
                 apply = {
                     isShadowCaster = true
                     isShadowReceiver = true
@@ -87,46 +88,37 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 CylinderNode(
                     radius = 0.01f,
                     height = 0.025f,
-                    position = Float3(0f, 0f, 0.5f * viewModel.doorSize.z),
                     rotation = Float3(90f, 0f, 0f),
                     materialInstance = materialLoader.createColorInstance(color = Color.GRAY)
                 )
 
-                // The first link, empty node parent used to hold the translation to the door surface
+                // The first link
                 CubeNode(
-                    size = Float3(0.001f), // Very small, doesn't need to be seen
-                    position = Float3(0f, 0f, 0.5f * viewModel.doorSize.z)
+                    size = state.links[0].size,
+                    center = state.links[0].center,
+                    rotation = state.links[0].rotation(),
+                    materialInstance = materialLoader.createColorInstance(color = Color.RED)
                 ) {
-                    // The first link
-                    CubeNode(
-                        size = state.links[0].size,
-                        center = Float3(state.links[0].offset, 0f, 0f),
-                        position = Float3(0f, 0f, 0.5f * state.links[0].thickness),
-                        rotation = Float3(0f, 0f, state.links[0].theta * rad2deg),
-                        materialInstance = materialLoader.createColorInstance(color = Color.RED)
-                    ) {
-                        // The pivot
-                        CylinderNode(
-                            radius = 0.01f,
-                            height = 0.025f,
-                            position = Float3(state.pivot, 0f, state.links[0].thickness),
-                            rotation = Float3(90f, 0f, 0f),
-                            materialInstance = materialLoader.createColorInstance(color = Color.GREEN)
-                        )
+                    // The pivot
+                    CylinderNode(
+                        radius = 0.01f,
+                        height = 0.025f,
+                        position = state.pivotPosition,
+                        rotation = Float3(90f, 0f, 0f),
+                        materialInstance = materialLoader.createColorInstance(color = Color.GREEN)
+                    )
 
-                        // The second link, empty node parent used to hold the pivot translation, but not rotation
+                    // The second link, empty node parent used to hold the pivot translation, but not rotation
+                    CubeNode(
+                        size = Float3(0.001f), // Very small, doesn't need to be seen
+                        position = state.pivotPosition
+                    ) {
                         CubeNode(
-                            size = Float3(0.001f), // Very small, doesn't need to be seen
-                            position = Float3(state.pivot, 0f, 0.5f * state.links[0].thickness)
-                        ) {
-                            CubeNode(
-                                size = state.links[1].size,
-                                center = Float3(state.links[1].offset, 0f, 0f),
-                                position = Float3(0f, 0f,0.5f * state.links[1].thickness),
-                                rotation = Float3(0f, 0f, (state.links[1].theta - state.links[0].theta) * rad2deg),
-                                materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
-                            )
-                        }
+                            size = state.links[1].size,
+                            center = state.links[1].center,
+                            rotation = state.links[1].rotation(relativeTo = state.links[0]),
+                            materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
+                        )
                     }
                 }
             }
