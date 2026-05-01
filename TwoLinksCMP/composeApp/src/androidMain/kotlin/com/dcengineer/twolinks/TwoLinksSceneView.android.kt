@@ -87,10 +87,20 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                     }
                 )
 
+                // The center
+                CylinderNode(
+                    radius = 0.01f,
+                    height = 0.025f,
+                    position = Float3(0f, 0f, 0.5f * viewModel.doorSize.z),
+                    rotation = Float3(90f, 0f, 0f),
+                    materialInstance = materialLoader.createColorInstance(color = Color.GRAY)
+                )
+
                 // The first link
                 CubeNode(
                     size = state.links[0].size,
-                    position = Float3(state.links[0].offset, 0f, 0.5f * (viewModel.doorSize.z + state.links[0].thickness)),
+                    center = Float3(state.links[0].offset, 0f, 0f),
+                    position = Float3(0f, 0f, 0.5f * (viewModel.doorSize.z + state.links[0].thickness)),
                     rotation = Float3(0f, 0f, state.links[0].theta * rad2deg),
                     materialInstance = materialLoader.createColorInstance(color = Color.RED)
                 ) {
@@ -110,7 +120,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                     ) {
                         CubeNode(
                             size = state.links[1].size,
-                            position = Float3(state.links[1].offset, 0f, 0.5f * state.links[1].thickness),
+                            center = Float3(state.links[1].offset, 0f, 0f),
+                            position = Float3(0f, 0f,0.5f * state.links[1].thickness),
                             rotation = Float3(0f, 0f, state.links[1].theta * rad2deg),
                             materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
                         )
