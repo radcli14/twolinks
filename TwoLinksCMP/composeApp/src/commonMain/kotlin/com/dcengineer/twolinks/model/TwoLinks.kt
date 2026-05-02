@@ -92,6 +92,11 @@ data class TwoLinks(
         val priorState = Float4(links[0].theta, links[1].theta, links[0].omega, links[1].omega)
         val newState = rk4({x -> equationOfMotion(x)}, priorState, h)
 
+        // Guard against NaNs or infinity, exit without updating if the simulation had invalid state
+        if (newState.isInvalid) {
+            return
+        }
+
         // Update the state variables
         links[0].updateState(newTheta = newState[0], newOmega = newState[2])
         links[1].updateState(newTheta = newState[1], newOmega = newState[3])
@@ -162,3 +167,12 @@ data class TwoLinks(
         nullify()
     }
 }
+
+val Float4.containsNaN: Boolean
+    get() = x.isNaN() || y.isNaN() || z.isNaN() || w.isNaN()
+
+val Float4.containsInfinity: Boolean
+    get() = x.isInfinite() || y.isInfinite() || z.isInfinite() || w.isInfinite()
+
+val Float4.isInvalid: Boolean
+    get() = containsNaN || containsInfinity
