@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
-import com.dcengineer.twolinks.model.rotation
 import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.NodeScope
@@ -78,7 +77,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             CubeNode(
                 size = state.links[0].size,
                 center = state.links[0].center,
-                rotation = state.links[0].rotation(),
+                rotation = viewModel.linkOneRotation,
                 materialInstance = materialLoader.createColorInstance(color = state.links[0].color)
             ) {
                 // The pivot about which the second link rotates
@@ -89,7 +88,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                     size = state.links[1].size,
                     center = state.links[1].center,
                     position = state.pivotPosition,
-                    rotation = state.links[1].rotation(relativeTo = state.links[0]),
+                    rotation = viewModel.linkTwoRotation,
                     materialInstance = materialLoader.createColorInstance(color = state.links[1].color)
                 )
             }

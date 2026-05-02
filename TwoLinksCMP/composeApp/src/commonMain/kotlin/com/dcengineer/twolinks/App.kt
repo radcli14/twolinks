@@ -43,8 +43,8 @@ fun App(viewModel: MainViewModel = MainViewModel()) {
             bottomBar = {
                 BottomAppBar {
                     Text("Elapsed: $elapsedTime")
-                    Text("Theta0: ${state.links[0].theta}")
-                    Text("Theta1: ${state.links[1].theta}")
+                    //Text("Theta0: ${state.links[0].theta}")
+                    //Text("Theta1: ${state.links[1].theta}")
                 }
             }
         ) {

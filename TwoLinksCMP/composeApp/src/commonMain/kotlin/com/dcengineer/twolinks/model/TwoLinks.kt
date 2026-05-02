@@ -11,9 +11,11 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
-typealias Position = Float3
-
+/**
+ * The data model responsible for managing simulation math and state.
+ */
 data class TwoLinks(
+    var simulationState: Float4 = Float4(),
     var links: Array<Link> = arrayOf(Link.first, Link.second)
 ) {
     var pivot = 0.11f
@@ -90,8 +92,8 @@ data class TwoLinks(
      */
     fun update(h: Float = dt) {
         // Calculate states at the next frame based on current states
-        val priorState = Float4(links[0].theta, links[1].theta, links[0].omega, links[1].omega)
-        val newState = rk4({x -> equationOfMotion(x)}, priorState, h)
+        //val priorState = Float4(links[0].theta, links[1].theta, links[0].omega, links[1].omega)
+        val newState = rk4({x -> equationOfMotion(x)}, simulationState, h)
 
         // Guard against NaNs or infinity, exit without updating if the simulation had invalid state
         if (newState.isInvalid) {
@@ -99,8 +101,9 @@ data class TwoLinks(
         }
 
         // Update the state variables
-        links[0].updateState(newTheta = newState[0], newOmega = newState[2])
-        links[1].updateState(newTheta = newState[1], newOmega = newState[3])
+        simulationState = newState
+        //links[0].updateState(newTheta = newState[0], newOmega = newState[2])
+        //links[1].updateState(newTheta = newState[1], newOmega = newState[3])
     }
 
     /**

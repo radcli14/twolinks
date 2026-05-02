@@ -2,9 +2,10 @@ package com.dcengineer.twolinks
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.dcengineer.twolinks.functions.rad2deg
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.TwoLinks
-import com.dcengineer.twolinks.model.updateState
+import dev.romainguy.kotlin.math.Float2
 import dev.romainguy.kotlin.math.Float3
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,20 +38,14 @@ class MainViewModel : ViewModel() {
         return "$modelPath/${planet.file}"
     }
 
-    /*val linkOneLengthNorm: Int
-        get() = (100f * twoLinks.links[0].lengthNorm).toInt()
+    val anglesDegrees: Float2
+        get() = Float2(twoLinksState.value.simulationState[0] * rad2deg, twoLinksState.value.simulationState[1] * rad2deg)
 
-    val linkTwoLengthNorm: Int
-        get() = (100f * twoLinks.links[1].lengthNorm).toInt()
+    val linkOneRotation: Float3
+        get() = Float3(0f, 0f, anglesDegrees[0])
 
-    val linkOneOffsetNorm: Int
-        get() = (100f * twoLinks.links[0].offsetNorm).toInt()
-
-    val linkTwoOffsetNorm: Int
-        get() = (100f * twoLinks.links[1].offsetNorm).toInt()
-
-    val pivotNorm: Int
-        get() = (100f * twoLinks.pivotNorm).toInt()*/
+    val linkTwoRotation: Float3
+        get() = Float3(0f, 0f, anglesDegrees[1] - anglesDegrees[0])
 
     init {
         shuffle()
@@ -63,8 +58,6 @@ class MainViewModel : ViewModel() {
         _elapsedTimeState.value = 0f
         lastFrameTime = null
         _twoLinksState.update { current ->
-            current.links[0].updateState(newTheta = 0f, newOmega = 0f)
-            current.links[1].updateState(newTheta = 0f, newOmega = 0f)
             current.copy(links = current.links.copyOf())
         }
     }

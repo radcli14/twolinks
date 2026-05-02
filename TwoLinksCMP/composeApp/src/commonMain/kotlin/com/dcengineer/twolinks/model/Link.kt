@@ -10,6 +10,9 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
+/**
+ * The data model responsible for managing a single link's physical properties
+ */
 data class Link(
     var length: Float,
     var offset: Float,
@@ -17,8 +20,8 @@ data class Link(
     var thickness: Float = 0.0064f,
     var density: Float = 800f,
     var color: Float4 = Float4(1f, 0f, 0f, 1f),
-    var theta: Float = 0f,
-    var omega: Float = 0f
+    //var theta: Float = 0f,
+    //var omega: Float = 0f
 ) {
     internal val minLength = 0.12f
     internal val maxLength = 0.53f
@@ -63,16 +66,6 @@ val Link.maxPivot: Float
 
 val Link.center: Float3
     get() = Float3(offset, 0f, 0.5f * thickness)
-
-fun Link.rotation(relativeTo: Link? = null): Float3 {
-    val radians = theta - (relativeTo?.theta ?: 0f)
-    return Float3(0f, 0f, radians * rad2deg)
-}
-
-fun Link.updateState(newTheta: Float = 0f, newOmega: Float) {
-    theta = newTheta
-    omega = newOmega
-}
 
 fun Link.setLengthFromNorm(n: Float) {
     // Get the norm values before adjusting, to avoid recursion
