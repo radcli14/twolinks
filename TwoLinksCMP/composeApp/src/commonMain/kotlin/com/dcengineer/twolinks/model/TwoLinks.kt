@@ -102,8 +102,6 @@ data class TwoLinks(
 
         // Update the state variables
         simulationState = newState
-        //links[0].updateState(newTheta = newState[0], newOmega = newState[2])
-        //links[1].updateState(newTheta = newState[1], newOmega = newState[3])
     }
 
     /**

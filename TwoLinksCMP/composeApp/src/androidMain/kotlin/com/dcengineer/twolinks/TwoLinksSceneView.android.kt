@@ -29,6 +29,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val modelLoader = rememberModelLoader(engine)
     val cameraNode = rememberCameraNode(engine) {
         position = Float3(0f, 0f, 5f)
+        updateProjection(far = 1000f)
     }
     val materialLoader = rememberMaterialLoader(engine)
 
@@ -102,8 +103,19 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 rotation = Planet.moon.rotation,
                 scaleToUnits = Planet.moon.scale,
                 apply = {
-                    isShadowCaster = true
                     isShadowReceiver = true
+                }
+            )
+        }
+
+        rememberModelInstance(modelLoader, viewModel.fileLocation(planet = Planet.earth))?.let {
+            ModelNode(
+                modelInstance = it,
+                position = Planet.earth.position,
+                rotation = Planet.earth.rotation,
+                scaleToUnits = Planet.earth.scale,
+                apply = {
+                    //isShadowReceiver = true
                 }
             )
         }

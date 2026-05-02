@@ -7,6 +7,7 @@ import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.TwoLinks
 import dev.romainguy.kotlin.math.Float2
 import dev.romainguy.kotlin.math.Float3
+import dev.romainguy.kotlin.math.Float4
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -27,7 +28,7 @@ class MainViewModel : ViewModel() {
     private val _elapsedTimeState = MutableStateFlow(0f)
     val elapsedTimeState = _elapsedTimeState.asStateFlow()
     val elapsedTime: Float get() = elapsedTimeState.value
-    val maxFrameTime = 0.03f  // Limit to prevent simulation crashing from over-stepping
+    val maxFrameTime = 0.1f  // Limit to prevent simulation crashing from over-stepping
 
     val doorSize = Float3(0.91f, 2.03f, 0.035f)
 
@@ -58,7 +59,10 @@ class MainViewModel : ViewModel() {
         _elapsedTimeState.value = 0f
         lastFrameTime = null
         _twoLinksState.update { current ->
-            current.copy(links = current.links.copyOf())
+            current.copy(
+                simulationState = Float4(),
+                links = current.links.copyOf()
+            )
         }
     }
 
