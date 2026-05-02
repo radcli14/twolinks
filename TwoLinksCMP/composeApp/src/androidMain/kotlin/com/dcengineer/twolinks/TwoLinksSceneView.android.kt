@@ -11,6 +11,7 @@ import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.rotation
 import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
+import io.github.sceneview.NodeScope
 import io.github.sceneview.SceneView
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
@@ -50,77 +51,81 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         cameraNode = cameraNode,
         environment = environment,
         mainLightNode = mainLightNode,
-        onFrame = {
-            viewModel.updateOnFrame(it)
-        },
+        onFrame = viewModel::updateOnFrame,
     ) {
-        rememberModelInstance(modelLoader, viewModel.fileLocation(planet = Planet.moon))?.let {
-            // Base node is the door, the camera orbits around the door
+
+        // Base node is the door, the camera orbits around the door
+        CubeNode(
+            size = viewModel.doorSize,
+            // Offset backwards so the door surface is at zero
+            center = Float3(0f, 0f, -0.5f * viewModel.doorSize.z),
+            materialInstance = materialLoader.createColorInstance(
+                color = Color.GRAY,
+                roughness = 0f,
+                metallic = 1f,
+                reflectance = 1f
+            ),
+            apply = {
+                isShadowCaster = true
+                isShadowReceiver = true
+            }
+        ) {
+
+            // The center about which the first link rotates
+            PivotNode()
+
+            // The first link
             CubeNode(
-                size = viewModel.doorSize,
-                // Offset backwards so the door surface is at zero
-                center = Float3(0f, 0f, -0.5f * viewModel.doorSize.z),
-                materialInstance = materialLoader.createColorInstance(
-                    color = Color.GRAY,
-                    roughness = 0f,
-                    metallic = 1f,
-                    reflectance = 1f
-                ),
+                size = state.links[0].size,
+                center = state.links[0].center,
+                rotation = state.links[0].rotation(),
+                materialInstance = materialLoader.createColorInstance(color = state.links[0].color)
+            ) {
+                // The pivot about which the second link rotates
+                PivotNode(position = state.pivotPosition)
+
+                // The second link, rotates about the pivot position
+                CubeNode(
+                    size = state.links[1].size,
+                    center = state.links[1].center,
+                    position = state.pivotPosition,
+                    rotation = state.links[1].rotation(relativeTo = state.links[0]),
+                    materialInstance = materialLoader.createColorInstance(color = state.links[1].color)
+                )
+            }
+        }
+
+        rememberModelInstance(modelLoader, viewModel.fileLocation(planet = Planet.moon))?.let {
+            // Moon node is offset downward so its surface matches the door base
+            ModelNode(
+                modelInstance = it,
+                position = Planet.moon.position,
+                rotation = Planet.moon.rotation,
+                scaleToUnits = Planet.moon.scale,
                 apply = {
                     isShadowCaster = true
                     isShadowReceiver = true
                 }
-            ) {
-                // Moon node is offset downward so its surface matches the door base
-                ModelNode(
-                    modelInstance = it,
-                    position = Planet.moon.position,
-                    rotation = Planet.moon.rotation,
-                    scaleToUnits = Planet.moon.scale,
-                    apply = {
-                        isShadowCaster = true
-                        isShadowReceiver = true
-                    }
-                )
-
-                // The center about which the first link rotates
-                CylinderNode(
-                    radius = 0.01f,
-                    height = 0.025f,
-                    rotation = Float3(90f, 0f, 0f),
-                    materialInstance = materialLoader.createColorInstance(color = Color.GRAY)
-                )
-
-                // The first link
-                CubeNode(
-                    size = state.links[0].size,
-                    center = state.links[0].center,
-                    rotation = state.links[0].rotation(),
-                    materialInstance = materialLoader.createColorInstance(color = Color.RED)
-                ) {
-                    // The pivot
-                    CylinderNode(
-                        radius = 0.01f,
-                        height = 0.025f,
-                        position = state.pivotPosition,
-                        rotation = Float3(90f, 0f, 0f),
-                        materialInstance = materialLoader.createColorInstance(color = Color.GREEN)
-                    )
-
-                    // The second link, empty node parent used to hold the pivot translation, but not rotation
-                    CubeNode(
-                        size = Float3(0.001f), // Very small, doesn't need to be seen
-                        position = state.pivotPosition
-                    ) {
-                        CubeNode(
-                            size = state.links[1].size,
-                            center = state.links[1].center,
-                            rotation = state.links[1].rotation(relativeTo = state.links[0]),
-                            materialInstance = materialLoader.createColorInstance(color = Color.BLUE)
-                        )
-                    }
-                }
-            }
+            )
         }
     }
+}
+
+/**
+ * A simple cylindrical node used to represent the hinge that a link rotates around.
+ */
+@Composable
+fun NodeScope.PivotNode(
+    radius: Float = 0.01f,
+    height: Float = 0.015f,
+    position: Float3 = Float3(),
+    color: Int = Color.GRAY
+) {
+    CylinderNode(
+        radius = radius,
+        height = height,
+        position = position,
+        rotation = Float3(90f, 0f, 0f),
+        materialInstance = materialLoader.createColorInstance(color = color)
+    )
 }

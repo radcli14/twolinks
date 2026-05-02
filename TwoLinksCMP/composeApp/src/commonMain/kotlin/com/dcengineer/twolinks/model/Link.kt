@@ -2,6 +2,7 @@ package com.dcengineer.twolinks.model
 
 import com.dcengineer.twolinks.functions.rad2deg
 import dev.romainguy.kotlin.math.Float3
+import dev.romainguy.kotlin.math.Float4
 import kotlin.collections.get
 import kotlin.math.cos
 import kotlin.math.max
@@ -15,6 +16,7 @@ data class Link(
     var height: Float = 0.05f,
     var thickness: Float = 0.0064f,
     var density: Float = 800f,
+    var color: Float4 = Float4(1f, 0f, 0f, 1f),
     var theta: Float = 0f,
     var omega: Float = 0f
 ) {

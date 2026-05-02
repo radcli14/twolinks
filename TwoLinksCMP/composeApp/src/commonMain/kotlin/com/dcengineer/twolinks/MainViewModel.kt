@@ -6,7 +6,6 @@ import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.TwoLinks
 import com.dcengineer.twolinks.model.updateState
 import dev.romainguy.kotlin.math.Float3
-import dev.romainguy.kotlin.math.Float4
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -37,18 +36,6 @@ class MainViewModel : ViewModel() {
     fun fileLocation(planet: Planet): String {
         return "$modelPath/${planet.file}"
     }
-
-    /*val linkOnePosition: Position
-        get() = twoLinks.links[0].position()
-    val linkTwoPosition: Position
-        get() = twoLinks.links[1].position(zOffset = twoLinks.links[0].thickness)
-    val linkOneRotation: Float3
-        get() = Float3(0.0f, 0.0f,  twoLinks.links[0].theta * 180f / PI.toFloat())
-    val linkTwoRotation: Float3
-        get() = Float3(0.0f, 0.0f, twoLinks.links[1].theta * 180f / PI.toFloat())*/
-
-    var linkOneColor = Float4(1f, 0f, 0f, 1f)
-    var linkTwoColor = Float4(0f, 1f, 0f, 1f)
 
     /*val linkOneLengthNorm: Int
         get() = (100f * twoLinks.links[0].lengthNorm).toInt()
@@ -131,12 +118,12 @@ class MainViewModel : ViewModel() {
         twoLinks.setPivotFromNorm(random.nextFloat())
 
         // Create the randomized colors
-        linkOneColor.x = random.nextFloat()
-        linkOneColor.y = random.nextFloat()
-        linkOneColor.z = random.nextFloat()
-        linkTwoColor.x = random.nextFloat()
-        linkTwoColor.y = random.nextFloat()
-        linkTwoColor.z = random.nextFloat()
+        twoLinks.links[0].color.x = random.nextFloat()
+        twoLinks.links[0].color.y = random.nextFloat()
+        twoLinks.links[0].color.z = random.nextFloat()
+        twoLinks.links[1].color.x = random.nextFloat()
+        twoLinks.links[1].color.y = random.nextFloat()
+        twoLinks.links[1].color.z = random.nextFloat()
     }
 
     fun setLinkOneLengthFromNorm(n: Int) {
