@@ -3,8 +3,12 @@ package com.dcengineer.twolinks
 import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
@@ -12,6 +16,7 @@ import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.NodeScope
 import io.github.sceneview.SceneView
+import io.github.sceneview.model.ModelInstance
 import io.github.sceneview.rememberCameraNode
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberEnvironment
@@ -42,6 +47,22 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val mainLightNode = rememberMainLightNode(engine) {
         isShadowCaster = true
         rotation = Float3(x = 45f, y = 0f, z = 45f)
+    }
+
+    // Define states for the GLB formatted models
+    var moonInstance by remember { mutableStateOf<ModelInstance?>(null) }
+    var earthInstance by remember { mutableStateOf<ModelInstance?>(null) }
+
+    // Load the Moon first
+    LaunchedEffect(Unit) {
+        moonInstance = modelLoader.loadModelInstance(viewModel.fileLocation(Planet.moon))
+    }
+
+    // Load the Earth ONLY after the Moon is ready
+    LaunchedEffect(moonInstance) {
+        if (moonInstance != null) {
+            earthInstance = modelLoader.loadModelInstance(viewModel.fileLocation(Planet.earth))
+        }
     }
 
     SceneView(
@@ -95,7 +116,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             }
         }
 
-        rememberModelInstance(modelLoader, viewModel.fileLocation(planet = Planet.moon))?.let {
+        moonInstance?.let {
             // Moon node is offset downward so its surface matches the door base
             ModelNode(
                 modelInstance = it,
@@ -108,19 +129,33 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             )
         }
 
-        rememberModelInstance(modelLoader, viewModel.fileLocation(planet = Planet.earth))?.let {
+        earthInstance?.let {
             ModelNode(
                 modelInstance = it,
                 position = Planet.earth.position,
                 rotation = Planet.earth.rotation,
                 scaleToUnits = Planet.earth.scale,
                 apply = {
-                    //isShadowReceiver = true
+                    isShadowReceiver = true
                 }
             )
         }
     }
 }
+
+@Composable
+fun NodeScope.PlanetNode(instance: ModelInstance, planet: Planet) {
+    ModelNode(
+        modelInstance = instance,
+        position = planet.position,
+        rotation = planet.rotation,
+        scaleToUnits = planet.scale,
+        apply = {
+            isShadowReceiver = true
+        }
+    )
+}
+
 
 /**
  * A simple cylindrical node used to represent the hinge that a link rotates around.

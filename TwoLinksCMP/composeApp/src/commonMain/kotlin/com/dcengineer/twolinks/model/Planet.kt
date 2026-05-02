@@ -22,8 +22,8 @@ data class Planet(
         val earth = Planet(
             file = "earth.glb",
             scale = earthScale,
-            position = Float3(15.7f, -15.7f, -157f),
-            rotation = Float3(22f, 120f, 0f)
+            position = Float3(31.4f, -15.7f, -314f),
+            rotation = Float3(22f, 0f, 0f)
         )
     }
 }
