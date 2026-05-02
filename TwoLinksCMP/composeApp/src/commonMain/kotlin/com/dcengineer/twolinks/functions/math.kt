@@ -58,3 +58,13 @@ fun invert2x2(matrix: Array<FloatArray>): Array<FloatArray> {
         floatArrayOf(-c * det, a * det)
     )
 }
+
+
+val Float4.containsNaN: Boolean
+    get() = x.isNaN() || y.isNaN() || z.isNaN() || w.isNaN()
+
+val Float4.containsInfinity: Boolean
+    get() = x.isInfinite() || y.isInfinite() || z.isInfinite() || w.isInfinite()
+
+val Float4.isInvalid: Boolean
+    get() = containsNaN || containsInfinity

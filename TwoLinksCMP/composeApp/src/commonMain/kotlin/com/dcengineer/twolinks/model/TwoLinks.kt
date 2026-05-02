@@ -1,6 +1,7 @@
 package com.dcengineer.twolinks.model
 
 import com.dcengineer.twolinks.functions.invert2x2
+import com.dcengineer.twolinks.functions.isInvalid
 import com.dcengineer.twolinks.functions.rk4
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
@@ -167,12 +168,3 @@ data class TwoLinks(
         nullify()
     }
 }
-
-val Float4.containsNaN: Boolean
-    get() = x.isNaN() || y.isNaN() || z.isNaN() || w.isNaN()
-
-val Float4.containsInfinity: Boolean
-    get() = x.isInfinite() || y.isInfinite() || z.isInfinite() || w.isInfinite()
-
-val Float4.isInvalid: Boolean
-    get() = containsNaN || containsInfinity
