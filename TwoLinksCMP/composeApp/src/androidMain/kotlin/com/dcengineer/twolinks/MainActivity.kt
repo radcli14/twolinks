@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.filament.Filament
 import com.google.android.filament.gltfio.Gltfio
+import com.google.android.filament.utils.Utils
 import io.github.sceneview.SceneView
 import io.github.sceneview.rememberModelInstance
 
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
         // Important to initialize here so that the SceneManager doesn't crash on startup
         Filament.init()
         Gltfio.init()
+        Utils.init()
 
         setContent {
             val viewModel = MainViewModel()

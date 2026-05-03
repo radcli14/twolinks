@@ -6,12 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.dcengineer.twolinks.functions.fileLocation
 import com.dcengineer.twolinks.model.Link
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
@@ -21,12 +18,6 @@ import io.github.sceneview.NodeScope
 import io.github.sceneview.SceneScope
 import io.github.sceneview.SceneView
 import io.github.sceneview.model.ModelInstance
-import io.github.sceneview.rememberCameraNode
-import io.github.sceneview.rememberEngine
-import io.github.sceneview.rememberEnvironment
-import io.github.sceneview.rememberEnvironmentLoader
-import io.github.sceneview.rememberMainLightNode
-import io.github.sceneview.rememberModelLoader
 
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
@@ -39,46 +30,12 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         manager.loadModels()
     }
 
-    /*val engine = rememberEngine()
-    val modelLoader = rememberModelLoader(engine)
-    val cameraNode = rememberCameraNode(engine) {
-        position = Float3(0f, 0f, 5f)
-        updateProjection(far = 1000f)
-    }
-
-    val environmentLoader = rememberEnvironmentLoader(engine)
-    val environment = rememberEnvironment(environmentLoader) {
-        environmentLoader.createHDREnvironment(
-            assetFileLocation = "${viewModel.environmentsPath}/NightSkyHDRI009_2K_HDR.hdr"
-        ) ?: environmentLoader.createEnvironment()
-    }
-    val mainLightNode = rememberMainLightNode(engine) {
-        isShadowCaster = true
-        rotation = Float3(x = 45f, y = 0f, z = 45f)
-    }
-
-    // Define states for the GLB formatted models
-    var moonInstance by remember { mutableStateOf<ModelInstance?>(null) }
-    var earthInstance by remember { mutableStateOf<ModelInstance?>(null) }
-
-    // Load the Moon first
-    LaunchedEffect(Unit) {
-        moonInstance = modelLoader.loadModelInstance(viewModel.fileLocation(Planet.moon))
-    }
-
-    // Load the Earth ONLY after the Moon is ready
-    LaunchedEffect(moonInstance) {
-        if (moonInstance != null) {
-            earthInstance = modelLoader.loadModelInstance(viewModel.fileLocation(Planet.earth))
-        }
-    }*/
-
     SceneView(
         modifier = Modifier.fillMaxSize(),
         engine = manager.engine,
         modelLoader = manager.modelLoader,
         cameraNode = manager.cameraNode,
-        //environment = manager.environment,
+        environment = manager.environment,
         mainLightNode = manager.mainLightNode,
         onFrame = viewModel::updateOnFrame,
     ) {
