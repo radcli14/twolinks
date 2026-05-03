@@ -3,7 +3,6 @@ package com.dcengineer.twolinks
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dcengineer.twolinks.functions.rad2deg
-import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.TwoLinks
 import dev.romainguy.kotlin.math.Float2
 import dev.romainguy.kotlin.math.Float3
@@ -21,6 +20,9 @@ class MainViewModel : ViewModel() {
     val twoLinksState = _twoLinksState.asStateFlow()
     val twoLinks: TwoLinks get() = twoLinksState.value
 
+    var linkDimensionEditorIsVisible = mutableStateOf(false)
+    var linkColorEditorIsVisible = mutableStateOf(false)
+
     var isPaused = mutableStateOf(false)
 
     var lastFrameTime: Long? = null
@@ -33,7 +35,7 @@ class MainViewModel : ViewModel() {
     val doorSize = Float3(0.91f, 2.03f, 0.035f)
 
     val anglesDegrees: Float2
-        get() = Float2(twoLinksState.value.simulationState[0] * rad2deg, twoLinksState.value.simulationState[1] * rad2deg)
+        get() = Float2(twoLinks.simulationState[0] * rad2deg, twoLinks.simulationState[1] * rad2deg)
 
     val linkOneRotation: Float3
         get() = Float3(0f, 0f, anglesDegrees[0])
@@ -43,6 +45,20 @@ class MainViewModel : ViewModel() {
 
     init {
         shuffle()
+    }
+
+    /**
+     * Opens or closes the sheet used to edit the link dimensions
+     */
+    fun toggleLinkDimensionEditor() {
+        linkDimensionEditorIsVisible.value = !linkDimensionEditorIsVisible.value
+    }
+
+    /**
+     * Opens or closes the sheet used to edit the link colors
+     */
+    fun toggleLinkColorEditor() {
+        linkColorEditorIsVisible.value = !linkColorEditorIsVisible.value
     }
 
     /**
