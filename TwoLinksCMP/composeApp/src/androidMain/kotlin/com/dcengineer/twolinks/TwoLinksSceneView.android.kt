@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.dcengineer.twolinks.functions.fileLocation
 import com.dcengineer.twolinks.model.Link
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
@@ -29,8 +31,15 @@ import io.github.sceneview.rememberModelLoader
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val state by viewModel.twoLinksState.collectAsState()
+    val context = LocalContext.current
+    val manager = remember { SceneManager(context) }
 
-    val engine = rememberEngine()
+    // Load assets when the view is ready
+    LaunchedEffect(Unit) {
+        manager.loadModels()
+    }
+
+    /*val engine = rememberEngine()
     val modelLoader = rememberModelLoader(engine)
     val cameraNode = rememberCameraNode(engine) {
         position = Float3(0f, 0f, 5f)
@@ -62,15 +71,15 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         if (moonInstance != null) {
             earthInstance = modelLoader.loadModelInstance(viewModel.fileLocation(Planet.earth))
         }
-    }
+    }*/
 
     SceneView(
         modifier = Modifier.fillMaxSize(),
-        engine = engine,
-        modelLoader = modelLoader,
-        cameraNode = cameraNode,
-        environment = environment,
-        mainLightNode = mainLightNode,
+        engine = manager.engine,
+        modelLoader = manager.modelLoader,
+        cameraNode = manager.cameraNode,
+        //environment = manager.environment,
+        mainLightNode = manager.mainLightNode,
         onFrame = viewModel::updateOnFrame,
     ) {
 
@@ -90,8 +99,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             }
         }
 
-        PlanetNode(moonInstance, planet = Planet.moon)
-        PlanetNode(earthInstance, planet = Planet.earth)
+        PlanetNode(manager.moonInstance, planet = Planet.moon)
+        PlanetNode(manager.earthInstance, planet = Planet.earth)
     }
 }
 

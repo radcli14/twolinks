@@ -32,13 +32,6 @@ class MainViewModel : ViewModel() {
 
     val doorSize = Float3(0.91f, 2.03f, 0.035f)
 
-    val filesPath = "composeResources/twolinkscmp.composeapp.generated.resources/files"
-    val environmentsPath = "$filesPath/environments"
-    val modelPath = "$filesPath/models"
-    fun fileLocation(planet: Planet): String {
-        return "$modelPath/${planet.file}"
-    }
-
     val anglesDegrees: Float2
         get() = Float2(twoLinksState.value.simulationState[0] * rad2deg, twoLinksState.value.simulationState[1] * rad2deg)
 
