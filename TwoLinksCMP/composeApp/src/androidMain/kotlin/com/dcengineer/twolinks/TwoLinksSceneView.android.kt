@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.dcengineer.twolinks.model.Link
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
@@ -23,7 +24,6 @@ import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberEnvironment
 import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberMainLightNode
-import io.github.sceneview.rememberMaterialLoader
 import io.github.sceneview.rememberModelLoader
 
 @Composable
@@ -36,7 +36,6 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         position = Float3(0f, 0f, 5f)
         updateProjection(far = 1000f)
     }
-    val materialLoader = rememberMaterialLoader(engine)
 
     val environmentLoader = rememberEnvironmentLoader(engine)
     val environment = rememberEnvironment(environmentLoader) {
@@ -76,43 +75,18 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     ) {
 
         // Base node is the door, the camera orbits around the door
-        CubeNode(
-            size = viewModel.doorSize,
-            // Offset backwards so the door surface is at zero
-            center = Float3(0f, 0f, -0.5f * viewModel.doorSize.z),
-            materialInstance = materialLoader.createColorInstance(
-                color = Color.GRAY,
-                roughness = 0f,
-                metallic = 1f,
-                reflectance = 1f
-            ),
-            apply = {
-                isShadowCaster = true
-                isShadowReceiver = true
-            }
-        ) {
+        DoorNode(viewModel.doorSize) {
 
             // The center about which the first link rotates
             PivotNode()
 
             // The first link
-            CubeNode(
-                size = state.links[0].size,
-                center = state.links[0].center,
-                rotation = viewModel.linkOneRotation,
-                materialInstance = materialLoader.createColorInstance(color = state.links[0].color)
-            ) {
+            LinkNode(state.links[0], rotation = viewModel.linkOneRotation) {
                 // The pivot about which the second link rotates
                 PivotNode(position = state.pivotPosition)
 
                 // The second link, rotates about the pivot position
-                CubeNode(
-                    size = state.links[1].size,
-                    center = state.links[1].center,
-                    position = state.pivotPosition,
-                    rotation = viewModel.linkTwoRotation,
-                    materialInstance = materialLoader.createColorInstance(color = state.links[1].color)
-                )
+                LinkNode(state.links[1], position = state.pivotPosition, rotation = viewModel.linkTwoRotation)
             }
         }
 
@@ -122,23 +96,30 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
 }
 
 /**
- * Creates a node representing a planet as soon as its Filament instance has loaded
+ * The representation of the door that the pendulum hangs from
  */
 @Composable
-fun SceneScope.PlanetNode(instance: ModelInstance?, planet: Planet) {
-    instance?.let {
-        ModelNode(
-            modelInstance = it,
-            position = planet.position,
-            rotation = planet.rotation,
-            scaleToUnits = planet.scale,
-            apply = {
-                isShadowReceiver = true
-            }
-        )
-    }
+fun SceneScope.DoorNode(
+    size: Float3,
+    content: @Composable (NodeScope.() -> Unit)? = null
+) {
+    CubeNode(
+        size = size,
+        // Offset backwards so the door surface is at zero
+        center = Float3(0f, 0f, -0.5f * size.z),
+        materialInstance = materialLoader.createColorInstance(
+            color = Color.GRAY,
+            roughness = 0f,
+            metallic = 1f,
+            reflectance = 1f
+        ),
+        apply = {
+            isShadowCaster = true
+            isShadowReceiver = true
+        },
+        content = content
+    )
 }
-
 
 /**
  * A simple cylindrical node used to represent the hinge that a link rotates around.
@@ -157,4 +138,42 @@ fun NodeScope.PivotNode(
         rotation = Float3(90f, 0f, 0f),
         materialInstance = materialLoader.createColorInstance(color = color)
     )
+}
+
+/**
+ * Creates a node representing one of the pendulum links
+ */
+@Composable
+fun NodeScope.LinkNode(
+    link: Link,
+    position: Float3 = Float3(),
+    rotation: Float3 = Float3(),
+    content: @Composable (NodeScope.() -> Unit)? = null
+) {
+    CubeNode(
+        size = link.size,
+        center = link.center,
+        position = position,
+        rotation = rotation,
+        materialInstance = materialLoader.createColorInstance(color = link.color),
+        content = content
+    )
+}
+
+/**
+ * Creates a node representing a planet as soon as its Filament instance has loaded
+ */
+@Composable
+fun SceneScope.PlanetNode(instance: ModelInstance?, planet: Planet) {
+    instance?.let {
+        ModelNode(
+            modelInstance = it,
+            position = planet.position,
+            rotation = planet.rotation,
+            scaleToUnits = planet.scale,
+            apply = {
+                isShadowReceiver = true
+            }
+        )
+    }
 }
