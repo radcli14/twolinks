@@ -15,6 +15,7 @@ import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
 import io.github.sceneview.NodeScope
+import io.github.sceneview.SceneScope
 import io.github.sceneview.SceneView
 import io.github.sceneview.model.ModelInstance
 import io.github.sceneview.rememberCameraNode
@@ -23,7 +24,6 @@ import io.github.sceneview.rememberEnvironment
 import io.github.sceneview.rememberEnvironmentLoader
 import io.github.sceneview.rememberMainLightNode
 import io.github.sceneview.rememberMaterialLoader
-import io.github.sceneview.rememberModelInstance
 import io.github.sceneview.rememberModelLoader
 
 @Composable
@@ -116,44 +116,27 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             }
         }
 
-        moonInstance?.let {
-            // Moon node is offset downward so its surface matches the door base
-            ModelNode(
-                modelInstance = it,
-                position = Planet.moon.position,
-                rotation = Planet.moon.rotation,
-                scaleToUnits = Planet.moon.scale,
-                apply = {
-                    isShadowReceiver = true
-                }
-            )
-        }
-
-        earthInstance?.let {
-            ModelNode(
-                modelInstance = it,
-                position = Planet.earth.position,
-                rotation = Planet.earth.rotation,
-                scaleToUnits = Planet.earth.scale,
-                apply = {
-                    isShadowReceiver = true
-                }
-            )
-        }
+        PlanetNode(moonInstance, planet = Planet.moon)
+        PlanetNode(earthInstance, planet = Planet.earth)
     }
 }
 
+/**
+ * Creates a node representing a planet as soon as its Filament instance has loaded
+ */
 @Composable
-fun NodeScope.PlanetNode(instance: ModelInstance, planet: Planet) {
-    ModelNode(
-        modelInstance = instance,
-        position = planet.position,
-        rotation = planet.rotation,
-        scaleToUnits = planet.scale,
-        apply = {
-            isShadowReceiver = true
-        }
-    )
+fun SceneScope.PlanetNode(instance: ModelInstance?, planet: Planet) {
+    instance?.let {
+        ModelNode(
+            modelInstance = it,
+            position = planet.position,
+            rotation = planet.rotation,
+            scaleToUnits = planet.scale,
+            apply = {
+                isShadowReceiver = true
+            }
+        )
+    }
 }
 
 
