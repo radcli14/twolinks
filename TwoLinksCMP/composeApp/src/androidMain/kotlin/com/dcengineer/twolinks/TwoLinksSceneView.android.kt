@@ -116,14 +116,27 @@ fun NodeScope.LinkNode(
     rotation: Float3 = Float3(),
     content: @Composable (NodeScope.() -> Unit)? = null
 ) {
-    CubeNode(
-        size = link.size,
-        center = link.center,
-        position = position,
-        rotation = rotation,
-        materialInstance = materialLoader.createColorInstance(color = link.color),
-        content = content
-    )
+    // Remember the material instance so it doesn't have to be regenerated each update
+    val materialInstance = remember(link.color) {
+        materialLoader.createColorInstance(color = link.color)
+    }
+
+    // We need to use runtime keying to force an identity reset when size changes
+    androidx.compose.runtime.key(link.length) {
+        CubeNode(
+            size = link.size,
+            center = link.center,
+            position = position,
+            rotation = rotation,
+            materialInstance = materialInstance,
+            apply = {
+                // Ensure the node is visible and updates its bounding box
+                isShadowCaster = true
+                isShadowReceiver = true
+            },
+            content = content
+        )
+    }
 }
 
 /**
