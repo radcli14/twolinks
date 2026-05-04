@@ -1,9 +1,15 @@
 @file:OptIn(ExperimentalWasmJsInterop::class)
 package com.dcengineer.twolinks
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
@@ -13,6 +19,8 @@ import kotlinx.browser.window
 import org.w3c.dom.HTMLCanvasElement
 import kotlin.js.ExperimentalWasmJsInterop
 
+// Note, can run using ./gradlew clean && ./gradlew :composeApp:wasmJsBrowserDevelopmentRun`
+
 @OptIn(ExperimentalWasmJsInterop::class)
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
@@ -21,6 +29,35 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     // Convert to web-friendly paths (Filament web loads from root or relative to html)
     val moonPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
     val earthPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/earth.glb"
+
+    var layoutX by remember { mutableStateOf(0f) }
+    var layoutY by remember { mutableStateOf(0f) }
+    var layoutW by remember { mutableStateOf(0) }
+    var layoutH by remember { mutableStateOf(0) }
+
+    Box(modifier = Modifier.fillMaxSize().onGloballyPositioned { coordinates ->
+        val position = coordinates.positionInWindow()
+        layoutX = position.x
+        layoutY = position.y
+        layoutW = coordinates.size.width
+        layoutH = coordinates.size.height
+    }.drawBehind {
+        drawRect(
+            color = Color.Transparent,
+            size = size,
+            blendMode = BlendMode.Clear
+        )
+    })
+
+    DisposableEffect(layoutX, layoutY, layoutW, layoutH) {
+        val container = document.getElementById("scene-target") as? org.w3c.dom.HTMLElement
+        container?.style?.left = "${layoutX}px"
+        container?.style?.top = "${layoutY}px"
+        container?.style?.width = "${layoutW}px"
+        container?.style?.height = "${layoutH}px"
+        
+        onDispose {}
+    }
 
     DisposableEffect(Unit) {
         val canvas = document.createElement("canvas") as HTMLCanvasElement

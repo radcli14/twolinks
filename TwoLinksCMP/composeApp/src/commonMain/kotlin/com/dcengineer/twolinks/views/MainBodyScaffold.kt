@@ -6,6 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.dcengineer.twolinks.MainViewModel
 import com.dcengineer.twolinks.TwoLinksSceneView
 
@@ -22,7 +23,8 @@ fun MainBodyScaffold(
                 onEditDimensions = viewModel::toggleLinkDimensionEditor,
                 onEditColors = viewModel::toggleLinkColorEditor
             )
-        }
+        },
+        containerColor = Color.Transparent
     ) { paddingValues ->
         // Main content is the scene view, which is overlaid by the play and reset buttons
         Box {
