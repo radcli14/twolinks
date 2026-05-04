@@ -1,53 +1,195 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
 package com.dcengineer.twolinks
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import com.dcengineer.twolinks.model.Planet
+import com.dcengineer.twolinks.model.center
+import com.dcengineer.twolinks.model.size
+import dev.romainguy.kotlin.math.*
 import kotlinx.browser.document
+import kotlinx.browser.window
 import org.w3c.dom.HTMLCanvasElement
 import kotlin.js.ExperimentalWasmJsInterop
 
 @OptIn(ExperimentalWasmJsInterop::class)
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
-    // The path relative to the web server root
-    val modelPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
+    val state by viewModel.twoLinksState.collectAsState()
+    
+    // Convert to web-friendly paths (Filament web loads from root or relative to html)
+    val moonPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
+    val earthPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/earth.glb"
 
     DisposableEffect(Unit) {
-        // Create the canvas element that we will put the SceneView inside
         val canvas = document.createElement("canvas") as HTMLCanvasElement
         canvas.style.width = "100%"
         canvas.style.height = "100%"
         canvas.style.display = "block"
-
-        // Add the canvas to the scene-target we defined in index.html
+        
         val container = document.getElementById("scene-target")
         container?.appendChild(canvas)
+        
+        var renderLoopActive = true
+        
+        initSceneViewAsync(canvas) { svRef ->
+            if (!renderLoopActive) return@initSceneViewAsync
 
-        // Call our top-level Wasm bridge
-        initSceneView(canvas, modelPath)
+            // Add lights
+            addDirectionalLight(svRef, 100000f, 0f, -1f, -0.5f)
+
+            // Create Primitives
+            val doorEntity = createBox(svRef, viewModel.doorSize.x, viewModel.doorSize.y, viewModel.doorSize.z, 0.5f, 0.5f, 0.5f)
+            val pivot1Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
+            val pivot2Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
+            
+            val link1Entity = createBox(svRef, state.links[0].size.x, state.links[0].size.y, state.links[0].size.z, state.links[0].color.x, state.links[0].color.y, state.links[0].color.z)
+            val link2Entity = createBox(svRef, state.links[1].size.x, state.links[1].size.y, state.links[1].size.z, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
+
+            // Load Planets asynchronously
+            val moonEntityRef = arrayOf<JsAny?>(null)
+            val earthEntityRef = arrayOf<JsAny?>(null)
+            
+            loadModelAsync(svRef, moonPath) { moonEntityRef[0] = it }
+            loadModelAsync(svRef, earthPath) { earthEntityRef[0] = it }
+
+            // Setup the render loop
+            fun renderLoop(timeMs: Double) {
+                if (!renderLoopActive) return
+                
+                val timeNs = (timeMs * 1_000_000.0).toLong()
+                viewModel.updateOnFrame(timeNs)
+                
+                // Re-read state after update
+                val currentState = viewModel.twoLinksState.value
+                
+                // Calculate Door Transform
+                val doorPos = Float3(0f, 0f, -0.5f * viewModel.doorSize.z)
+                val doorOriginT = translation(doorPos)
+                setEntityTransform(svRef, doorEntity, doorOriginT)
+                
+                // Pivot 1 Transform
+                val pivot1Rot = Float3(90f, 0f, 0f)
+                val pivot1T = doorOriginT * translation(Float3()) * rotation(pivot1Rot)
+                setEntityTransform(svRef, pivot1Entity, pivot1T)
+                
+                // Link 1 Transform
+                val link1OriginT = doorOriginT * translation(Float3()) * rotation(viewModel.linkOneRotation)
+                val link1GeomT = link1OriginT * translation(currentState.links[0].center)
+                setEntityTransform(svRef, link1Entity, link1GeomT)
+                
+                // Pivot 2 Transform
+                val pivot2T = link1OriginT * translation(currentState.pivotPosition) * rotation(Float3(90f, 0f, 0f))
+                setEntityTransform(svRef, pivot2Entity, pivot2T)
+                
+                // Link 2 Transform
+                val link2OriginT = link1OriginT * translation(currentState.pivotPosition) * rotation(viewModel.linkTwoRotation)
+                val link2GeomT = link2OriginT * translation(currentState.links[1].center)
+                setEntityTransform(svRef, link2Entity, link2GeomT)
+                
+                // Moon Transform
+                moonEntityRef[0]?.let { moonEntity ->
+                    val moonScale = scale(Float3(Planet.moon.scale))
+                    val moonT = translation(Planet.moon.position) * rotation(Planet.moon.rotation) * moonScale
+                    setEntityTransform(svRef, moonEntity, moonT)
+                }
+
+                // Earth Transform
+                earthEntityRef[0]?.let { earthEntity ->
+                    val earthScale = scale(Float3(Planet.earth.scale))
+                    val earthT = translation(Planet.earth.position) * rotation(Planet.earth.rotation) * earthScale
+                    setEntityTransform(svRef, earthEntity, earthT)
+                }
+                
+                window.requestAnimationFrame(::renderLoop)
+            }
+            
+            window.requestAnimationFrame(::renderLoop)
+        }
+
         onDispose {
-            // Cleanup: Remove the canvas when the Composable is destroyed
+            renderLoopActive = false
             canvas.remove()
         }
     }
+}
 
-    Box(modifier = Modifier.background(Color.LightGray)) {
-        Text("This is compose")
-    }
+fun setEntityTransform(svRef: JsAny, entity: JsAny, mat: Mat4) {
+    setEntityTransformJs(svRef, entity,
+        mat.x.x, mat.x.y, mat.x.z, mat.x.w,
+        mat.y.x, mat.y.y, mat.y.z, mat.y.w,
+        mat.z.x, mat.z.y, mat.z.z, mat.z.w,
+        mat.w.x, mat.w.y, mat.w.z, mat.w.w
+    )
 }
 
 @OptIn(ExperimentalWasmJsInterop::class)
 @JsFun("""
-    (canvas, modelUrl) => { 
-        SceneView.modelViewer(canvas, modelUrl, { 
-            autoAnimate: true, 
-            cameraControls: true 
-        });
+    (canvas, onReady) => {
+        SceneView.create(canvas).then(sv => {
+            onReady(sv);
+        }).catch(err => console.error(err));
     }
 """)
-external fun initSceneView(canvas: HTMLCanvasElement, modelUrl: String)
+external fun initSceneViewAsync(canvas: HTMLCanvasElement, onReady: (JsAny) -> Unit)
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, intensity, dx, dy, dz) => {
+        sv.addLight({ type: "directional", intensity: intensity, direction: [dx, dy, dz] });
+    }
+""")
+external fun addDirectionalLight(sv: JsAny, intensity: Float, dx: Float, dy: Float, dz: Float)
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, sx, sy, sz, r, g, b) => {
+        var asset = sv.createBox([0, 0, 0], [sx, sy, sz], [r, g, b]);
+        return asset ? asset.getRoot() : null;
+    }
+""")
+external fun createBox(sv: JsAny, sx: Float, sy: Float, sz: Float, r: Float, g: Float, b: Float): JsAny
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, radius, height, r, g, b) => {
+        var asset = sv.createCylinder([0, 0, 0], radius, height, [r, g, b]);
+        return asset ? asset.getRoot() : null;
+    }
+""")
+external fun createCylinder(sv: JsAny, radius: Float, height: Float, r: Float, g: Float, b: Float): JsAny
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, url, onLoaded) => {
+        fetch(url).then(r => r.arrayBuffer()).then(buffer => {
+            var data = new Uint8Array(buffer);
+            var asset = sv._loader.createAsset(data);
+            if (asset) {
+                // Initialize resources and add to the shared scene
+                asset.loadResources();
+                sv._scene.addEntity(asset.getRoot());
+                sv._scene.addEntities(asset.getRenderableEntities());
+                
+                // Return the root entity
+                onLoaded(asset.getRoot());
+            }
+        }).catch(err => console.error("Failed to fetch model", url, err));
+    }
+""")
+external fun loadModelAsync(sv: JsAny, url: String, onLoaded: (JsAny) -> Unit)
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, entity, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) => {
+        if (!entity) return;
+        var tcm = sv._engine.getTransformManager();
+        var inst = tcm.getInstance(entity);
+        if (inst != 0) {
+            var mat = [m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33];
+            tcm.setTransform(inst, mat);
+        }
+    }
+""")
+external fun setEntityTransformJs(sv: JsAny, entity: JsAny, m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float, m20: Float, m21: Float, m22: Float, m23: Float, m30: Float, m31: Float, m32: Float, m33: Float)
