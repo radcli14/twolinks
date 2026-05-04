@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dcengineer.twolinks.model.lengthNorm
 import com.dcengineer.twolinks.model.offsetNorm
+import com.dcengineer.twolinks.views.LinkDimensionEditor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -93,45 +94,6 @@ fun TwoLinksTopAppBar(
             actionIconContentColor = MaterialTheme.colorScheme.primary
         )
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LinkDimensionEditor(
-    viewModel: MainViewModel
-) {
-    val state by viewModel.twoLinksState.collectAsState()
-    if (viewModel.linkDimensionEditorIsVisible.value) {
-        ModalBottomSheet(
-            onDismissRequest = { viewModel.linkDimensionEditorIsVisible.value = false }
-        ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                ) {
-                Text("Link Dimension Editor")
-                Slider(
-                    value = state.links[0].lengthNorm,
-                    onValueChange = viewModel::setLinkOneLengthFromNorm
-                )
-                Slider(
-                    value = state.links[0].offsetNorm,
-                    onValueChange = viewModel::setLinkOneOffsetFromNorm
-                )
-                Slider(
-                    value = state.pivotNorm,
-                    onValueChange = viewModel::setPivotFromNorm
-                )
-                Slider(
-                    value = state.links[1].lengthNorm,
-                    onValueChange = viewModel::setLinkTwoLengthFromNorm
-                )
-                Slider(
-                    value = state.links[1].offsetNorm,
-                    onValueChange = viewModel::setLinkTwoOffsetFromNorm
-                )
-            }
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
