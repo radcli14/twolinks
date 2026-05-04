@@ -34,7 +34,8 @@ fun PlayAndResetButtons(
         FilledIconButton(
             modifier = Modifier.size(96.dp).align(Alignment.Center),
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             onClick = onClickPlayPause
         ) {
@@ -46,6 +47,10 @@ fun PlayAndResetButtons(
         }
         FilledIconButton(
             modifier = Modifier.align(Alignment.BottomEnd),
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
             onClick = onClickReset
         ) {
             Icon(Icons.Default.Refresh, contentDescription = "Pause")
