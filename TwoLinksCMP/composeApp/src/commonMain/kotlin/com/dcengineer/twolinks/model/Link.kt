@@ -20,8 +20,6 @@ data class Link(
     var thickness: Float = 0.0064f,
     var density: Float = 800f,
     var color: Float4 = Float4(1f, 0f, 0f, 1f),
-    //var theta: Float = 0f,
-    //var omega: Float = 0f
 ) {
     internal val minLength = 0.12f
     internal val maxLength = 0.53f
@@ -44,6 +42,9 @@ data class Link(
 val Link.size: Float3
     get() = Float3(length, height, thickness)
 
+val Link.center: Float3
+    get() = Float3(offset, 0f, 0.5f * thickness)
+
 val Link.mass: Float
     get() = _mass ?: (density * length * height * thickness)
 
@@ -63,9 +64,6 @@ val Link.offsetNorm: Float
 
 val Link.maxPivot: Float
     get() = 0.5f * length - minDistanceFromEdge + offset
-
-val Link.center: Float3
-    get() = Float3(offset, 0f, 0.5f * thickness)
 
 fun Link.setLengthFromNorm(n: Float) {
     // Get the norm values before adjusting, to avoid recursion

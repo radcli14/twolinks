@@ -132,23 +132,33 @@ class MainViewModel : ViewModel() {
         twoLinks.links[1].color.z = random.nextFloat()
     }
 
-    fun setLinkOneLengthFromNorm(n: Int) {
-        twoLinks.setLinkOneLengthFromNorm(0.01f * n.toFloat())
+    private fun setDimensionFromNorm(n: Float, f: (Float) -> Unit) {
+        _twoLinksState.update { current ->
+            f(n)
+            current.copy(
+                pivot = twoLinks.pivot,
+                links = current.links.copyOf()
+            )
+        }
     }
 
-    fun setLinkTwoLengthFromNorm(n: Int) {
-        twoLinks.setLinkTwoLengthFromNorm(0.01f * n.toFloat())
+    fun setLinkOneLengthFromNorm(n: Float) {
+        setDimensionFromNorm(n, f = twoLinks::setLinkOneLengthFromNorm)
     }
 
-    fun setLinkOneOffsetFromNorm(n: Int) {
-        twoLinks.setLinkOneOffsetFromNorm(0.01f * n.toFloat())
+    fun setLinkTwoLengthFromNorm(n: Float) {
+        setDimensionFromNorm(n, f = twoLinks::setLinkTwoLengthFromNorm)
     }
 
-    fun setLinkTwoOffsetFromNorm(n: Int) {
-        twoLinks.setLinkTwoOffsetFromNorm(0.01f * n.toFloat())
+    fun setLinkOneOffsetFromNorm(n: Float) {
+        setDimensionFromNorm(n, f = twoLinks::setLinkOneOffsetFromNorm)
     }
 
-    fun setPivotFromNorm(n: Int) {
-        twoLinks.setPivotFromNorm(0.01f * n.toFloat())
+    fun setLinkTwoOffsetFromNorm(n: Float) {
+        setDimensionFromNorm(n, f = twoLinks::setLinkTwoOffsetFromNorm)
+    }
+
+    fun setPivotFromNorm(n: Float) {
+        setDimensionFromNorm(n, f = twoLinks::setPivotFromNorm)
     }
 }

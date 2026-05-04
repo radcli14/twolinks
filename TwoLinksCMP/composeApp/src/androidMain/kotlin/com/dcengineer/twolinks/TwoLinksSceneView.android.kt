@@ -122,7 +122,7 @@ fun NodeScope.LinkNode(
     }
 
     // We need to use runtime keying to force an identity reset when size changes
-    androidx.compose.runtime.key(link.length) {
+    androidx.compose.runtime.key(link.length, link.offset) {
         CubeNode(
             size = link.size,
             center = link.center,
