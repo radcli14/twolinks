@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import com.dcengineer.twolinks.MainViewModel
 import com.dcengineer.twolinks.TwoLinksSceneView
 
+/**
+ * The primary view content, including the top bar, the 3D scene, and editor sheets
+ */
 @Composable
 fun MainBodyScaffold(
     viewModel: MainViewModel
@@ -21,6 +24,7 @@ fun MainBodyScaffold(
             )
         }
     ) { paddingValues ->
+        // Main content is the scene view, which is overlaid by the play and reset buttons
         Box {
             TwoLinksSceneView(viewModel)
             PlayAndResetButtons(
@@ -33,11 +37,8 @@ fun MainBodyScaffold(
             )
         }
 
+        // The editors are modal bottom sheets, with visibility controlled by the view model
         LinkDimensionEditor(viewModel)
-
-        LinkColorEditor(
-            isExpanded = viewModel.linkColorEditorIsVisible.value,
-            onDismissRequest = viewModel::toggleLinkColorEditor
-        )
+        LinkColorEditor(viewModel)
     }
 }

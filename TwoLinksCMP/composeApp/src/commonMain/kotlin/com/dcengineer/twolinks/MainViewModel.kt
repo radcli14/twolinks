@@ -161,4 +161,18 @@ class MainViewModel : ViewModel() {
     fun setPivotFromNorm(n: Float) {
         setDimensionFromNorm(n, f = twoLinks::setPivotFromNorm)
     }
+
+    fun setLinkOneColor(newColor: Float4) {
+        _twoLinksState.update { current ->
+            current.links[0].color = newColor
+            current.copy(links = current.links.copyOf())
+        }
+    }
+
+    fun setLinkTwoColor(newColor: Float4) {
+        _twoLinksState.update { current ->
+            current.links[1].color = newColor
+            current.copy(links = current.links.copyOf())
+        }
+    }
 }

@@ -121,8 +121,8 @@ fun NodeScope.LinkNode(
         materialLoader.createColorInstance(color = link.color)
     }
 
-    // We need to use runtime keying to force an identity reset when size changes
-    androidx.compose.runtime.key(link.length, link.offset) {
+    // We need to use runtime keying to force an identity reset when size or color changes
+    androidx.compose.runtime.key(link.length, link.offset, link.color) {
         CubeNode(
             size = link.size,
             center = link.center,
