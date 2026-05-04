@@ -29,7 +29,7 @@ fun PlayAndResetButtons(
     onClickReset: () -> Unit
 ) {
     Box(
-        modifier.width(196.dp).padding(bottom = 32.dp)
+        modifier.width(196.dp).padding(bottom = 16.dp)
     ) {
         FilledIconButton(
             modifier = Modifier.size(96.dp).align(Alignment.Center),

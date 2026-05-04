@@ -1,6 +1,7 @@
 package com.dcengineer.twolinks.views
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,11 +20,13 @@ fun MainBodyScaffold(
                 onEditColors = viewModel::toggleLinkColorEditor
             )
         }
-    ) {
+    ) { paddingValues ->
         Box {
             TwoLinksSceneView(viewModel)
             PlayAndResetButtons(
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier
+                    .padding(bottom = paddingValues.calculateBottomPadding())
+                    .align(Alignment.BottomCenter),
                 isPaused = viewModel.isPaused.value,
                 onClickPlayPause = viewModel::pause,
                 onClickReset = viewModel::resetStates
