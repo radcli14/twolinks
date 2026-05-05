@@ -3,21 +3,29 @@ package com.dcengineer.twolinks
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import com.dcengineer.twolinks.functions.fileLocation
-import com.dcengineer.twolinks.functions.resolveEnvironmentPath
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
-import dev.romainguy.kotlin.math.*
+import dev.romainguy.kotlin.math.Float3
+import dev.romainguy.kotlin.math.Mat4
+import dev.romainguy.kotlin.math.rotation
+import dev.romainguy.kotlin.math.scale
+import dev.romainguy.kotlin.math.translation
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.HTMLCanvasElement
 import kotlin.js.ExperimentalWasmJsInterop
+import kotlin.js.JsAny
+import kotlin.js.JsNumber
+import kotlin.js.toDouble
 
 // Note, can run using ./gradlew clean && ./gradlew :composeApp:wasmJsBrowserDevelopmentRun`
 
@@ -25,12 +33,8 @@ import kotlin.js.ExperimentalWasmJsInterop
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val state by viewModel.twoLinksState.collectAsState()
-    
-    // Prepend "./" for browser fetch() — Android's AssetManager doesn't need it
-    val moonPath = "./${fileLocation(Planet.moon)}"
-    val earthPath = "./${fileLocation(Planet.earth)}"
-    val environmentPath = "./${resolveEnvironmentPath("NightSkyHDRI008_10K_HDR_ibl.ktx")}"
-    val skyboxPath = "./${resolveEnvironmentPath("NightSkyHDRI008_10K_HDR_skybox.ktx")}"
+
+    val sceneManager = SceneManager()
 
     // Punch a transparent hole through the Skiko canvas so the Filament 3D scene shows through
     Box(modifier = Modifier.fillMaxSize().drawBehind {
@@ -58,8 +62,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             if (!renderLoopActive) return@initSceneViewAsync
 
             // Load KTX1 IBL environment and skybox (generated from HDR via cmgen)
-            loadEnvironment(svRef, environmentPath, 40000f)
-            loadSkybox(svRef, skyboxPath)
+            loadEnvironment(svRef, sceneManager.environmentPath, 40000f)
+            loadSkybox(svRef, sceneManager.skyboxPath)
 
             // Add lights
             addDirectionalLight(svRef, 100000f, 0f, -1f, -0.5f)
@@ -73,17 +77,16 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             val link2Entity = createBox(svRef, state.links[1].size.x, state.links[1].size.y, state.links[1].size.z, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
 
             // Load Planets asynchronously
-            // entityRef[0] = root entity, entityRef[1] = uniform scale factor (from bounding box)
-            val moonEntityRef = arrayOf<JsAny?>(null, null)
-            val earthEntityRef = arrayOf<JsAny?>(null, null)
+            val moonEntityRef = EntityRef()
+            val earthEntityRef = EntityRef()
             
-            loadModelWithScaleAsync(svRef, moonPath, Planet.moon.scale) { entity, scaleFactor ->
-                moonEntityRef[0] = entity
-                moonEntityRef[1] = scaleFactor
+            loadModelWithScaleAsync(svRef, sceneManager.moonPath, Planet.moon.scale) { entity, scaleFactor ->
+                moonEntityRef.entity = entity
+                moonEntityRef.scaleFactor = scaleFactor
             }
-            loadModelWithScaleAsync(svRef, earthPath, Planet.earth.scale) { entity, scaleFactor ->
-                earthEntityRef[0] = entity
-                earthEntityRef[1] = scaleFactor
+            loadModelWithScaleAsync(svRef, sceneManager.earthPath, Planet.earth.scale) { entity, scaleFactor ->
+                earthEntityRef.entity = entity
+                earthEntityRef.scaleFactor = scaleFactor
             }
 
             // Setup the render loop
@@ -121,19 +124,17 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 setEntityTransform(svRef, link2Entity, link2GeomT)
                 
                 // Moon Transform
-                val moonEntity = moonEntityRef[0]
-                val moonScaleFactor = (moonEntityRef[1] as? JsNumber)?.toDouble()?.toFloat() ?: 1f
+                val moonEntity = moonEntityRef.entity
                 if (moonEntity != null) {
-                    val moonScale = scale(Float3(moonScaleFactor))
+                    val moonScale = scale(Float3(moonEntityRef.scaleFactorValue))
                     val moonT = translation(Planet.moon.position) * rotation(Planet.moon.rotation) * moonScale
                     setEntityTransform(svRef, moonEntity, moonT)
                 }
 
                 // Earth Transform — scaleToUnits equivalent via bounding box
-                val earthEntity = earthEntityRef[0]
-                val earthScaleFactor = (earthEntityRef[1] as? JsNumber)?.toDouble()?.toFloat() ?: 1f
+                val earthEntity = earthEntityRef.entity
                 if (earthEntity != null) {
-                    val earthScale = scale(Float3(earthScaleFactor))
+                    val earthScale = scale(Float3(earthEntityRef.scaleFactorValue))
                     val earthT = translation(Planet.earth.position) * rotation(Planet.earth.rotation) * earthScale
                     setEntityTransform(svRef, earthEntity, earthT)
                 }
@@ -150,6 +151,15 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         }
     }
 }
+
+data class EntityRef(
+    var entity: JsAny? = null,
+    var scaleFactor: JsAny? = null
+)
+
+val EntityRef.scaleFactorValue: Float
+    get() = (scaleFactor as? JsNumber)?.toDouble()?.toFloat() ?: 1f
+
 
 fun setEntityTransform(svRef: JsAny, entity: JsAny, mat: Mat4) {
     setEntityTransformJs(svRef, entity,
