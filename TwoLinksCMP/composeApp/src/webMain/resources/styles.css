@@ -22,4 +22,10 @@ html, body {
     width: 100vw;
     height: 100vh;
     z-index: 1;
+    background: transparent !important;
+}
+
+/* Make the Skiko/Compose canvas transparent so the Filament 3D scene shows through */
+#compose-target canvas {
+    background-color: transparent !important;
 }
