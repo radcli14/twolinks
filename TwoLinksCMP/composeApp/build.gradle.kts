@@ -61,6 +61,7 @@ kotlin {
             // TODO: add WASM, currently see error :composeApp:wasmJsMain: Could not find io.github.sceneview:sceneview-web:4.0.0.
             //implementation("io.github.sceneview:sceneview-web:4.0.0")
             implementation(libs.kotlinx.browser)
+            implementation(npm("@js-joda/core", "5.6.3"))
         }
 
         commonTest.dependencies {
