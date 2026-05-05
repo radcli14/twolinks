@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import com.dcengineer.twolinks.functions.fileLocation
+import com.dcengineer.twolinks.functions.resolveEnvironmentPath
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
@@ -24,9 +26,11 @@ import kotlin.js.ExperimentalWasmJsInterop
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val state by viewModel.twoLinksState.collectAsState()
     
-    // Convert to web-friendly paths (Filament web loads from root or relative to html)
-    val moonPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/moon.glb"
-    val earthPath = "./composeResources/twolinkscmp.composeapp.generated.resources/files/models/earth.glb"
+    // Prepend "./" for browser fetch() — Android's AssetManager doesn't need it
+    val moonPath = "./${fileLocation(Planet.moon)}"
+    val earthPath = "./${fileLocation(Planet.earth)}"
+    val environmentPath = "./${resolveEnvironmentPath("NightSkyHDRI009_2K_HDR_ibl.ktx")}"
+    val skyboxPath = "./${resolveEnvironmentPath("NightSkyHDRI009_2K_HDR_skybox.ktx")}"
 
     // Punch a transparent hole through the Skiko canvas so the Filament 3D scene shows through
     Box(modifier = Modifier.fillMaxSize().drawBehind {
@@ -52,6 +56,10 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         
         initSceneViewAsync(canvas) { svRef ->
             if (!renderLoopActive) return@initSceneViewAsync
+
+            // Load KTX1 IBL environment and skybox (generated from HDR via cmgen)
+            loadEnvironment(svRef, environmentPath, 40000f)
+            loadSkybox(svRef, skyboxPath)
 
             // Add lights
             addDirectionalLight(svRef, 100000f, 0f, -1f, -0.5f)
@@ -107,7 +115,9 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 
                 // Moon Transform
                 moonEntityRef[0]?.let { moonEntity ->
-                    val moonScale = scale(Float3(Planet.moon.scale))
+                    // The original GLB file is scaled down by 0.27 relative to Earth, this scales it back up
+                    val scaleCorrection = 1.0f / 0.27f
+                    val moonScale = scale(Float3(Planet.moon.scale * scaleCorrection)) 
                     val moonT = translation(Planet.moon.position) * rotation(Planet.moon.rotation) * moonScale
                     setEntityTransform(svRef, moonEntity, moonT)
                 }
@@ -210,3 +220,27 @@ external fun loadModelAsync(sv: JsAny, url: String, onLoaded: (JsAny) -> Unit)
     }
 """)
 external fun setEntityTransformJs(sv: JsAny, entity: JsAny, m00: Float, m01: Float, m02: Float, m03: Float, m10: Float, m11: Float, m12: Float, m13: Float, m20: Float, m21: Float, m22: Float, m23: Float, m30: Float, m31: Float, m32: Float, m33: Float)
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, url, intensity) => {
+        sv.loadEnvironment(url, intensity);
+    }
+""")
+external fun loadEnvironment(sv: JsAny, url: String, intensity: Float)
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, url) => {
+        fetch(url).then(r => r.arrayBuffer()).then(buffer => {
+            try {
+                var skybox = sv._engine.createSkyFromKtx1(new Uint8Array(buffer));
+                sv._scene.setSkybox(skybox);
+                console.log('SceneView: Skybox loaded');
+            } catch (e) {
+                console.warn('SceneView: loadSkybox failed', e);
+            }
+        }).catch(err => console.error("Failed to fetch skybox", url, err));
+    }
+""")
+external fun loadSkybox(sv: JsAny, url: String)
