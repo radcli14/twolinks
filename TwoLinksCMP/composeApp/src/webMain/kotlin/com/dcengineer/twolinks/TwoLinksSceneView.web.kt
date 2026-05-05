@@ -29,8 +29,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     // Prepend "./" for browser fetch() — Android's AssetManager doesn't need it
     val moonPath = "./${fileLocation(Planet.moon)}"
     val earthPath = "./${fileLocation(Planet.earth)}"
-    val environmentPath = "./${resolveEnvironmentPath("NightSkyHDRI009_2K_HDR_ibl.ktx")}"
-    val skyboxPath = "./${resolveEnvironmentPath("NightSkyHDRI009_2K_HDR_skybox.ktx")}"
+    val environmentPath = "./${resolveEnvironmentPath("NightSkyHDRI008_10K_HDR_ibl.ktx")}"
+    val skyboxPath = "./${resolveEnvironmentPath("NightSkyHDRI008_10K_HDR_skybox.ktx")}"
 
     // Punch a transparent hole through the Skiko canvas so the Filament 3D scene shows through
     Box(modifier = Modifier.fillMaxSize().drawBehind {
