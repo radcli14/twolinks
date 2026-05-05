@@ -70,7 +70,7 @@ class MainViewModel : ViewModel() {
         _twoLinksState.update { current ->
             current.copy(
                 simulationState = Float4(),
-                links = current.links.copyOf()
+                links = current.links.toList()
             )
         }
     }
@@ -89,7 +89,7 @@ class MainViewModel : ViewModel() {
     fun update(h: Float) {
         _twoLinksState.update { current ->
             current.update(h)
-            current.copy(links = current.links.copyOf())
+            current.copy(links = current.links.toList())
         }
         _elapsedTimeState.value += h
     }
@@ -137,7 +137,7 @@ class MainViewModel : ViewModel() {
             f(n)
             current.copy(
                 pivot = twoLinks.pivot,
-                links = current.links.copyOf()
+                links = current.links.toList()
             )
         }
     }
@@ -165,14 +165,14 @@ class MainViewModel : ViewModel() {
     fun setLinkOneColor(newColor: Float4) {
         _twoLinksState.update { current ->
             current.links[0].color = newColor
-            current.copy(links = current.links.copyOf())
+            current.copy(links = current.links.toList())
         }
     }
 
     fun setLinkTwoColor(newColor: Float4) {
         _twoLinksState.update { current ->
             current.links[1].color = newColor
-            current.copy(links = current.links.copyOf())
+            current.copy(links = current.links.toList())
         }
     }
 }

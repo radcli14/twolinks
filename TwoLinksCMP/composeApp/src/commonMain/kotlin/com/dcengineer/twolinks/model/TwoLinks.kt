@@ -16,7 +16,7 @@ import kotlin.math.sin
  */
 data class TwoLinks(
     var simulationState: Float4 = Float4(),
-    var links: Array<Link> = arrayOf(Link.first, Link.second),
+    var links: List<Link> = listOf(Link.first, Link.second),
     var pivot: Float = 0.11f,
 ) {
     private var dt = 1.0f / 60.0f

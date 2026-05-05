@@ -75,8 +75,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             setEntityTransform(svRef, doorEntity, doorOriginT)
 
             val pivot1Entity = createCylinder(svRef, 0.01f, 0.015f, 0.69f, 0.69f, 0.69f)
-            val pivot1Rot = Float3(90f, 0f, 0f)
-            val pivot1T = translation(Float3(0f, 0f, state.links[0].thickness)) * rotation(pivot1Rot) // doorOriginT * translation(Float3()) * rotation(pivot1Rot)
+            val pivotRotation = rotation(Float3(90f, 0f, 0f))
+            val pivot1T = translation(Float3(0f, 0f, state.links[0].thickness)) * pivotRotation
             setEntityTransform(svRef, pivot1Entity, pivot1T)
 
             // Create dynamic primitives, but don't assign transforms until the update loop
