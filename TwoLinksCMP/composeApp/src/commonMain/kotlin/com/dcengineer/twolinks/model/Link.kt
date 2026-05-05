@@ -42,6 +42,10 @@ data class Link(
 val Link.size: Float3
     get() = Float3(length, height, thickness)
 
+/**
+ * The center of a link, in its local coordinate space. This is the offset position of the center
+ * of the link box, at offset distance in the x direction, and half its thickness in the z.
+ */
 val Link.center: Float3
     get() = Float3(offset, 0f, 0.5f * thickness)
 

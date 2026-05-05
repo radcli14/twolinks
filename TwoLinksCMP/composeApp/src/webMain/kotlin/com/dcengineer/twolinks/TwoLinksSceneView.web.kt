@@ -68,11 +68,19 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             // Add lights
             addDirectionalLight(svRef, 100000f, 0f, -1f, -0.5f)
 
-            // Create Primitives
-            val doorEntity = createBox(svRef, viewModel.doorSize.x, viewModel.doorSize.y, viewModel.doorSize.z, 0.5f, 0.5f, 0.5f)
-            val pivot1Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
+            // Create static primitives, and assign transforms that are permanent
+            val doorEntity = createBox(svRef, viewModel.doorSize.x, viewModel.doorSize.y, viewModel.doorSize.z, 0.157f, 0.157f, 0.157f)
+            val doorPos = Float3(0f, 0f, -0.5f * viewModel.doorSize.z)
+            val doorOriginT = translation(doorPos)
+            setEntityTransform(svRef, doorEntity, doorOriginT)
+
+            val pivot1Entity = createCylinder(svRef, 0.01f, 0.015f, 0.69f, 0.69f, 0.69f)
+            val pivot1Rot = Float3(90f, 0f, 0f)
+            val pivot1T = translation(Float3(0f, 0f, state.links[0].thickness)) * rotation(pivot1Rot) // doorOriginT * translation(Float3()) * rotation(pivot1Rot)
+            setEntityTransform(svRef, pivot1Entity, pivot1T)
+
+            // Create dynamic primitives, but don't assign transforms until the update loop
             val pivot2Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
-            
             val link1Entity = createBox(svRef, state.links[0].size.x, state.links[0].size.y, state.links[0].size.z, state.links[0].color.x, state.links[0].color.y, state.links[0].color.z)
             val link2Entity = createBox(svRef, state.links[1].size.x, state.links[1].size.y, state.links[1].size.z, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
 
@@ -99,18 +107,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 // Re-read state after update
                 val currentState = viewModel.twoLinksState.value
                 
-                // Calculate Door Transform
-                val doorPos = Float3(0f, 0f, -0.5f * viewModel.doorSize.z)
-                val doorOriginT = translation(doorPos)
-                setEntityTransform(svRef, doorEntity, doorOriginT)
-                
-                // Pivot 1 Transform
-                val pivot1Rot = Float3(90f, 0f, 0f)
-                val pivot1T = doorOriginT * translation(Float3()) * rotation(pivot1Rot)
-                setEntityTransform(svRef, pivot1Entity, pivot1T)
-                
                 // Link 1 Transform
-                val link1OriginT = doorOriginT * translation(Float3()) * rotation(viewModel.linkOneRotation)
+                val link1OriginT = translation(Float3()) * rotation(viewModel.linkOneRotation)
                 val link1GeomT = link1OriginT * translation(currentState.links[0].center)
                 setEntityTransform(svRef, link1Entity, link1GeomT)
                 
