@@ -73,11 +73,18 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             val link2Entity = createBox(svRef, state.links[1].size.x, state.links[1].size.y, state.links[1].size.z, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
 
             // Load Planets asynchronously
-            val moonEntityRef = arrayOf<JsAny?>(null)
-            val earthEntityRef = arrayOf<JsAny?>(null)
+            // entityRef[0] = root entity, entityRef[1] = uniform scale factor (from bounding box)
+            val moonEntityRef = arrayOf<JsAny?>(null, null)
+            val earthEntityRef = arrayOf<JsAny?>(null, null)
             
-            loadModelAsync(svRef, moonPath) { moonEntityRef[0] = it }
-            loadModelAsync(svRef, earthPath) { earthEntityRef[0] = it }
+            loadModelWithScaleAsync(svRef, moonPath, Planet.moon.scale) { entity, scaleFactor ->
+                moonEntityRef[0] = entity
+                moonEntityRef[1] = scaleFactor
+            }
+            loadModelWithScaleAsync(svRef, earthPath, Planet.earth.scale) { entity, scaleFactor ->
+                earthEntityRef[0] = entity
+                earthEntityRef[1] = scaleFactor
+            }
 
             // Setup the render loop
             fun renderLoop(timeMs: Double) {
@@ -114,17 +121,19 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 setEntityTransform(svRef, link2Entity, link2GeomT)
                 
                 // Moon Transform
-                moonEntityRef[0]?.let { moonEntity ->
-                    // The original GLB file is scaled down by 0.27 relative to Earth, this scales it back up
-                    val scaleCorrection = 1.0f / 0.27f
-                    val moonScale = scale(Float3(Planet.moon.scale * scaleCorrection)) 
+                val moonEntity = moonEntityRef[0]
+                val moonScaleFactor = (moonEntityRef[1] as? JsNumber)?.toDouble()?.toFloat() ?: 1f
+                if (moonEntity != null) {
+                    val moonScale = scale(Float3(moonScaleFactor))
                     val moonT = translation(Planet.moon.position) * rotation(Planet.moon.rotation) * moonScale
                     setEntityTransform(svRef, moonEntity, moonT)
                 }
 
-                // Earth Transform
-                earthEntityRef[0]?.let { earthEntity ->
-                    val earthScale = scale(Float3(Planet.earth.scale))
+                // Earth Transform — scaleToUnits equivalent via bounding box
+                val earthEntity = earthEntityRef[0]
+                val earthScaleFactor = (earthEntityRef[1] as? JsNumber)?.toDouble()?.toFloat() ?: 1f
+                if (earthEntity != null) {
+                    val earthScale = scale(Float3(earthScaleFactor))
                     val earthT = translation(Planet.earth.position) * rotation(Planet.earth.rotation) * earthScale
                     setEntityTransform(svRef, earthEntity, earthT)
                 }
@@ -206,6 +215,37 @@ external fun createCylinder(sv: JsAny, radius: Float, height: Float, r: Float, g
     }
 """)
 external fun loadModelAsync(sv: JsAny, url: String, onLoaded: (JsAny) -> Unit)
+
+@OptIn(ExperimentalWasmJsInterop::class)
+@JsFun("""
+    (sv, url, desiredRadius, onLoaded) => {
+        fetch(url).then(r => r.arrayBuffer()).then(buffer => {
+            var data = new Uint8Array(buffer);
+            var asset = sv._loader.createAsset(data);
+            if (asset) {
+                asset.loadResources();
+                sv._scene.addEntity(asset.getRoot());
+                sv._scene.addEntities(asset.getRenderableEntities());
+                
+                // Compute scaleToUnits: find the natural radius from bounding box half-extents
+                var bb = asset.getBoundingBox();
+                var halfExtent = bb ? Math.max(
+                    Math.abs(bb.max[0] - bb.min[0]),
+                    Math.abs(bb.max[1] - bb.min[1]),
+                    Math.abs(bb.max[2] - bb.min[2])
+                ) / 2.0 : 1.0;
+                var scaleFactor = halfExtent > 0 ? 0.5 * desiredRadius / halfExtent : 1.0;
+                
+                console.log('Model loaded:', url);
+                console.log('  Natural size (diameter) ~', halfExtent * 2);
+                console.log('  Scale factor for radius', desiredRadius, ':', scaleFactor);
+
+                onLoaded(asset.getRoot(), scaleFactor);
+            }
+        }).catch(err => console.error("Failed to fetch model", url, err));
+    }
+""")
+external fun loadModelWithScaleAsync(sv: JsAny, url: String, desiredRadius: Float, onLoaded: (JsAny, JsNumber) -> Unit)
 
 @OptIn(ExperimentalWasmJsInterop::class)
 @JsFun("""
