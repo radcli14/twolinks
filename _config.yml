@@ -3,9 +3,9 @@ TwoLinks                                  :                                     
 
 # App Info
 ios_app_id                                : "1625794656"                               # SwiftyTwoLinks App Store ID
-ios_app_country                           : bo                                        # Country code for the app store link (Bolivia)
+ios_app_country                           : us                                        # Country code for the app store link (US)
 
-appstore_link                             : "https://apps.apple.com/bo/app/swiftytwolinks/id1625794656" # App Store Link
+appstore_link                             : "https://apps.apple.com/us/app/swiftytwolinks/id1625794656" # App Store Link
 playstore_link                            : ""                                        # Enter Google Play Store URL if live
 presskit_download_link                    : ""                                        # Link to downloadable press kit zip
 
