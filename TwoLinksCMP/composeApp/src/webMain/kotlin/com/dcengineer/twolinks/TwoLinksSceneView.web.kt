@@ -17,6 +17,7 @@ import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Mat4
 import dev.romainguy.kotlin.math.rotation
+import dev.romainguy.kotlin.math.scale
 import dev.romainguy.kotlin.math.translation
 import kotlinx.browser.document
 import kotlinx.browser.window
@@ -63,8 +64,8 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
 
             // Create dynamic primitives, but don't assign transforms until the update loop
             val pivot2Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
-            val link1Entity = createBox(svRef, state.links[0].size.x, state.links[0].size.y, state.links[0].size.z, state.links[0].color.x, state.links[0].color.y, state.links[0].color.z)
-            val link2Entity = createBox(svRef, state.links[1].size.x, state.links[1].size.y, state.links[1].size.z, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
+            val link1Entity = createBox(svRef, 1f, 1f, 1f, state.links[0].color.x, state.links[0].color.y, state.links[0].color.z)
+            val link2Entity = createBox(svRef, 1f, 1f, 1f, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
 
             // Setup the render loop
             fun renderLoop(timeMs: Double) {
@@ -78,7 +79,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 
                 // Link 1 Transform
                 val link1OriginT = translation(Float3()) * rotation(viewModel.linkOneRotation)
-                val link1GeomT = link1OriginT * translation(currentState.links[0].center)
+                val link1GeomT = link1OriginT * translation(currentState.links[0].center) * scale(currentState.links[0].size)
                 setEntityTransform(svRef, link1Entity, link1GeomT)
                 
                 // Pivot 2 Transform
@@ -87,7 +88,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 
                 // Link 2 Transform
                 val link2OriginT = link1OriginT * translation(currentState.pivotPosition) * rotation(viewModel.linkTwoRotation)
-                val link2GeomT = link2OriginT * translation(currentState.links[1].center)
+                val link2GeomT = link2OriginT * translation(currentState.links[1].center) * scale(currentState.links[1].size)
                 setEntityTransform(svRef, link2Entity, link2GeomT)
                 
                 window.requestAnimationFrame(::renderLoop)
