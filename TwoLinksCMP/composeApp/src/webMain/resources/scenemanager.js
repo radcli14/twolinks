@@ -11,14 +11,50 @@ window.addDirectionalLight = (sv, intensity, dx, dy, dz) => {
     sv.addLight({ type: "directional", intensity: intensity, direction: [dx, dy, dz] });
 };
 
+var _primitiveMap = new Map();
+
 window.createBox = (sv, sx, sy, sz, r, g, b) => {
     var asset = sv.createBox([0, 0, 0], [sx, sy, sz], [r, g, b]);
-    return asset ? asset.getRoot() : null;
+    if (asset) {
+        var root = asset.getRoot();
+        _primitiveMap.set(root, asset);
+        return root;
+    }
+    return null;
 };
 
 window.createCylinder = (sv, radius, height, r, g, b) => {
     var asset = sv.createCylinder([0, 0, 0], radius, height, [r, g, b]);
-    return asset ? asset.getRoot() : null;
+    if (asset) {
+        var root = asset.getRoot();
+        _primitiveMap.set(root, asset);
+        return root;
+    }
+    return null;
+};
+
+window.setEntityColor = (sv, entity, r, g, b, a) => {
+    if (!entity) return;
+    var asset = _primitiveMap.get(entity);
+    if (!asset) return;
+    var rm = sv._engine.getRenderableManager();
+    var entities = asset.getEntities();
+    for (var i = 0; i < entities.length; i++) {
+        var ent = entities[i];
+        var inst = rm.getInstance(ent);
+        if (inst != 0) {
+            var mat = rm.getMaterialInstanceAt(inst, 0);
+            if (mat) {
+                if (mat.setFloat4Parameter) {
+                    mat.setFloat4Parameter("baseColorFactor", [r, g, b, a]);
+                } else if (mat.setColor4Parameter) {
+                    mat.setColor4Parameter("baseColorFactor", 0, [r, g, b, a]); // 0 = LINEAR
+                } else if (mat.setParameter) {
+                    mat.setParameter("baseColorFactor", [r, g, b, a]);
+                }
+            }
+        }
+    }
 };
 
 window.loadModelAsync = (sv, url, onLoaded) => {

@@ -64,8 +64,12 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
 
             // Create dynamic primitives, but don't assign transforms until the update loop
             val pivot2Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
-            val link1Entity = createBox(svRef, 1f, 1f, 1f, state.links[0].color.x, state.links[0].color.y, state.links[0].color.z)
-            val link2Entity = createBox(svRef, 1f, 1f, 1f, state.links[1].color.x, state.links[1].color.y, state.links[1].color.z)
+            
+            var lastLink1Color = state.links[0].color
+            var lastLink2Color = state.links[1].color
+            
+            val link1Entity = createBox(svRef, 1f, 1f, 1f, lastLink1Color.x, lastLink1Color.y, lastLink1Color.z)
+            val link2Entity = createBox(svRef, 1f, 1f, 1f, lastLink2Color.x, lastLink2Color.y, lastLink2Color.z)
 
             // Setup the render loop
             fun renderLoop(timeMs: Double) {
@@ -76,6 +80,16 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
                 
                 // Re-read state after update
                 val currentState = viewModel.twoLinksState.value
+                
+                // Check and update colors
+                if (lastLink1Color != currentState.links[0].color) {
+                    lastLink1Color = currentState.links[0].color
+                    setEntityColor(svRef, link1Entity, lastLink1Color.x, lastLink1Color.y, lastLink1Color.z, 1f)
+                }
+                if (lastLink2Color != currentState.links[1].color) {
+                    lastLink2Color = currentState.links[1].color
+                    setEntityColor(svRef, link2Entity, lastLink2Color.x, lastLink2Color.y, lastLink2Color.z, 1f)
+                }
                 
                 // Link 1 Transform
                 val link1OriginT = translation(Float3()) * rotation(viewModel.linkOneRotation)

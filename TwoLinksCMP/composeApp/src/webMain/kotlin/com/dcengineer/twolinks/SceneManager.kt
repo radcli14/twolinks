@@ -97,6 +97,9 @@ external fun createBox(sv: JsAny, sx: Float, sy: Float, sz: Float, r: Float, g: 
 @JsFun("createCylinder")
 external fun createCylinder(sv: JsAny, radius: Float, height: Float, r: Float, g: Float, b: Float): JsAny
 
+@JsFun("setEntityColor")
+external fun setEntityColor(sv: JsAny, entity: JsAny, r: Float, g: Float, b: Float, a: Float)
+
 @JsFun("loadModelAsync")
 external fun loadModelAsync(sv: JsAny, url: String, onLoaded: (JsAny) -> Unit)
 
