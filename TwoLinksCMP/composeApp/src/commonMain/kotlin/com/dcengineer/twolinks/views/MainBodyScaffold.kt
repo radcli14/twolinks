@@ -31,7 +31,7 @@ fun MainBodyScaffold(
         // Main content is the scene view, which is overlaid by the play and reset buttons
         Box {
             TwoLinksSceneView(viewModel)
-            val extraBottomPadding = if (getPlatform().hasBottomSafeArea) 32.dp else 0.dp
+            val extraBottomPadding = if (getPlatform().hasBottomSafeArea) 0.dp else 0.dp
             PlayAndResetButtons(
                 modifier = Modifier
                     .padding(bottom = paddingValues.calculateBottomPadding() + extraBottomPadding)
