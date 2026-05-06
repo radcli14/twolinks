@@ -92,7 +92,7 @@ fi
 echo "Committing and pushing to web branch..."
 git add app
 if [ -f "_config.yml" ]; then
-    git add _config.yml index.html _includes _layouts _pages _sass main.scss assets Gemfile
+    git add _config.yml index.html _includes _layouts _pages _sass main.scss assets Gemfile CNAME
 fi
 git commit -m "Deploy landing page to root/ and web build to app/ $(date)" || echo "No changes to commit"
 git push --force origin web

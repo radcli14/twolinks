@@ -2,10 +2,10 @@
 TwoLinks                                  :                                           # Automatically populates with app name if not set and if iOS app ID is set. Otherwise enter manually.
 
 # App Info
-ios_app_id                                : ""                                        # Set to your iOS App ID when live
-ios_app_country                           : us                                        # Required outside USA. Enter 2 letter country code as in https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+ios_app_id                                : "1625794656"                               # SwiftyTwoLinks App Store ID
+ios_app_country                           : bo                                        # Country code for the app store link (Bolivia)
 
-appstore_link                             : ""                                        # Will populate from App ID or enter manually
+appstore_link                             : "https://apps.apple.com/bo/app/swiftytwolinks/id1625794656" # App Store Link
 playstore_link                            : ""                                        # Enter Google Play Store URL if live
 presskit_download_link                    : ""                                        # Link to downloadable press kit zip
 
@@ -14,7 +14,7 @@ app_name                                  : TwoLinks                            
 app_price                                 : Free                                      # Price
 app_description                           : A real-time, interactive 3D physical simulation of a chaotic double pendulum. Explore chaos theory, custom link dimensions, and gravity.
 
-enable_smart_app_banner                   : false                                     # Set to true to show a smart app banner on iOS
+enable_smart_app_banner                   : true                                      # Set to true to show a smart app banner on iOS
 
 # Information About Yourself
 your_name                                 : Eliott Radcliffe
