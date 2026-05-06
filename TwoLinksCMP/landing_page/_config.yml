@@ -58,34 +58,34 @@ features                                  :
     fontawesome_icon_name                 : graduation-cap
 
 # Theme Settings
-topbar_color                              : "#121214"
+topbar_color                              : "#0a0f12"                                 # Matching surfaceContainerLowestDark
 topbar_transparency                       : 0.8
-topbar_title_color                        : "#ffffff"
+topbar_title_color                        : "#dfe3e7"                                 # Matching onBackgroundDark
 
-cover_image                               : assets/headerimage.png                    # Replace with alternative image path or image URL.
-cover_overlay_color                       : "#1a1a2e"
+cover_image                               : assets/headerimage.png                    # Cover Graphic
+cover_overlay_color                       : "#1c2024"                                 # Matching surfaceContainerDark
 cover_overlay_transparency                : 0.85
 
 device_color                              : black                                     # Set to: blue, black, yellow, coral or white.
 
-body_background_color                     : "#121214"
+body_background_color                     : "#101417"                                 # Matching backgroundDark
 
-link_color                                : "#9f7aea"
+link_color                                : "#93cdf6"                                 # Matching primaryDark (soft sky blue)
 
 app_title_color                           : "#ffffff"
-app_price_color                           : "#a0aec0"
-app_description_color                     : "#e2e8f0"
+app_price_color                           : "#b6c9d8"                                 # Matching secondaryDark
+app_description_color                     : "#dfe3e7"                                 # Matching onBackgroundDark
 
 feature_title_color                       : "#ffffff"
-feature_text_color                        : "#a0aec0"
+feature_text_color                        : "#c1c7ce"                                 # Matching onSurfaceVariantDark
 
-feature_icons_foreground_color            : "#9f7aea"
-feature_icons_background_color            : "#2d3748"
+feature_icons_foreground_color            : "#93cdf6"                                 # Matching primaryDark
+feature_icons_background_color            : "#181c20"                                 # Matching surfaceContainerLowDark
 
-social_icons_foreground_color             : "#a0aec0"
-social_icons_background_color             : "#2d3748"
+social_icons_foreground_color             : "#b6c9d8"                                 # Matching secondaryDark
+social_icons_background_color             : "#181c20"                                 # Matching surfaceContainerLowDark
 
-footer_text_color                         : "#718096"
+footer_text_color                         : "#8b9198"                                 # Matching outlineDark
 
 ####################################################
 ### Jekyll Configuration. No need to touch this. ###

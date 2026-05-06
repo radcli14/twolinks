@@ -19,7 +19,7 @@
 	</div>
 	<nav class="scroll">
 		<ul>
-			<li><a href="{{ "/app/" | relative_url }}" target="_self" style="font-weight: bold; color: #9f7aea;">Open Web App</a></li>
+			<li><a href="{{ "/app/" | relative_url }}" target="_self" style="font-weight: bold; color: {{ site.link_color }};">Open Web App</a></li>
 			{% for page in site.pages %}
 				{% if page.include_in_header == true %}
 				<li><a href="{{ page.url | relative_url }}" target="_self">{{ page.title }}</a></li>
