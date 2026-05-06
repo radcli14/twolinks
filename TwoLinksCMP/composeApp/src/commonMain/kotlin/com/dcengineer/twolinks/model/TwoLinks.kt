@@ -87,20 +87,19 @@ data class TwoLinks(
     }
 
     /**
-     * Simulate a single time step, and update the theta and omega state variables
+     * Simulate a single time step, and return the new theta and omega state variables
      */
-    fun update(h: Float = dt) {
+    fun getUpdatedState(h: Float = dt): Float4 {
         // Calculate states at the next frame based on current states
         //val priorState = Float4(links[0].theta, links[1].theta, links[0].omega, links[1].omega)
         val newState = rk4({x -> equationOfMotion(x)}, simulationState, h)
 
-        // Guard against NaNs or infinity, exit without updating if the simulation had invalid state
+        // Guard against NaNs or infinity, return current state if invalid
         if (newState.isInvalid) {
-            return
+            return simulationState
         }
 
-        // Update the state variables
-        simulationState = newState
+        return newState
     }
 
     val pivotNorm: Float

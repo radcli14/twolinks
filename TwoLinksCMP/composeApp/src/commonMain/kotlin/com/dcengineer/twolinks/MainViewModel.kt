@@ -90,8 +90,8 @@ class MainViewModel : ViewModel() {
      */
     fun update(h: Float) {
         _twoLinksState.update { current ->
-            current.update(h)
-            current.copy(links = current.links.toList())
+            val newState = current.getUpdatedState(h)
+            current.copy(simulationState = newState)
         }
         _elapsedTimeState.value += h
     }
