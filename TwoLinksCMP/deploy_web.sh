@@ -78,7 +78,7 @@ rm -rf "$TEMP_DIR"
 echo "Committing and pushing to web branch..."
 git add app .nojekyll
 git commit -m "Deploy web build to app/ $(date)" || echo "No changes to commit"
-git push origin web || git push -u origin web
+git push --force origin web
 
 # Step 8: Return to original branch
 echo "Returning to $CURRENT_BRANCH branch..."
