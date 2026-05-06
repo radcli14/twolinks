@@ -38,20 +38,28 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-# Step 3: Copy the build output to a temporary directory
+# Step 3: Copy the build output and landing page to temporary directories
 TEMP_DIR=$(mktemp -d)
 cp -r "$BUILD_OUTPUT_ABS_PATH/"* "$TEMP_DIR/"
-
 echo "Build output copied to temporary directory."
+
+if [ -d "$REPO_ROOT/TwoLinksCMP/landing_page" ]; then
+    TEMP_LANDING_DIR=$(mktemp -d)
+    cp -r "$REPO_ROOT/TwoLinksCMP/landing_page/"* "$TEMP_LANDING_DIR/"
+    echo "Landing page files copied to temporary directory."
+else
+    echo "Warning: Landing page directory not found at $REPO_ROOT/TwoLinksCMP/landing_page. Landing page will not be deployed."
+    TEMP_LANDING_DIR=""
+fi
 
 # Step 4: Checkout the web branch
 echo "Checking out web branch..."
 if git show-ref --verify --quiet refs/heads/web; then
-    git checkout web
+    git checkout -f web
 else
     echo "Web branch not found locally. Trying to fetch and checkout..."
     if git ls-remote --exit-code --heads origin web; then
-        git checkout web
+        git checkout -f web
     else
         echo "Web branch not found remotely either. Creating an orphan branch..."
         git checkout --orphan web
@@ -68,20 +76,29 @@ echo "Setting up 'app' directory..."
 mkdir -p app
 cp -r "$TEMP_DIR/"* app/
 
-# Add .nojekyll to prevent GitHub Pages from ignoring files with underscores
-touch .nojekyll
+# Copy landing page files to the root of the web branch
+if [ -n "$TEMP_LANDING_DIR" ]; then
+    echo "Copying landing page files to the root..."
+    cp -r "$TEMP_LANDING_DIR/"* .
+fi
 
-# Cleanup temporary directory
+# Cleanup temporary directories
 rm -rf "$TEMP_DIR"
+if [ -n "$TEMP_LANDING_DIR" ]; then
+    rm -rf "$TEMP_LANDING_DIR"
+fi
 
 # Step 7: Add, commit, and push
 echo "Committing and pushing to web branch..."
-git add app .nojekyll
-git commit -m "Deploy web build to app/ $(date)" || echo "No changes to commit"
+git add app
+if [ -f "_config.yml" ]; then
+    git add _config.yml index.html _includes _layouts _pages _sass main.scss assets Gemfile
+fi
+git commit -m "Deploy landing page to root/ and web build to app/ $(date)" || echo "No changes to commit"
 git push --force origin web
 
 # Step 8: Return to original branch
 echo "Returning to $CURRENT_BRANCH branch..."
 git checkout "$CURRENT_BRANCH"
 
-echo "Web deployment completed successfully! Your app should be available at your GitHub Pages URL shortly."
+echo "Web deployment completed successfully! Your landing page and app should be available shortly."
