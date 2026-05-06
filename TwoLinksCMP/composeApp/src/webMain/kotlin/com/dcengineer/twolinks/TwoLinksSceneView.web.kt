@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
@@ -29,7 +30,7 @@ import kotlin.js.JsAny
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val state by viewModel.twoLinksState.collectAsState()
 
-    val sceneManager = SceneManager()
+    val sceneManager = remember { SceneManager() }
 
     // Punch a transparent hole through the Skiko canvas so the Filament 3D scene shows through
     Box(modifier = Modifier.fillMaxSize().drawBehind {
