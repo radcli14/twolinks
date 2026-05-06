@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dcengineer.twolinks.functions.rad2deg
 import com.dcengineer.twolinks.model.TwoLinks
+import com.dcengineer.twolinks.model.maxPivot
+import com.dcengineer.twolinks.model.offsetNorm
 import dev.romainguy.kotlin.math.Float2
 import dev.romainguy.kotlin.math.Float3
 import dev.romainguy.kotlin.math.Float4
@@ -117,62 +119,78 @@ class MainViewModel : ViewModel() {
         val random = Random(seed)
 
         // Create the randomized link dimensions
-        twoLinks.setLinkOneLengthFromNorm(random.nextFloat())
-        twoLinks.setLinkTwoLengthFromNorm(random.nextFloat())
-        twoLinks.setLinkOneOffsetFromNorm(random.nextFloat())
-        twoLinks.setLinkTwoOffsetFromNorm(random.nextFloat())
-        twoLinks.setPivotFromNorm(random.nextFloat())
+        setLinkOneLengthFromNorm(random.nextFloat())
+        setLinkTwoLengthFromNorm(random.nextFloat())
+        setLinkOneOffsetFromNorm(random.nextFloat())
+        setLinkTwoOffsetFromNorm(random.nextFloat())
+        setPivotFromNorm(random.nextFloat())
 
         // Create the randomized colors
-        twoLinks.links[0].color.x = random.nextFloat()
-        twoLinks.links[0].color.y = random.nextFloat()
-        twoLinks.links[0].color.z = random.nextFloat()
-        twoLinks.links[1].color.x = random.nextFloat()
-        twoLinks.links[1].color.y = random.nextFloat()
-        twoLinks.links[1].color.z = random.nextFloat()
-    }
-
-    private fun setDimensionFromNorm(n: Float, f: (Float) -> Unit) {
-        _twoLinksState.update { current ->
-            f(n)
-            current.copy(
-                pivot = twoLinks.pivot,
-                links = current.links.toList()
-            )
-        }
+        setLinkOneColor(Float4(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1f))
+        setLinkTwoColor(Float4(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1f))
     }
 
     fun setLinkOneLengthFromNorm(n: Float) {
-        setDimensionFromNorm(n, f = twoLinks::setLinkOneLengthFromNorm)
+        _twoLinksState.update { current ->
+            val link0 = current.links[0]
+            val newLength = link0.minLength + n * (link0.maxLength - link0.minLength)
+            val newOffset = (1.0f - link0.offsetNorm) * (0.5f * newLength - link0.minDistanceFromEdge)
+            val newLink0 = link0.copy(length = newLength, offset = newOffset)
+            val maxPivot = 0.5f * newLength - link0.minDistanceFromEdge + newOffset
+            val newPivot = min(current.pivot, maxPivot)
+            current.copy(links = listOf(newLink0, current.links[1]), pivot = newPivot)
+        }
     }
 
     fun setLinkTwoLengthFromNorm(n: Float) {
-        setDimensionFromNorm(n, f = twoLinks::setLinkTwoLengthFromNorm)
+        _twoLinksState.update { current ->
+            val link1 = current.links[1]
+            val newLength = link1.minLength + n * (link1.maxLength - link1.minLength)
+            val newOffset = (1.0f - link1.offsetNorm) * (0.5f * newLength - link1.minDistanceFromEdge)
+            val newLink1 = link1.copy(length = newLength, offset = newOffset)
+            current.copy(links = listOf(current.links[0], newLink1))
+        }
     }
 
     fun setLinkOneOffsetFromNorm(n: Float) {
-        setDimensionFromNorm(n, f = twoLinks::setLinkOneOffsetFromNorm)
+        _twoLinksState.update { current ->
+            val link0 = current.links[0]
+            val newOffset = (1.0f - n) * (0.5f * link0.length - link0.minDistanceFromEdge)
+            val newLink0 = link0.copy(offset = newOffset)
+            val maxPivot = 0.5f * link0.length - link0.minDistanceFromEdge + newOffset
+            val newPivot = min(current.pivot, maxPivot)
+            current.copy(links = listOf(newLink0, current.links[1]), pivot = newPivot)
+        }
     }
 
     fun setLinkTwoOffsetFromNorm(n: Float) {
-        setDimensionFromNorm(n, f = twoLinks::setLinkTwoOffsetFromNorm)
+        _twoLinksState.update { current ->
+            val link1 = current.links[1]
+            val newOffset = (1.0f - n) * (0.5f * link1.length - link1.minDistanceFromEdge)
+            val newLink1 = link1.copy(offset = newOffset)
+            current.copy(links = listOf(current.links[0], newLink1))
+        }
     }
 
     fun setPivotFromNorm(n: Float) {
-        setDimensionFromNorm(n, f = twoLinks::setPivotFromNorm)
+        _twoLinksState.update { current ->
+            val maxPivot = current.links[0].maxPivot
+            val newPivot = n * maxPivot
+            current.copy(pivot = newPivot)
+        }
     }
 
     fun setLinkOneColor(newColor: Float4) {
         _twoLinksState.update { current ->
-            current.links[0].color = newColor
-            current.copy(links = current.links.toList())
+            val newLink = current.links[0].copy(color = newColor)
+            current.copy(links = listOf(newLink, current.links[1]))
         }
     }
 
     fun setLinkTwoColor(newColor: Float4) {
         _twoLinksState.update { current ->
-            current.links[1].color = newColor
-            current.copy(links = current.links.toList())
+            val newLink = current.links[1].copy(color = newColor)
+            current.copy(links = listOf(current.links[0], newLink))
         }
     }
 }

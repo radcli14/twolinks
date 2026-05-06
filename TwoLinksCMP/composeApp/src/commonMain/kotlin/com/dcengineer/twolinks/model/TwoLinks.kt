@@ -103,68 +103,6 @@ data class TwoLinks(
         simulationState = newState
     }
 
-    /**
-     * When a specified value changes, this makes sure the properties below get re-calculated on next update
-     */
-    private fun nullify() {
-        links[0].nullify()
-        links[1].nullify()
-        _m11 = null
-        _m22 = null
-    }
-
-    /**
-     * Given a normalized length (0f to 1f) update the link one length, offset, and pivot
-     */
-    fun setLinkOneLengthFromNorm(n: Float) {
-        links[0].setLengthFromNorm(n)
-        pivot = min(pivot, links[0].maxPivot)
-
-        // Call this to make sure the mass properties get re-calculated
-        nullify()
-    }
-
-    /**
-     * Given a normalized offset (0f to 1f) update the link one offset
-     */
-    fun setLinkOneOffsetFromNorm(n: Float) {
-        links[0].offset = (1.0f - n) * (0.5f * links[0].length - links[0].minDistanceFromEdge)
-        pivot = min(pivot, links[0].maxPivot)
-
-        // Call this to make sure the mass properties get re-calculated
-        nullify()
-    }
-
     val pivotNorm: Float
         get() = min(1.0f, max(0.0f, pivot / links[0].maxPivot))
-
-    /**
-     * Given a normalized pivot (0f to 1f) update the pivot location
-     */
-    fun setPivotFromNorm(m: Float) {
-        pivot = m * links[0].maxPivot
-
-        // Call this to make sure the mass properties get re-calculated
-        nullify()
-    }
-
-    /**
-     * Given a normalized length (0f to 1f) update the link two length and offset
-     */
-    fun setLinkTwoLengthFromNorm(n: Float) {
-        links[1].setLengthFromNorm(n)
-
-        // Call this to make sure the mass properties get re-calculated
-        nullify()
-    }
-
-    /**
-     * Given a normalized offset (0f to 1f) update the link two offset
-     */
-    fun setLinkTwoOffsetFromNorm(n: Float) {
-        links[1].setOffsetFromNorm(n)
-
-        // Call this to make sure the mass properties get re-calculated
-        nullify()
-    }
 }

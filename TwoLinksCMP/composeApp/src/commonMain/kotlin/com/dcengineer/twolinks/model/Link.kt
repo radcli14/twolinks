@@ -68,21 +68,3 @@ val Link.offsetNorm: Float
 
 val Link.maxPivot: Float
     get() = 0.5f * length - minDistanceFromEdge + offset
-
-fun Link.setLengthFromNorm(n: Float) {
-    // Get the norm values before adjusting, to avoid recursion
-    val offsetNorm = offsetNorm
-
-    // Adjust the physical distances
-    length = minLength + n * (maxLength - minLength)
-    offset = (1.0f - offsetNorm) * (0.5f * length - minDistanceFromEdge)
-}
-
-fun Link.setOffsetFromNorm(n: Float) {
-    offset = (1.0f - n) * (0.5f * length - minDistanceFromEdge)
-}
-
-fun Link.nullify() {
-    _mass = null
-    _moi = null
-}
