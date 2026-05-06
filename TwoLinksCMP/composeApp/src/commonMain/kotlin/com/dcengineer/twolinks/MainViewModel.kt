@@ -112,7 +112,7 @@ class MainViewModel : ViewModel() {
     /**
      * Randomize the initial dimensions and colors
      */
-    private fun shuffle() {
+    fun shuffle() {
         // Create a random number generator, seeded with the current time
         val now = Clock.System.now()
         val seed = now.toEpochMilliseconds()

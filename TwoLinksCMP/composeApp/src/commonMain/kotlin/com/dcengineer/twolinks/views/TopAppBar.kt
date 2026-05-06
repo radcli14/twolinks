@@ -2,6 +2,7 @@ package com.dcengineer.twolinks.views
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,11 +18,15 @@ import androidx.compose.runtime.Composable
 @Composable
 fun TwoLinksTopAppBar(
     onEditDimensions: () -> Unit,
-    onEditColors: () -> Unit
+    onEditColors: () -> Unit,
+    onShuffle: () -> Unit
 ) {
     TopAppBar(
         title = { Text("Bi Links") },
         actions = {
+            IconButton(onClick = onShuffle) {
+                Icon(Icons.Default.Shuffle, "Shuffle")
+            }
             IconButton(onClick = onEditDimensions) {
                 Icon(Icons.Default.Straighten, "Edit Dimensions")
             }
