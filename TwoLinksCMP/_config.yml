@@ -1,0 +1,110 @@
+# page title
+TwoLinks                                  :                                           # Automatically populates with app name if not set and if iOS app ID is set. Otherwise enter manually.
+
+# App Info
+ios_app_id                                : "1625794656"                               # SwiftyTwoLinks App Store ID
+ios_app_country                           : us                                        # Country code for the app store link (US)
+
+appstore_link                             : "https://apps.apple.com/us/app/swiftytwolinks/id1625794656" # App Store Link
+playstore_link                            : ""                                        # Enter Google Play Store URL if live
+presskit_download_link                    : ""                                        # Link to downloadable press kit zip
+
+app_icon                                  : assets/appicon.png                        # Path to app icon
+app_name                                  : TwoLinks                                  # App name
+app_price                                 : Free                                      # Price
+app_description                           : A real-time, interactive 3D physical simulation of a chaotic double pendulum. Explore chaos theory, custom link dimensions, and gravity.
+
+enable_smart_app_banner                   : true                                      # Set to true to show a smart app banner on iOS
+
+# Information About Yourself
+your_name                                 : Eliott Radcliffe
+your_link                                 : https://www.dc-engineer.com
+your_city                                 : Bilbao
+email_address                             : Eliott.Radcliffe@dc-engineer.com
+linkedin_username                         : www.linkedin.com/in/eliott-radcliffe-dcdc-llc
+linkedin_company                          : 
+facebook_username                         : 
+instagram_username                        :
+twitter_username                          :
+github_username                           : radcli14
+youtube_username                          : https://www.youtube.com/@dc-engineer
+mastodon_link                             :
+
+# Feature List                            Edit, add or remove features to be presented.
+features                                  :
+
+  - title                                 : Interactive 3D Simulation
+    description                           : Real-time physical simulation of a chaotic two-link pendulum rendered in beautiful, high-fidelity 3D space.
+    fontawesome_icon_name                 : sync
+
+  - title                                 : Customizable Link Dimensions
+    description                           : Fine-tune the length, hinge offset, center of mass, and pivot points of both links to witness various chaotic movements.
+    fontawesome_icon_name                 : sliders-h
+    
+  - title                                 : Dynamic Color Selection
+    description                           : Personalize the appearance of each link with an interactive and responsive color picker.
+    fontawesome_icon_name                 : palette
+
+  - title                                 : Immediate State Controls
+    description                           : Pause, play, reset, or shuffle physical properties instantly to control the chaotic pendulum behavior in real-time.
+    fontawesome_icon_name                 : play-circle
+
+  - title                                 : Premium KMP Architecture
+    description                           : Powered by Google's Filament rendering engine and Kotlin Multiplatform for buttery-smooth 60 FPS across Web and mobile.
+    fontawesome_icon_name                 : bolt
+
+  - title                                 : Educational & Fun
+    description                           : Perfect for students, engineers, and scientists wanting to explore multi-body system dynamics and chaotic mechanics.
+    fontawesome_icon_name                 : graduation-cap
+
+# Theme Settings
+topbar_color                              : "#0a0f12"                                 # Matching surfaceContainerLowestDark
+topbar_transparency                       : 0.8
+topbar_title_color                        : "#dfe3e7"                                 # Matching onBackgroundDark
+
+cover_image                               : assets/headerimage.png                    # Cover Graphic
+cover_overlay_color                       : "#1c2024"                                 # Matching surfaceContainerDark
+cover_overlay_transparency                : 0.85
+
+device_color                              : black                                     # Set to: blue, black, yellow, coral or white.
+
+body_background_color                     : "#101417"                                 # Matching backgroundDark
+
+link_color                                : "#93cdf6"                                 # Matching primaryDark (soft sky blue)
+
+app_title_color                           : "#ffffff"
+app_price_color                           : "#b6c9d8"                                 # Matching secondaryDark
+app_description_color                     : "#dfe3e7"                                 # Matching onBackgroundDark
+
+feature_title_color                       : "#ffffff"
+feature_text_color                        : "#c1c7ce"                                 # Matching onSurfaceVariantDark
+
+feature_icons_foreground_color            : "#93cdf6"                                 # Matching primaryDark
+feature_icons_background_color            : "#181c20"                                 # Matching surfaceContainerLowDark
+
+social_icons_foreground_color             : "#b6c9d8"                                 # Matching secondaryDark
+social_icons_background_color             : "#181c20"                                 # Matching surfaceContainerLowDark
+
+footer_text_color                         : "#8b9198"                                 # Matching outlineDark
+
+####################################################
+### Jekyll Configuration. No need to touch this. ###
+####################################################
+
+# Set the Sass partials directory, as we're using @imports
+sass:
+  style: :compressed # You might prefer to minify using :compressed
+
+# Exclude these files from your production _site
+exclude:
+  - LICENSE
+  - README.md
+  - CNAME
+
+collections:
+  pages:
+    output: true
+    permalink: /:path/
+
+# Markdown rendering
+markdown: kramdown
