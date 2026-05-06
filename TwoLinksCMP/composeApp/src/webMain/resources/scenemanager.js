@@ -57,6 +57,32 @@ window.setEntityColor = (sv, entity, r, g, b, a) => {
     }
 };
 
+window.setEntityMaterialProperties = (sv, entity, metallic, roughness, reflectance) => {
+    if (!entity) return;
+    var asset = _primitiveMap.get(entity);
+    if (!asset) return;
+    var rm = sv._engine.getRenderableManager();
+    var entities = asset.getEntities();
+    for (var i = 0; i < entities.length; i++) {
+        var ent = entities[i];
+        var inst = rm.getInstance(ent);
+        if (inst != 0) {
+            var mat = rm.getMaterialInstanceAt(inst, 0);
+            if (mat) {
+                if (mat.setFloatParameter) {
+                    mat.setFloatParameter("metallicFactor", metallic);
+                    mat.setFloatParameter("roughnessFactor", roughness);
+                    mat.setFloatParameter("reflectance", reflectance);
+                } else if (mat.setParameter) {
+                    mat.setParameter("metallicFactor", metallic);
+                    mat.setParameter("roughnessFactor", roughness);
+                    mat.setParameter("reflectance", reflectance);
+                }
+            }
+        }
+    }
+};
+
 window.loadModelAsync = (sv, url, onLoaded) => {
     fetch(url).then(r => r.arrayBuffer()).then(buffer => {
         var data = new Uint8Array(buffer);

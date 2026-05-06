@@ -52,10 +52,11 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             if (!renderLoopActive) return@initSceneViewAsync
 
             // Create static primitives, and assign transforms that are permanent
-            val doorEntity = createBox(svRef, viewModel.doorSize.x, viewModel.doorSize.y, viewModel.doorSize.z, 0.157f, 0.157f, 0.157f)
+            val doorEntity = createBox(svRef, viewModel.doorSize.x, viewModel.doorSize.y, viewModel.doorSize.z, 0.75f, 0.75f, 0.75f)
             val doorPos = Float3(0f, 0f, -0.5f * viewModel.doorSize.z)
             val doorOriginT = translation(doorPos)
             setEntityTransform(svRef, doorEntity, doorOriginT)
+            setEntityMaterialProperties(svRef, doorEntity, metallic = 0.97f, roughness = 0.05f, reflectance = 0.95f)
 
             val pivot1Entity = createCylinder(svRef, 0.01f, 0.015f, 0.69f, 0.69f, 0.69f)
             val pivotRotation = rotation(Float3(90f, 0f, 0f))

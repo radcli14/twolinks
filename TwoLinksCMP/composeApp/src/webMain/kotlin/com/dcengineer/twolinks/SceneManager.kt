@@ -100,6 +100,9 @@ external fun createCylinder(sv: JsAny, radius: Float, height: Float, r: Float, g
 @JsFun("setEntityColor")
 external fun setEntityColor(sv: JsAny, entity: JsAny, r: Float, g: Float, b: Float, a: Float)
 
+@JsFun("setEntityMaterialProperties")
+external fun setEntityMaterialProperties(sv: JsAny, entity: JsAny, metallic: Float, roughness: Float, reflectance: Float)
+
 @JsFun("loadModelAsync")
 external fun loadModelAsync(sv: JsAny, url: String, onLoaded: (JsAny) -> Unit)
 
