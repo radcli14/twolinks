@@ -1,0 +1,2 @@
+
+<TwoLinksCMP:composeApp>:com.dcengineer.twolinks:!com.dcengineer.twolinks.functions:com.dcengineer.twolinks.model: com.dcengineer.twolinks.ui.theme:com.dcengineer.twolinks.views:com.example.ui.theme:*twolinkscmp.composeapp.generated.resources

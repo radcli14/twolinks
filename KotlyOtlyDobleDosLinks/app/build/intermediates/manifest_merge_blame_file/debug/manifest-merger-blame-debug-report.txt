@@ -1,0 +1,82 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="dcsimulationstudio.kotlyotlydobledoslinks"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Needed to load gltf from network. -->
+12    <uses-permission android:name="android.permission.INTERNET" /> <!-- SceneView requires OpenGLES 3.0 or later for 3D rendering. -->
+12-->[io.github.sceneview:sceneview:0.6.0] /Users/radcli14/.gradle/caches/transforms-3/9caca11c3cf1981239f5c9a35e521ac6/transformed/sceneview-0.6.0/AndroidManifest.xml:10:5-67
+12-->[io.github.sceneview:sceneview:0.6.0] /Users/radcli14/.gradle/caches/transforms-3/9caca11c3cf1981239f5c9a35e521ac6/transformed/sceneview-0.6.0/AndroidManifest.xml:10:22-64
+13    <uses-feature
+13-->[io.github.sceneview:sceneview:0.6.0] /Users/radcli14/.gradle/caches/transforms-3/9caca11c3cf1981239f5c9a35e521ac6/transformed/sceneview-0.6.0/AndroidManifest.xml:13:5-15:35
+14        android:glEsVersion="0x00030000"
+14-->[io.github.sceneview:sceneview:0.6.0] /Users/radcli14/.gradle/caches/transforms-3/9caca11c3cf1981239f5c9a35e521ac6/transformed/sceneview-0.6.0/AndroidManifest.xml:14:9-41
+15        android:required="true" />
+15-->[io.github.sceneview:sceneview:0.6.0] /Users/radcli14/.gradle/caches/transforms-3/9caca11c3cf1981239f5c9a35e521ac6/transformed/sceneview-0.6.0/AndroidManifest.xml:15:9-32
+16
+17    <application
+17-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:5:5-21:19
+18        android:allowBackup="true"
+18-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:6:9-35
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.8.0] /Users/radcli14/.gradle/caches/transforms-3/8fb40d19f6d1660bc15678113b9477d9/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
+20        android:debuggable="true"
+21        android:extractNativeLibs="false"
+22        android:icon="@mipmap/ic_launcher"
+22-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:7:9-43
+23        android:label="@string/app_name"
+23-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:8:9-41
+24        android:roundIcon="@mipmap/ic_launcher_round"
+24-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:9:9-54
+25        android:supportsRtl="true"
+25-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:10:9-35
+26        android:testOnly="true"
+27        android:theme="@style/Theme.KotlyOtlyDobleDosLinks" >
+27-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:11:9-60
+28        <activity
+28-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:12:9-20:20
+29            android:name="dcsimulationstudio.kotlyotlydobledoslinks.MainActivity"
+29-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:13:13-41
+30            android:exported="true" >
+30-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:14:13-36
+31            <intent-filter>
+31-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:15:13-19:29
+32                <action android:name="android.intent.action.MAIN" />
+32-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:16:17-69
+32-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:16:25-66
+33
+34                <category android:name="android.intent.category.LAUNCHER" />
+34-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:18:17-77
+34-->/Users/radcli14/Developer/twolinks/KotlyOtlyDobleDosLinks/app/src/main/AndroidManifest.xml:18:27-74
+35            </intent-filter>
+36        </activity>
+37
+38        <provider
+38-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
+39            android:name="androidx.startup.InitializationProvider"
+39-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:27:13-67
+40            android:authorities="dcsimulationstudio.kotlyotlydobledoslinks.androidx-startup"
+40-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:28:13-68
+41            android:exported="false" >
+41-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:29:13-37
+42            <meta-data
+42-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:31:13-33:52
+43                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+43-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:32:17-75
+44                android:value="androidx.startup" />
+44-->[androidx.emoji2:emoji2:1.0.0] /Users/radcli14/.gradle/caches/transforms-3/aeb7a05bce3bab482238d712255f11b6/transformed/emoji2-1.0.0/AndroidManifest.xml:33:17-49
+45            <meta-data
+45-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/radcli14/.gradle/caches/transforms-3/f07cbab7547b70686bb64c0f93830387/transformed/lifecycle-process-2.4.0/AndroidManifest.xml:31:13-33:52
+46                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+46-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/radcli14/.gradle/caches/transforms-3/f07cbab7547b70686bb64c0f93830387/transformed/lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
+47                android:value="androidx.startup" />
+47-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/radcli14/.gradle/caches/transforms-3/f07cbab7547b70686bb64c0f93830387/transformed/lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
+48        </provider>
+49    </application>
+50
+51</manifest>

@@ -1,0 +1,110 @@
+# page title
+TwoLinks                                  :                                           # Automatically populates with app name if not set and if iOS app ID is set. Otherwise enter manually.
+
+# App Info
+ios_app_id                                : ""                                        # Set to your iOS App ID when live
+ios_app_country                           : us                                        # Required outside USA. Enter 2 letter country code as in https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+
+appstore_link                             : ""                                        # Will populate from App ID or enter manually
+playstore_link                            : ""                                        # Enter Google Play Store URL if live
+presskit_download_link                    : ""                                        # Link to downloadable press kit zip
+
+app_icon                                  : assets/appicon.png                        # Path to app icon
+app_name                                  : TwoLinks                                  # App name
+app_price                                 : Free                                      # Price
+app_description                           : A real-time, interactive 3D physical simulation of a chaotic double pendulum. Explore chaos theory, custom link dimensions, and gravity.
+
+enable_smart_app_banner                   : false                                     # Set to true to show a smart app banner on iOS
+
+# Information About Yourself
+your_name                                 : Eliott Radcliffe
+your_link                                 : https://www.dc-engineer.com
+your_city                                 : Bilbao
+email_address                             : Eliott.Radcliffe@dc-engineer.com
+linkedin_username                         : www.linkedin.com/in/eliott-radcliffe-dcdc-llc
+linkedin_company                          : 
+facebook_username                         : 
+instagram_username                        :
+twitter_username                          :
+github_username                           : radcli14
+youtube_username                          : https://www.youtube.com/@dc-engineer
+mastodon_link                             :
+
+# Feature List                            Edit, add or remove features to be presented.
+features                                  :
+
+  - title                                 : Interactive 3D Simulation
+    description                           : Real-time physical simulation of a chaotic two-link pendulum rendered in beautiful, high-fidelity 3D space.
+    fontawesome_icon_name                 : sync
+
+  - title                                 : Customizable Link Dimensions
+    description                           : Fine-tune the length, hinge offset, center of mass, and pivot points of both links to witness various chaotic movements.
+    fontawesome_icon_name                 : sliders-h
+    
+  - title                                 : Dynamic Color Selection
+    description                           : Personalize the appearance of each link with an interactive and responsive color picker.
+    fontawesome_icon_name                 : palette
+
+  - title                                 : Immediate State Controls
+    description                           : Pause, play, reset, or shuffle physical properties instantly to control the chaotic pendulum behavior in real-time.
+    fontawesome_icon_name                 : play-circle
+
+  - title                                 : Premium KMP Architecture
+    description                           : Powered by Google's Filament rendering engine and Kotlin Multiplatform for buttery-smooth 60 FPS across Web and mobile.
+    fontawesome_icon_name                 : bolt
+
+  - title                                 : Educational & Fun
+    description                           : Perfect for students, engineers, and scientists wanting to explore multi-body system dynamics and chaotic mechanics.
+    fontawesome_icon_name                 : graduation-cap
+
+# Theme Settings
+topbar_color                              : "#121214"
+topbar_transparency                       : 0.8
+topbar_title_color                        : "#ffffff"
+
+cover_image                               : assets/headerimage.png                    # Replace with alternative image path or image URL.
+cover_overlay_color                       : "#1a1a2e"
+cover_overlay_transparency                : 0.85
+
+device_color                              : black                                     # Set to: blue, black, yellow, coral or white.
+
+body_background_color                     : "#121214"
+
+link_color                                : "#9f7aea"
+
+app_title_color                           : "#ffffff"
+app_price_color                           : "#a0aec0"
+app_description_color                     : "#e2e8f0"
+
+feature_title_color                       : "#ffffff"
+feature_text_color                        : "#a0aec0"
+
+feature_icons_foreground_color            : "#9f7aea"
+feature_icons_background_color            : "#2d3748"
+
+social_icons_foreground_color             : "#a0aec0"
+social_icons_background_color             : "#2d3748"
+
+footer_text_color                         : "#718096"
+
+####################################################
+### Jekyll Configuration. No need to touch this. ###
+####################################################
+
+# Set the Sass partials directory, as we're using @imports
+sass:
+  style: :compressed # You might prefer to minify using :compressed
+
+# Exclude these files from your production _site
+exclude:
+  - LICENSE
+  - README.md
+  - CNAME
+
+collections:
+  pages:
+    output: true
+    permalink: /:path/
+
+# Markdown rendering
+markdown: kramdown

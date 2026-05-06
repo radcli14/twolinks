@@ -1,0 +1,114 @@
+[
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable_restart.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable/restart.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/layout_text_slider.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/layout/text_slider.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable-v24_ic_launcher_foreground.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/layout_bottom_layout.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/layout/bottom_layout.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable_palette.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable/palette.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/layout_color_layout.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/layout/color_layout.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable_hub.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable/hub.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/layout_activity_main.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/layout/activity_main.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable_ic_launcher_background.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable_play.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable/play.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/drawable_pause.xml.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-main-33:/drawable/pause.xml"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "dcsimulationstudio.kotlyotlydobledoslinks.app-merged_res-31:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "dcsimulationstudio.kotlyotlydobledoslinks.app-debug-32:/mipmap-xxxhdpi/ic_launcher.png"
+    }
+]
