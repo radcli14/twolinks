@@ -81,6 +81,30 @@ import ComposeApp
             let link2 = ModelEntity(mesh: link2Mesh, materials: [SimpleMaterial(color: .blue, isMetallic: true)])
             link2Anchor.addChild(link2)
             self.link2Entity = link2
+
+            // --- Async planet loading ---
+            // moon.usdz and earth.usdz must be added to the Xcode app target.
+            // Adding to root here is safe: Entity is a reference type and RealityKit
+            // allows child insertion from the main actor after the scene is live.
+            Task { @MainActor [weak root] in
+                guard let root else { return }
+                await Self.loadPlanet(
+                    named: "moon",
+                    scale: 27,
+                    position: SIMD3<Float>(0, -14.515, 0),
+                    xRotationDeg: 69,
+                    fallbackColor: UIColor(white: 0.55, alpha: 1),
+                    into: root
+                )
+                await Self.loadPlanet(
+                    named: "earth",
+                    scale: 100,
+                    position: SIMD3<Float>(31.4, -15.7, -314),
+                    xRotationDeg: 22,
+                    fallbackColor: UIColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 1),
+                    into: root
+                )
+            }
         }
         .cameraControls(.orbit)
 
@@ -137,5 +161,29 @@ import ComposeApp
             mat.roughness = .init(floatLiteral: 0.4)
             link2Entity?.model?.materials = [mat]
         }
+    }
+
+    // MARK: - Planet loading
+
+    @MainActor
+    private static func loadPlanet(
+        named name: String,
+        scale: Float,
+        position: SIMD3<Float>,
+        xRotationDeg: Float,
+        fallbackColor: UIColor,
+        into root: Entity
+    ) async {
+        let entity: Entity
+        if let node = try? await ModelNode.load("\(name).usdz") {
+            node.scaleToUnits(scale)
+            entity = node.entity
+        } else {
+            let sphere = GeometryNode.sphere(radius: scale * 0.5, color: fallbackColor)
+            entity = sphere.entity
+        }
+        entity.position    = position
+        entity.orientation = simd_quatf(angle: xRotationDeg * .pi / 180, axis: [1, 0, 0])
+        root.addChild(entity)
     }
 }
