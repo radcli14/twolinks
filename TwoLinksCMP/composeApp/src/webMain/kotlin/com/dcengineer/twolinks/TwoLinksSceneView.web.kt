@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalWasmJsInterop::class)
 package com.dcengineer.twolinks
 
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
@@ -33,14 +35,20 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
 
     val sceneManager = remember { SceneManager() }
 
-    // Punch a transparent hole through the Skiko canvas so the Filament 3D scene shows through
-    Box(modifier = Modifier.fillMaxSize().drawBehind {
-        drawRect(
-            color = Color.Transparent,
-            size = size,
-            blendMode = BlendMode.Clear
-        )
-    })
+    // Punch a transparent hole through the Skiko canvas so the Filament 3D scene shows through.
+    // Drag gestures on the transparent scene area orbit the camera; pinch zooms.
+    // UI elements drawn above this Box (buttons, sheets) consume their own events first.
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .drawBehind {
+            drawRect(color = Color.Transparent, size = size, blendMode = BlendMode.Clear)
+        }
+        .pointerInput(Unit) {
+            detectTransformGestures { _, pan, _, _ ->
+                orbitScene(pan.x, pan.y)
+            }
+        }
+    )
 
     DisposableEffect(Unit) {
         val container = document.getElementById("scene-target")

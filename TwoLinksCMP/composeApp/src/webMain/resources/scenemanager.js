@@ -1,10 +1,41 @@
+var _sv = null;
+
 window.initSceneViewAsync = (canvas, onReady) => {
     console.log('Initializing SceneView in scenemanager.js');
     SceneView.create(canvas).then(sv => {
         console.log('SceneView created successfully');
+        _sv = sv;
         onReady(sv);
     }).catch(err => console.error(err));
 };
+
+// Orbit the camera by a pixel-space drag delta.
+// Horizontal drag rotates azimuth; vertical drag shifts camera height.
+window.orbitScene = function(deltaX, deltaY) {
+    if (!_sv) return;
+    _sv._angle -= deltaX * 0.004;
+    _sv._orbitHeight = Math.max(-2.0, Math.min(5.0, _sv._orbitHeight + deltaY * 0.0015));
+    if (_sv._velocityAngle !== undefined) _sv._velocityAngle = 0;
+    if (_sv._velocityHeight !== undefined) _sv._velocityHeight = 0;
+};
+
+// Zoom by a Compose scale factor (>1 = pinch-spread = zoom in, <1 = zoom out).
+window.zoomScene = function(scaleFactor) {
+    if (!_sv) return;
+    _sv._orbitRadius = Math.max(0.5, Math.min(15.0, _sv._orbitRadius / scaleFactor));
+};
+
+// Handle scroll-wheel and trackpad pinch zoom here in JS so we can preventDefault and
+// stop the browser from intercepting the gesture as a native page zoom.
+// ctrlKey is set by browsers on trackpad pinch events.
+document.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    if (!_sv) return;
+    var speed = e.ctrlKey ? 0.01 : 0.003;
+    var scaleFactor = 1 - e.deltaY * speed;
+    scaleFactor = Math.max(0.85, Math.min(1.15, scaleFactor));
+    _sv._orbitRadius = Math.max(0.5, Math.min(15.0, _sv._orbitRadius / scaleFactor));
+}, { passive: false });
 
 window.addDirectionalLight = (sv, intensity, dx, dy, dz) => {
     console.log('Adding directional light');
@@ -151,3 +182,4 @@ window.loadSkybox = (sv, url) => {
         }
     }).catch(err => console.error("Failed to fetch skybox", url, err));
 };
+

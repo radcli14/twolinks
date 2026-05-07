@@ -117,3 +117,9 @@ external fun loadEnvironment(sv: JsAny, url: String, intensity: Float)
 
 @JsFun("loadSkybox")
 external fun loadSkybox(sv: JsAny, url: String)
+
+@JsFun("orbitScene")
+external fun orbitScene(deltaX: Float, deltaY: Float)
+
+@JsFun("zoomScene")
+external fun zoomScene(scaleFactor: Float)
