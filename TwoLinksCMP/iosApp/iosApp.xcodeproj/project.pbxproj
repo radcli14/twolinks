@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8AAF2B222FAC9CC300002062 /* SceneViewSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8AAF2B212FAC9CC300002062 /* SceneViewSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F7368546B9E539524BC421DF /* TwoLinksCMP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwoLinksCMP.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AAF2B222FAC9CC300002062 /* SceneViewSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				8AAF2B212FAC9CC300002062 /* SceneViewSwift */,
 			);
 			productName = iosApp;
 			productReference = F7368546B9E539524BC421DF /* TwoLinksCMP.app */;
@@ -114,6 +120,9 @@
 			);
 			mainGroup = 5E4D0C26E89E9F032AABBC9C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8AAF2B202FAC9CC300002062 /* XCRemoteSwiftPackageReference "sceneview-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 98690363A02E865F9B17EE09 /* Products */;
 			projectDirPath = "";
@@ -368,6 +377,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8AAF2B202FAC9CC300002062 /* XCRemoteSwiftPackageReference "sceneview-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sceneview/sceneview-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8AAF2B212FAC9CC300002062 /* SceneViewSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8AAF2B202FAC9CC300002062 /* XCRemoteSwiftPackageReference "sceneview-swift" */;
+			productName = SceneViewSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5985CA7CC1A94221EAA90E1F /* Project object */;
 }
