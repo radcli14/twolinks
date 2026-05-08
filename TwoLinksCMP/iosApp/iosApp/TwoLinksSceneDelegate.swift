@@ -117,6 +117,7 @@ import ComposeApp
             }
         }
         .cameraControls(.orbit)
+        .environment(.custom(name: "Night Sky", hdrFile: "NightSkyHDRI008_4K_HDR.exr"))
 
         let hc = UIHostingController(rootView: AnyView(sceneView))
         hc.view.backgroundColor = .clear
