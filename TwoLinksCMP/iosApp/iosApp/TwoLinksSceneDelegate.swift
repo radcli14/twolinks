@@ -12,6 +12,9 @@ import ComposeApp
     private let pivotHeight: Float = 0.015
     private let link1Thickness: Float = 0.0064
 
+    // ViewModel reference stored by createView(viewModel:)
+    private weak var viewModel: MainViewModel?
+
     // Dynamic entity references updated each frame
     private var link1AnchorEntity: Entity?
     private var link1Entity: ModelEntity?
@@ -20,8 +23,7 @@ import ComposeApp
     private var link2AnchorEntity: Entity?
     private var link2Entity: ModelEntity?
 
-    // Pending colors set by updateColors(); flushed immediately when entities exist,
-    // or deferred until applyPendingColors() is called after scene setup completes.
+    // Pending colors flushed after scene setup when entities become non-nil.
     private var pendingLink1Color = SIMD3<Float>(repeating: -1)
     private var pendingLink2Color = SIMD3<Float>(repeating: -1)
     private var lastLink1Color    = SIMD3<Float>(repeating: -1)
@@ -103,6 +105,7 @@ import ComposeApp
                     scale: 27,
                     position: SIMD3<Float>(0, -14.515, 0),
                     xRotationDeg: 69,
+                    yRotationDeg: 0,
                     fallbackColor: UIColor(white: 0.55, alpha: 1),
                     into: root
                 )
@@ -111,6 +114,7 @@ import ComposeApp
                     scale: 100,
                     position: SIMD3<Float>(31.4, -15.7, -314),
                     xRotationDeg: 22,
+                    yRotationDeg: 90,
                     fallbackColor: UIColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 1),
                     into: root
                 )
@@ -118,40 +122,47 @@ import ComposeApp
         }
         .cameraControls(.orbit)
         .environment(.custom(name: "NightSky", hdrFile: "NightSky"))
+        .edgesIgnoringSafeArea(.all)
 
         let hc = UIHostingController(rootView: AnyView(sceneView))
         hc.view.backgroundColor = .clear
         return hc
     }()
 
-    @objc func createView() -> UIView {
-        hostingController.view
+    @objc func createView(viewModel: MainViewModel) -> UIView {
+        self.viewModel = viewModel
+        return hostingController.view
     }
 
-    @objc func updateTransforms(l1Deg: Float, l2Deg: Float,
-                                 pivotX: Float, pivotY: Float, pivotZ: Float,
-                                 l1CenterX: Float, l1CenterY: Float, l1CenterZ: Float,
-                                 l1SizeX: Float, l1SizeY: Float, l1SizeZ: Float,
-                                 l2CenterX: Float, l2CenterY: Float, l2CenterZ: Float,
-                                 l2SizeX: Float, l2SizeY: Float, l2SizeZ: Float) {
-        // The 180° Y wrapper negates world X and Z, so we negate angles and X/Z
-        // positions here to keep the visual motion consistent with the physics model.
-        link1AnchorEntity?.orientation = simd_quatf(angle: -l1Deg * .pi / 180, axis: [0, 0, 1])
+    @objc func update() {
+        guard let vm = viewModel else { return }
+        
+        let state = vm.twoLinks
+        let l0 = state.links[0]
+        let l1 = state.links[1]
 
-        link1Entity?.position = SIMD3<Float>(-l1CenterX, l1CenterY, -l1CenterZ)
-        link1Entity?.scale    = SIMD3<Float>(l1SizeX,    l1SizeY,   l1SizeZ)
+        // center and size are Kotlin extension properties — compute inline
+        let l0Center = SIMD3<Float>(l0.offset, 0, 0.5 * l0.thickness)
+        let l0Size   = SIMD3<Float>(l0.length, l0.height, l0.thickness)
+        let l1Center = SIMD3<Float>(l1.offset, 0, 0.5 * l1.thickness)
+        let l1Size   = SIMD3<Float>(l1.length, l1.height, l1.thickness)
+        let pivot    = state.pivotPosition
 
-        pivot2AnchorEntity?.position = SIMD3<Float>(-pivotX, pivotY, -pivotZ)
+        // The 180° Y wrapper negates world X and Z; negate angles and X/Z to compensate.
+        link1AnchorEntity?.orientation = simd_quatf(angle: -vm.linkOneRotation.z * .pi / 180, axis: [0, 0, 1])
+        link1Entity?.position = SIMD3<Float>(-l0Center.x, l0Center.y, -l0Center.z)
+        link1Entity?.scale    = l0Size
 
-        link2AnchorEntity?.orientation = simd_quatf(angle: -l2Deg * .pi / 180, axis: [0, 0, 1])
+        pivot2AnchorEntity?.position = SIMD3<Float>(-pivot.x, pivot.y, -pivot.z)
 
-        link2Entity?.position = SIMD3<Float>(-l2CenterX, l2CenterY, -l2CenterZ)
-        link2Entity?.scale    = SIMD3<Float>(l2SizeX,    l2SizeY,   l2SizeZ)
-    }
+        link2AnchorEntity?.orientation = simd_quatf(angle: -vm.linkTwoRotation.z * .pi / 180, axis: [0, 0, 1])
+        link2Entity?.position = SIMD3<Float>(-l1Center.x, l1Center.y, -l1Center.z)
+        link2Entity?.scale    = l1Size
 
-    @objc func updateColors(r1: Float, g1: Float, b1: Float, r2: Float, g2: Float, b2: Float) {
-        pendingLink1Color = SIMD3<Float>(r1, g1, b1)
-        pendingLink2Color = SIMD3<Float>(r2, g2, b2)
+        let c0 = l0.color
+        let c1 = l1.color
+        pendingLink1Color = SIMD3<Float>(c0.x, c0.y, c0.z)
+        pendingLink2Color = SIMD3<Float>(c1.x, c1.y, c1.z)
         applyPendingColors()
     }
 
@@ -189,6 +200,7 @@ import ComposeApp
         scale: Float,
         position: SIMD3<Float>,
         xRotationDeg: Float,
+        yRotationDeg: Float,
         fallbackColor: UIColor,
         into root: Entity
     ) async {
@@ -201,7 +213,7 @@ import ComposeApp
             entity = sphere.entity
         }
         entity.position    = position
-        entity.orientation = simd_quatf(angle: xRotationDeg * .pi / 180, axis: [1, 0, 0])
+        entity.orientation = simd_quatf(angle: xRotationDeg * .pi / 180, axis: [1, 0, 0]) * simd_quatf(angle: yRotationDeg * .pi / 180, axis: [0, 1, 0])
         root.addChild(entity)
     }
 }
