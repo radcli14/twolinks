@@ -28,6 +28,12 @@ import ComposeApp
         let sceneView = SceneView { [weak self] root in
             guard let self else { return }
 
+            // A 180° Y-rotation wrapper makes the camera at +Z face the mechanism
+            // side of the door on launch, without touching DerivedData camera setup.
+            let wrapper = Entity()
+            wrapper.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
+            root.addChild(wrapper)
+
             // --- Door (static, metallic gray panel) ---
             let doorMesh = MeshResource.generateBox(size: self.doorSize)
             var doorMat = PhysicallyBasedMaterial()
@@ -35,21 +41,20 @@ import ComposeApp
             doorMat.metallic = .init(floatLiteral: 0.97)
             doorMat.roughness = .init(floatLiteral: 0.05)
             let doorEntity = ModelEntity(mesh: doorMesh, materials: [doorMat])
-            // Offset back so the door surface sits at z=0
-            doorEntity.position = SIMD3<Float>(0, 0, -0.5 * self.doorSize.z)
-            root.addChild(doorEntity)
+            doorEntity.position = SIMD3<Float>(0, 0, 0.5 * self.doorSize.z)
+            wrapper.addChild(doorEntity)
 
             // --- Pivot 1 (static cylinder at origin, lying along Z) ---
             let p1Mesh = MeshResource.generateCylinder(height: self.pivotHeight, radius: self.pivotRadius)
             let p1Mat = SimpleMaterial(color: UIColor(white: 0.69, alpha: 1), isMetallic: false)
             let pivot1 = ModelEntity(mesh: p1Mesh, materials: [p1Mat])
             pivot1.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
-            pivot1.position = SIMD3<Float>(0, 0, self.link1Thickness)
-            root.addChild(pivot1)
+            pivot1.position = SIMD3<Float>(0, 0, -self.link1Thickness)
+            wrapper.addChild(pivot1)
 
             // --- Link 1 anchor (rotates around Z, carries link1 and pivot2 hierarchy) ---
             let link1Anchor = Entity()
-            root.addChild(link1Anchor)
+            wrapper.addChild(link1Anchor)
             self.link1AnchorEntity = link1Anchor
 
             // Link 1 visual (unit cube scaled per-frame to link dimensions)
@@ -83,9 +88,8 @@ import ComposeApp
             self.link2Entity = link2
 
             // --- Async planet loading ---
-            // moon.usdz and earth.usdz must be added to the Xcode app target.
-            // Adding to root here is safe: Entity is a reference type and RealityKit
-            // allows child insertion from the main actor after the scene is live.
+            // Planets go directly under root (not the wrapper) so their world-space
+            // positions are unchanged by the 180° wrapper flip.
             Task { @MainActor [weak root] in
                 guard let root else { return }
                 await Self.loadPlanet(
@@ -123,22 +127,19 @@ import ComposeApp
                                  l1SizeX: Float, l1SizeY: Float, l1SizeZ: Float,
                                  l2CenterX: Float, l2CenterY: Float, l2CenterZ: Float,
                                  l2SizeX: Float, l2SizeY: Float, l2SizeZ: Float) {
-        // Link 1 rotation (around Z axis)
-        link1AnchorEntity?.orientation = simd_quatf(angle: l1Deg * .pi / 180, axis: [0, 0, 1])
+        // The 180° Y wrapper negates world X and Z, so we negate angles and X/Z
+        // positions here to keep the visual motion consistent with the physics model.
+        link1AnchorEntity?.orientation = simd_quatf(angle: -l1Deg * .pi / 180, axis: [0, 0, 1])
 
-        // Link 1 visual: position = center offset, scale = physical dimensions
-        link1Entity?.position = SIMD3<Float>(l1CenterX, l1CenterY, l1CenterZ)
-        link1Entity?.scale    = SIMD3<Float>(l1SizeX,   l1SizeY,   l1SizeZ)
+        link1Entity?.position = SIMD3<Float>(-l1CenterX, l1CenterY, -l1CenterZ)
+        link1Entity?.scale    = SIMD3<Float>(l1SizeX,    l1SizeY,   l1SizeZ)
 
-        // Pivot 2 position along link1 (in link1's local space)
-        pivot2AnchorEntity?.position = SIMD3<Float>(pivotX, pivotY, pivotZ)
+        pivot2AnchorEntity?.position = SIMD3<Float>(-pivotX, pivotY, -pivotZ)
 
-        // Link 2 rotation relative to the pivot2 anchor
-        link2AnchorEntity?.orientation = simd_quatf(angle: l2Deg * .pi / 180, axis: [0, 0, 1])
+        link2AnchorEntity?.orientation = simd_quatf(angle: -l2Deg * .pi / 180, axis: [0, 0, 1])
 
-        // Link 2 visual: position = center offset, scale = physical dimensions
-        link2Entity?.position = SIMD3<Float>(l2CenterX, l2CenterY, l2CenterZ)
-        link2Entity?.scale    = SIMD3<Float>(l2SizeX,   l2SizeY,   l2SizeZ)
+        link2Entity?.position = SIMD3<Float>(-l2CenterX, l2CenterY, -l2CenterZ)
+        link2Entity?.scale    = SIMD3<Float>(l2SizeX,    l2SizeY,   l2SizeZ)
     }
 
     @objc func updateColors(r1: Float, g1: Float, b1: Float, r2: Float, g2: Float, b2: Float) {
