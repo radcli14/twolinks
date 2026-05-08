@@ -20,9 +20,12 @@ import ComposeApp
     private var link2AnchorEntity: Entity?
     private var link2Entity: ModelEntity?
 
-    // Color cache to avoid material recreation every frame
-    private var lastLink1Color = SIMD3<Float>(repeating: -1)
-    private var lastLink2Color = SIMD3<Float>(repeating: -1)
+    // Pending colors set by updateColors(); flushed immediately when entities exist,
+    // or deferred until applyPendingColors() is called after scene setup completes.
+    private var pendingLink1Color = SIMD3<Float>(repeating: -1)
+    private var pendingLink2Color = SIMD3<Float>(repeating: -1)
+    private var lastLink1Color    = SIMD3<Float>(repeating: -1)
+    private var lastLink2Color    = SIMD3<Float>(repeating: -1)
 
     private lazy var hostingController: UIHostingController<AnyView> = {
         let sceneView = SceneView { [weak self] root in
@@ -87,6 +90,9 @@ import ComposeApp
             link2Anchor.addChild(link2)
             self.link2Entity = link2
 
+            // Flush any colors that arrived before entities were ready.
+            self.applyPendingColors()
+
             // --- Async planet loading ---
             // Planets go directly under root (not the wrapper) so their world-space
             // positions are unchanged by the 180° wrapper flip.
@@ -143,24 +149,34 @@ import ComposeApp
     }
 
     @objc func updateColors(r1: Float, g1: Float, b1: Float, r2: Float, g2: Float, b2: Float) {
-        let newL1 = SIMD3<Float>(r1, g1, b1)
-        if newL1 != lastLink1Color {
-            lastLink1Color = newL1
+        pendingLink1Color = SIMD3<Float>(r1, g1, b1)
+        pendingLink2Color = SIMD3<Float>(r2, g2, b2)
+        applyPendingColors()
+    }
+
+    private func applyPendingColors() {
+        if pendingLink1Color != lastLink1Color, let entity = link1Entity {
+            lastLink1Color = pendingLink1Color
             var mat = SimpleMaterial()
-            mat.color    = .init(tint: UIColor(red: CGFloat(r1), green: CGFloat(g1), blue: CGFloat(b1), alpha: 1))
+            mat.color    = .init(tint: UIColor(red:   CGFloat(pendingLink1Color.x),
+                                               green: CGFloat(pendingLink1Color.y),
+                                               blue:  CGFloat(pendingLink1Color.z),
+                                               alpha: 1))
             mat.metallic  = .init(floatLiteral: 0.5)
             mat.roughness = .init(floatLiteral: 0.4)
-            link1Entity?.model?.materials = [mat]
+            entity.model?.materials = [mat]
         }
 
-        let newL2 = SIMD3<Float>(r2, g2, b2)
-        if newL2 != lastLink2Color {
-            lastLink2Color = newL2
+        if pendingLink2Color != lastLink2Color, let entity = link2Entity {
+            lastLink2Color = pendingLink2Color
             var mat = SimpleMaterial()
-            mat.color    = .init(tint: UIColor(red: CGFloat(r2), green: CGFloat(g2), blue: CGFloat(b2), alpha: 1))
+            mat.color    = .init(tint: UIColor(red:   CGFloat(pendingLink2Color.x),
+                                               green: CGFloat(pendingLink2Color.y),
+                                               blue:  CGFloat(pendingLink2Color.z),
+                                               alpha: 1))
             mat.metallic  = .init(floatLiteral: 0.5)
             mat.roughness = .init(floatLiteral: 0.4)
-            link2Entity?.model?.materials = [mat]
+            entity.model?.materials = [mat]
         }
     }
 
