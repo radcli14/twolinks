@@ -58,6 +58,13 @@ val Link.moi: Float
 val Link.moiRelOffset: Float
     get() = _moiRelOffset ?: (mass * offset.pow(2f))
 
+fun Link.refreshMassProperties() {
+    val m = density * length * height * thickness
+    _mass = m
+    _moi = 1.0f / 12.0f * m * (length.pow(2f) + height.pow(2f))
+    _moiRelOffset = m * offset.pow(2f)
+}
+
 val Link.lengthNorm: Float get() = (length - minLength) / (maxLength - minLength)
 
 val Link.offsetNorm: Float

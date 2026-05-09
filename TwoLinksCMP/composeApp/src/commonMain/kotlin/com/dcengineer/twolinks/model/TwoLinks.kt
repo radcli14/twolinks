@@ -89,6 +89,10 @@ data class TwoLinks(
     /**
      * Simulate a single time step, and return the new theta and omega state variables
      */
+    fun refreshMassProperties() {
+        links.forEach { it.refreshMassProperties() }
+    }
+
     fun getUpdatedState(h: Float = dt): Float4 {
         // Calculate states at the next frame based on current states
         //val priorState = Float4(links[0].theta, links[1].theta, links[0].omega, links[1].omega)

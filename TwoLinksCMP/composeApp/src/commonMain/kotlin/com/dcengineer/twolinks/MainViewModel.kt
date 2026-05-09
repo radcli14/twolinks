@@ -144,6 +144,7 @@ class MainViewModel : ViewModel() {
             val maxPivot = 0.5f * newLength - link0.minDistanceFromEdge + newOffset
             val newPivot = min(current.pivot, maxPivot)
             current.copy(links = listOf(newLink0, current.links[1]), pivot = newPivot)
+                .also { it.refreshMassProperties() }
         }
     }
 
@@ -154,6 +155,7 @@ class MainViewModel : ViewModel() {
             val newOffset = (1.0f - link1.offsetNorm) * (0.5f * newLength - link1.minDistanceFromEdge)
             val newLink1 = link1.copy(length = newLength, offset = newOffset)
             current.copy(links = listOf(current.links[0], newLink1))
+                .also { it.refreshMassProperties() }
         }
     }
 
@@ -165,6 +167,7 @@ class MainViewModel : ViewModel() {
             val maxPivot = 0.5f * link0.length - link0.minDistanceFromEdge + newOffset
             val newPivot = min(current.pivot, maxPivot)
             current.copy(links = listOf(newLink0, current.links[1]), pivot = newPivot)
+                .also { it.refreshMassProperties() }
         }
     }
 
@@ -174,6 +177,7 @@ class MainViewModel : ViewModel() {
             val newOffset = (1.0f - n) * (0.5f * link1.length - link1.minDistanceFromEdge)
             val newLink1 = link1.copy(offset = newOffset)
             current.copy(links = listOf(current.links[0], newLink1))
+                .also { it.refreshMassProperties() }
         }
     }
 
@@ -182,6 +186,7 @@ class MainViewModel : ViewModel() {
             val maxPivot = current.links[0].maxPivot
             val newPivot = n * maxPivot
             current.copy(pivot = newPivot)
+                .also { it.refreshMassProperties() }
         }
     }
 
