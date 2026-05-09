@@ -5,6 +5,7 @@ window.initSceneViewAsync = (canvas, onReady) => {
     SceneView.create(canvas).then(sv => {
         console.log('SceneView created successfully');
         _sv = sv;
+        _sv.setAutoRotate(false);
         onReady(sv);
     }).catch(err => console.error(err));
 };
