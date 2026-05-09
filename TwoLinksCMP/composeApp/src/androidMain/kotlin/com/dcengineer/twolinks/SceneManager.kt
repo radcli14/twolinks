@@ -22,9 +22,10 @@ class SceneManager(context: Context) {
 
     val modelLoader = ModelLoader(engine, context)
     val environmentLoader = EnvironmentLoader(engine, context)
-    val environment = environmentLoader.createHDREnvironment(
-        assetFileLocation = resolveEnvironmentPath("NightSkyHDRI009_2K_HDR.hdr")
-    ) ?: environmentLoader.createEnvironment()
+    val environment = environmentLoader.createKTX1Environment(
+        iblAssetFile = resolveEnvironmentPath("NightSkyHDRI008_4K_HDR_ibl.ktx"),
+        skyboxAssetFile = resolveEnvironmentPath("NightSkyHDRI008_4K_HDR_skybox.ktx")
+    )
 
     // Manage instances as state
     var moonInstance by mutableStateOf<ModelInstance?>(null)
