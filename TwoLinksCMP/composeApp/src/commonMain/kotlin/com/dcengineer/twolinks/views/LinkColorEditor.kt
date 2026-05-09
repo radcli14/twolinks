@@ -20,7 +20,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,7 +52,7 @@ fun LinkColorEditor(
         ModalBottomSheet(onDismissRequest = { viewModel.linkColorEditorIsVisible.value = false }) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             ) {
                 Text(
                     text = "Link Color Editor",
@@ -92,9 +91,6 @@ private fun SingleLinkColorEditor(
     onColorChanged: (Float4) -> Unit
 ) {
     val controller = rememberColorPickerController()
-    LaunchedEffect(Unit) {
-        controller.selectByColor(link.color.asColor, fromUser = true)
-    }
 
     val sliderModifier = Modifier
         .fillMaxWidth()
@@ -115,8 +111,9 @@ private fun SingleLinkColorEditor(
             HsvColorPicker(
                 modifier = Modifier.weight(1f, fill = false),
                 controller = controller,
+                initialColor = link.color.asColor,
                 onColorChanged = { colorEnvelope: ColorEnvelope ->
-                    onColorChanged(colorEnvelope.color.asFloat4)
+                    if (colorEnvelope.fromUser) onColorChanged(colorEnvelope.color.asFloat4)
                 },
             )
 
