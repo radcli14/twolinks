@@ -24,6 +24,7 @@ class MainViewModel : ViewModel() {
 
     var linkDimensionEditorIsVisible = mutableStateOf(false)
     var linkColorEditorIsVisible = mutableStateOf(false)
+    var shuffleDialogIsVisible = mutableStateOf(false)
 
     var isPaused = mutableStateOf(false)
 
@@ -61,6 +62,10 @@ class MainViewModel : ViewModel() {
      */
     fun toggleLinkColorEditor() {
         linkColorEditorIsVisible.value = !linkColorEditorIsVisible.value
+    }
+
+    fun toggleShuffleDialog() {
+        shuffleDialogIsVisible.value = !shuffleDialogIsVisible.value
     }
 
     /**

@@ -18,7 +18,7 @@ fun MainBodyScaffold(viewModel: MainViewModel) {
                 TwoLinksTopAppBar(
                         onEditDimensions = viewModel::toggleLinkDimensionEditor,
                         onEditColors = viewModel::toggleLinkColorEditor,
-                        onShuffle = viewModel::shuffle
+                        onShuffle = viewModel::toggleShuffleDialog
                 )
             },
             containerColor = Color.Transparent
@@ -39,5 +39,6 @@ fun MainBodyScaffold(viewModel: MainViewModel) {
         // The editors are modal bottom sheets, with visibility controlled by the view model
         LinkDimensionEditor(viewModel)
         LinkColorEditor(viewModel)
+        ShuffleDialog(viewModel)
     }
 }
