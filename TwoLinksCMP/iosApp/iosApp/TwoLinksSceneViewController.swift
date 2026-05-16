@@ -8,8 +8,7 @@ class TwoLinksSceneViewController: UIHostingController<AnyView> {
     let sceneState = TwoLinksSceneState()
 
     init() {
-        super.init(rootView: AnyView(EmptyView()))
-        rootView = AnyView(TwoLinksSceneView().environment(sceneState))
+        super.init(rootView: AnyView(TwoLinksSceneView().environment(sceneState)))
         view.backgroundColor = .clear
     }
 
@@ -17,8 +16,8 @@ class TwoLinksSceneViewController: UIHostingController<AnyView> {
 
     func update(viewModel: MainViewModel) {
         let twoLinks = viewModel.twoLinks
-        let l0 = twoLinks.links[0] as! ComposeApp.Link
-        let l1 = twoLinks.links[1] as! ComposeApp.Link
+        let l0 = twoLinks.links[0]
+        let l1 = twoLinks.links[1]
         let pivot = twoLinks.pivotPosition
 
         applyTransforms(

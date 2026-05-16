@@ -11,16 +11,15 @@ struct TwoLinksSceneView: View {
     private let link1Thickness: Float = 0.0064
 
     var body: some View {
-        let sceneState = state
         SceneView { root in
-            buildScene(root: root, state: sceneState)
+            buildScene(root: root)
         }
         .cameraControls(.orbit)
         .environment(.custom(name: "NightSky", hdrFile: "NightSky"))
         .edgesIgnoringSafeArea(.all)
     }
 
-    private func buildScene(root: Entity, state: TwoLinksSceneState) {
+    private func buildScene(root: Entity) {
         // 180° Y-rotation wrapper so the camera at +Z faces the mechanism side
         let wrapper = Entity()
         wrapper.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
