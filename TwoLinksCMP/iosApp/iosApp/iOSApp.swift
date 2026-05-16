@@ -4,8 +4,9 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
-        let delegate = TwoLinksSceneDelegate()
-        IosSceneRegistry.shared.provider = delegate
+        let controller = TwoLinksSceneViewController()
+        IosSceneRegistry.shared.viewController = controller
+        IosSceneRegistry.shared.onUpdate = { vm in controller.update(viewModel: vm) }
     }
 
     var body: some Scene {

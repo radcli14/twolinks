@@ -1,5 +1,8 @@
 package com.dcengineer.twolinks
 
+import platform.UIKit.UIViewController
+
 object IosSceneRegistry {
-    var provider: IosSceneProvider? = null
+    var viewController: UIViewController? = null
+    var onUpdate: ((MainViewModel) -> Unit)? = null
 }
