@@ -4,7 +4,9 @@ import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        MainViewControllerKt.mainViewController { viewModel in
+            UIHostingController(rootView: TwoLinksSceneView(viewModel: viewModel))
+        }
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

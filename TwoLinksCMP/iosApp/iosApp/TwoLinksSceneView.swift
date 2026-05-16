@@ -1,9 +1,12 @@
 import SwiftUI
 import SceneViewSwift
 import RealityKit
+import ComposeApp
 
 struct TwoLinksSceneView: View {
-    @Environment(TwoLinksSceneState.self) private var state
+    let viewModel: MainViewModel
+
+    @State private var sceneState = TwoLinksSceneState()
 
     private let doorSize    = SIMD3<Float>(0.91, 2.03, 0.035)
     private let pivotRadius: Float = 0.01
@@ -11,12 +14,20 @@ struct TwoLinksSceneView: View {
     private let link1Thickness: Float = 0.0064
 
     var body: some View {
-        SceneView { root in
-            buildScene(root: root)
+        TimelineView(.animation) { context in
+            SceneView { root in
+                buildScene(root: root)
+            }
+            .cameraControls(.orbit)
+            .environment(.custom(name: "NightSky", hdrFile: "NightSky"))
+            .edgesIgnoringSafeArea(.all)
+            .onChange(of: context.date) { _, _ in
+                let nanos = Int64(ProcessInfo.processInfo.systemUptime * 1_000_000_000)
+                viewModel.updateOnFrame(frameTime: nanos)
+                applyTransforms()
+                applyColors()
+            }
         }
-        .cameraControls(.orbit)
-        .environment(.custom(name: "NightSky", hdrFile: "NightSky"))
-        .edgesIgnoringSafeArea(.all)
     }
 
     private func buildScene(root: Entity) {
@@ -46,18 +57,18 @@ struct TwoLinksSceneView: View {
         // Link 1 anchor (rotates around Z, carries link1 and pivot2 hierarchy)
         let link1Anchor = Entity()
         wrapper.addChild(link1Anchor)
-        state.link1AnchorEntity = link1Anchor
+        sceneState.link1AnchorEntity = link1Anchor
 
         // Link 1 visual (unit cube scaled each frame to link dimensions)
         let link1Mesh = MeshResource.generateBox(size: 1.0)
         let link1 = ModelEntity(mesh: link1Mesh, materials: [SimpleMaterial(color: .red, isMetallic: true)])
         link1Anchor.addChild(link1)
-        state.link1Entity = link1
+        sceneState.link1Entity = link1
 
         // Pivot 2 anchor (translated along link1 to the hinge point each frame)
         let pivot2Anchor = Entity()
         link1Anchor.addChild(pivot2Anchor)
-        state.pivot2AnchorEntity = pivot2Anchor
+        sceneState.pivot2AnchorEntity = pivot2Anchor
 
         // Pivot 2 cylinder (lying along Z)
         let p2Mesh = MeshResource.generateCylinder(height: pivotHeight, radius: pivotRadius)
@@ -69,15 +80,15 @@ struct TwoLinksSceneView: View {
         // Link 2 anchor (rotates around Z relative to pivot2)
         let link2Anchor = Entity()
         pivot2Anchor.addChild(link2Anchor)
-        state.link2AnchorEntity = link2Anchor
+        sceneState.link2AnchorEntity = link2Anchor
 
         // Link 2 visual (unit cube scaled each frame)
         let link2Mesh = MeshResource.generateBox(size: 1.0)
         let link2 = ModelEntity(mesh: link2Mesh, materials: [SimpleMaterial(color: .blue, isMetallic: true)])
         link2Anchor.addChild(link2)
-        state.link2Entity = link2
+        sceneState.link2Entity = link2
 
-        // Async planet loading — placed under root (not wrapper) to keep world-space positions
+        // Async planet loading — under root (not wrapper) to keep world-space positions
         Task { @MainActor [weak root] in
             guard let root else { return }
             await Self.loadPlanet(
@@ -96,6 +107,54 @@ struct TwoLinksSceneView: View {
                 fallbackColor: UIColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 1),
                 into: root
             )
+        }
+    }
+
+    private func applyTransforms() {
+        let twoLinks = viewModel.twoLinks
+        let l0 = twoLinks.links[0]
+        let l1 = twoLinks.links[1]
+        let pivot = twoLinks.pivotPosition
+
+        // The 180° Y wrapper negates world X and Z; negate angles and positions to compensate
+        sceneState.link1AnchorEntity?.orientation = simd_quatf(
+            angle: -viewModel.linkOneRotation.z * .pi / 180, axis: [0, 0, 1]
+        )
+        sceneState.link1Entity?.position = SIMD3<Float>(-l0.offset, 0, -0.5 * l0.thickness)
+        sceneState.link1Entity?.scale    = SIMD3<Float>(l0.length, l0.height, l0.thickness)
+
+        sceneState.pivot2AnchorEntity?.position = SIMD3<Float>(-pivot.x, pivot.y, -pivot.z)
+
+        sceneState.link2AnchorEntity?.orientation = simd_quatf(
+            angle: -viewModel.linkTwoRotation.z * .pi / 180, axis: [0, 0, 1]
+        )
+        sceneState.link2Entity?.position = SIMD3<Float>(-l1.offset, 0, -0.5 * l1.thickness)
+        sceneState.link2Entity?.scale    = SIMD3<Float>(l1.length, l1.height, l1.thickness)
+    }
+
+    private func applyColors() {
+        let twoLinks = viewModel.twoLinks
+        guard let l0 = twoLinks.links.first, let l1 = twoLinks.links.last else { return }
+
+        let c0 = SIMD3<Float>(l0.color.x, l0.color.y, l0.color.z)
+        let c1 = SIMD3<Float>(l1.color.x, l1.color.y, l1.color.z)
+
+        if c0 != sceneState.lastLink0Color, let entity = sceneState.link1Entity {
+            sceneState.lastLink0Color = c0
+            var mat = SimpleMaterial()
+            mat.color    = .init(tint: UIColor(red: CGFloat(c0.x), green: CGFloat(c0.y), blue: CGFloat(c0.z), alpha: 1))
+            mat.metallic  = .init(floatLiteral: 0.5)
+            mat.roughness = .init(floatLiteral: 0.4)
+            entity.model?.materials = [mat]
+        }
+
+        if c1 != sceneState.lastLink1Color, let entity = sceneState.link2Entity {
+            sceneState.lastLink1Color = c1
+            var mat = SimpleMaterial()
+            mat.color    = .init(tint: UIColor(red: CGFloat(c1.x), green: CGFloat(c1.y), blue: CGFloat(c1.z), alpha: 1))
+            mat.metallic  = .init(floatLiteral: 0.5)
+            mat.roughness = .init(floatLiteral: 0.4)
+            entity.model?.materials = [mat]
         }
     }
 
