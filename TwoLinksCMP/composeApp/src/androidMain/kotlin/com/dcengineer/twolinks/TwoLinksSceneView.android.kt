@@ -14,50 +14,70 @@ import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
 import dev.romainguy.kotlin.math.Float3
+import dev.romainguy.kotlin.math.normalize
+import com.google.android.filament.LightManager
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInput
+import com.dcengineer.twolinks.model.ViewMode
+import com.google.ar.core.Anchor
+import com.google.ar.core.Config
+import com.google.ar.core.Plane
+import com.google.ar.core.Pose
+import com.google.ar.core.TrackingState
 import io.github.sceneview.NodeScope
 import io.github.sceneview.SceneScope
 import io.github.sceneview.SceneView
+import io.github.sceneview.ar.ARSceneView
+import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.model.ModelInstance
+import io.github.sceneview.rememberModelInstance
+import com.dcengineer.twolinks.functions.fileLocation
 
 @Composable
 actual fun TwoLinksSceneView(viewModel: MainViewModel) {
     val state by viewModel.twoLinksState.collectAsState()
     val context = LocalContext.current
     val manager = remember { SceneManager(context) }
+    val viewMode by viewModel.viewMode
 
     // Load assets when the view is ready
     LaunchedEffect(Unit) {
         manager.loadModels()
     }
 
-    SceneView(
-        modifier = Modifier.fillMaxSize(),
-        engine = manager.engine,
-        modelLoader = manager.modelLoader,
-        cameraNode = manager.cameraNode,
-        environment = manager.environment,
-        mainLightNode = manager.mainLightNode,
-        onFrame = viewModel::updateOnFrame,
-    ) {
+    when (viewMode) {
+        ViewMode.Standard -> SceneView(
+            modifier = Modifier.fillMaxSize(),
+            engine = manager.engine,
+            modelLoader = manager.modelLoader,
+            cameraNode = manager.cameraNode,
+            environment = manager.environment,
+            mainLightNode = manager.mainLightNode,
+            onFrame = viewModel::updateOnFrame,
+        ) {
 
-        // Base node is the door, the camera orbits around the door
-        DoorNode(viewModel.doorSize) {
+            // Base node is the door, the camera orbits around the door
+            DoorNode(viewModel.doorSize) {
 
-            // The center about which the first link rotates
-            PivotNode()
+                // The center about which the first link rotates
+                PivotNode()
 
-            // The first link
-            LinkNode(state.links[0], rotation = viewModel.linkOneRotation) {
-                // The pivot about which the second link rotates
-                PivotNode(position = state.pivotPosition)
+                // The first link
+                LinkNode(state.links[0], rotation = viewModel.linkOneRotation) {
+                    // The pivot about which the second link rotates
+                    PivotNode(position = state.pivotPosition)
 
-                // The second link, rotates about the pivot position
-                LinkNode(state.links[1], position = state.pivotPosition, rotation = viewModel.linkTwoRotation)
+                    // The second link, rotates about the pivot position
+                    LinkNode(state.links[1], position = state.pivotPosition, rotation = viewModel.linkTwoRotation)
+                }
             }
-        }
 
-        PlanetNode(manager.moonInstance, planet = Planet.moon)
-        PlanetNode(manager.earthInstance, planet = Planet.earth)
+            PlanetNode(manager.moonInstance, planet = Planet.moon)
+            PlanetNode(manager.earthInstance, planet = Planet.earth)
+        }
+        ViewMode.AR -> TwoLinksARScene(viewModel)
     }
 }
 
@@ -154,5 +174,86 @@ fun SceneScope.PlanetNode(instance: ModelInstance?, planet: Planet) {
                 isShadowReceiver = true
             }
         )
+    }
+}
+
+/**
+ * AR scene: places the pendulum on a detected horizontal plane.
+ * Pinch scales the scene; two-finger rotation rotates it around the Y-axis.
+ */
+@Composable
+fun TwoLinksARScene(viewModel: MainViewModel) {
+    val state by viewModel.twoLinksState.collectAsState()
+    var anchor by remember { mutableStateOf<Anchor?>(null) }
+    var sceneScale by remember { mutableStateOf(0.1f) }
+    var sceneRotationY by remember { mutableStateOf(0f) }
+    // Counter used to trigger the camera-forward fallback without causing recomposition each frame
+    val trackingFrames = remember { intArrayOf(0) }
+
+    ARSceneView(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTransformGestures { _, _, zoom, rotation ->
+                    sceneScale = (sceneScale * zoom).coerceIn(0.01f, 1f)
+                    sceneRotationY += rotation
+                }
+            },
+        sessionConfiguration = { _, config ->
+            config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
+            config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+        },
+        onSessionUpdated = { session, frame ->
+            viewModel.updateOnFrame(frame.timestamp)
+            if (anchor == null) {
+                anchor = frame.getUpdatedPlanes()
+                    .firstOrNull {
+                        it.type == Plane.Type.HORIZONTAL_UPWARD_FACING &&
+                        it.trackingState == TrackingState.TRACKING
+                    }
+                    ?.let { runCatching { it.createAnchor(it.centerPose) }.getOrNull() }
+
+                // Fall back to 1m in front of the camera after ~3 seconds with no plane
+                if (anchor == null && frame.camera.trackingState == TrackingState.TRACKING) {
+                    trackingFrames[0]++
+                    if (trackingFrames[0] > 90) {
+                        val forwardPose = frame.camera.pose.compose(Pose.makeTranslation(0f, 0f, -1f))
+                        anchor = runCatching { session.createAnchor(forwardPose) }.getOrNull()
+                    }
+                }
+            }
+        }
+    ) {
+        val moonInstance = rememberModelInstance(modelLoader, fileLocation(Planet.moon))
+        val earthInstance = rememberModelInstance(modelLoader, fileLocation(Planet.earth))
+        LightNode(
+            type = LightManager.Type.DIRECTIONAL,
+            direction = normalize(-Planet.sun.position),
+            apply = {
+                color(Planet.sun.color.x, Planet.sun.color.y, Planet.sun.color.z)
+                intensity(100_000f)
+                castShadows(true)
+            }
+        )
+
+        anchor?.let { a ->
+            AnchorNode(anchor = a) {
+                Node(
+                    position = Float3(0f, 0.1f, 0f),
+                    scale = Float3(sceneScale),
+                    rotation = Float3(0f, sceneRotationY, 0f)
+                ) {
+                    DoorNode(viewModel.doorSize) {
+                        PivotNode()
+                        LinkNode(state.links[0], rotation = viewModel.linkOneRotation) {
+                            PivotNode(position = state.pivotPosition)
+                            LinkNode(state.links[1], position = state.pivotPosition, rotation = viewModel.linkTwoRotation)
+                        }
+                    }
+                    PlanetNode(moonInstance, planet = Planet.moon)
+                    PlanetNode(earthInstance, planet = Planet.earth)
+                }
+            }
+        }
     }
 }
