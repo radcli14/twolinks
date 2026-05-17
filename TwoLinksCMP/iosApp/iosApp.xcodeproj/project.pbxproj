@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8AAF2B452FAE49EA00002062 /* SceneViewSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8AAF2B442FAE49EA00002062 /* SceneViewSwift */; };
+		8A0A26802FB8CA62004F9C06 /* SceneViewSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8A0A267F2FB8CA62004F9C06 /* SceneViewSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8AAF2B452FAE49EA00002062 /* SceneViewSwift in Frameworks */,
+				8A0A26802FB8CA62004F9C06 /* SceneViewSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
-				8AAF2B442FAE49EA00002062 /* SceneViewSwift */,
+				8A0A267F2FB8CA62004F9C06 /* SceneViewSwift */,
 			);
 			productName = iosApp;
 			productReference = F7368546B9E539524BC421DF /* TwoLinksCMP.app */;
@@ -121,7 +121,7 @@
 			mainGroup = 5E4D0C26E89E9F032AABBC9C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8AAF2B432FAE49EA00002062 /* XCRemoteSwiftPackageReference "sceneview-swift" */,
+				8A0A267E2FB8CA62004F9C06 /* XCRemoteSwiftPackageReference "sceneview" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 98690363A02E865F9B17EE09 /* Products */;
@@ -379,20 +379,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8AAF2B432FAE49EA00002062 /* XCRemoteSwiftPackageReference "sceneview-swift" */ = {
+		8A0A267E2FB8CA62004F9C06 /* XCRemoteSwiftPackageReference "sceneview" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/radcli14/sceneview-swift.git";
+			repositoryURL = "https://github.com/sceneview/sceneview.git";
 			requirement = {
-				branch = environmentSkybox;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.3.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8AAF2B442FAE49EA00002062 /* SceneViewSwift */ = {
+		8A0A267F2FB8CA62004F9C06 /* SceneViewSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8AAF2B432FAE49EA00002062 /* XCRemoteSwiftPackageReference "sceneview-swift" */;
+			package = 8A0A267E2FB8CA62004F9C06 /* XCRemoteSwiftPackageReference "sceneview" */;
 			productName = SceneViewSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
