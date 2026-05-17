@@ -12,10 +12,9 @@ struct TwoLinksSceneView: View {
     private let pivotRadius: Float = 0.01
     private let pivotHeight: Float = 0.015
     private let link1Thickness: Float = 0.0064
-    private let sunPosition = SIMD3<Float>(200, 150, 400)
 
     var body: some View {
-        let _ = sunLight.entity.look(at: .zero, from: sunPosition, relativeTo: nil)
+        let _ = sunLight.entity.look(at: .zero, from: Planet.companion.sun.position.asSIMD3, relativeTo: nil)
         return TimelineView(.animation) { context in
             SceneView { root in
                 buildScene(root: root)
@@ -93,10 +92,11 @@ struct TwoLinksSceneView: View {
         link2Anchor.addChild(link2)
         sceneState.link2Entity = link2
 
-        // Async planet loading — under root (not wrapper) to keep world-space positions
+        // Async planet loading — placed under entities.root (root.parent), not contentRoot,
+        // so the planets' large bounding boxes don't inflate the shadow frustum.
         Task { @MainActor [weak root] in
             guard let root else { return }
-            await loadPlanets(into: root)
+            await loadPlanets(into: root.parent ?? root)
         }
     }
 
@@ -148,53 +148,27 @@ struct TwoLinksSceneView: View {
     
     @MainActor
     private func loadPlanets(into root: Entity) async {
-        /*await Self.loadPlanet(
-            named: "sun",
-            scale: 700,
-            position: sunPosition,
-            xRotationDeg: 0, yRotationDeg: 0,
-            fallbackColor: UIColor(red: 1.0, green: 0.9, blue: 0.4, alpha: 1),
-            into: root
-        )*/
-        await Self.loadPlanet(
-            named: "moon",
-            scale: 27,
-            position: SIMD3<Float>(0, -14.515, 0),
-            xRotationDeg: 69, yRotationDeg: 0,
-            fallbackColor: UIColor(white: 0.55, alpha: 1),
-            into: root
-        )
-        await Self.loadPlanet(
-            named: "earth",
-            scale: 100,
-            position: SIMD3<Float>(31.4, -15.7, -314),
-            xRotationDeg: 22, yRotationDeg: 90,
-            fallbackColor: UIColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 1),
-            into: root
-        )
+        await Self.loadPlanet(representing: Planet.companion.moon, into: root)
+        await Self.loadPlanet(representing: Planet.companion.earth, into: root)
+        // TODO: there is an extra shadown being cast when I add the sun entity, it doesn't match the sun location or shape, but I can't trace the source. Omitting it for now.
+        //await Self.loadPlanet(representing: Planet.companion.sun, into: root)
     }
 
     @MainActor
     private static func loadPlanet(
-        named name: String,
-        scale: Float,
-        position: SIMD3<Float>,
-        xRotationDeg: Float,
-        yRotationDeg: Float,
-        fallbackColor: UIColor,
+        representing planet: Planet,
         into root: Entity
     ) async {
         let entity: Entity
-        if let node = try? await ModelNode.load("\(name).usdz") {
-            node.scaleToUnits(scale)
+        if let node = try? await ModelNode.load(planet.file) {
+            node.scaleToUnits(planet.scale)
             entity = node.entity
         } else {
-            let sphere = GeometryNode.sphere(radius: scale * 0.5, color: fallbackColor)
+            let sphere = GeometryNode.sphere(radius: planet.scale * 0.5, color: planet.color.asUIColor)
             entity = sphere.entity
         }
-        entity.position = position
-        entity.orientation = simd_quatf(angle: xRotationDeg * .pi / 180, axis: [1, 0, 0])
-            * simd_quatf(angle: yRotationDeg * .pi / 180, axis: [0, 1, 0])
+        entity.position = planet.position.asSIMD3
+        entity.orientation = planet.rotation.asQuatf
         root.addChild(entity)
     }
 }
@@ -210,6 +184,12 @@ extension Kotlin_mathFloat3 {
     }
 }
 
+extension Kotlin_mathFloat4 {
+    var asUIColor: UIColor {
+        UIColor(red: CGFloat(x), green: CGFloat(y), blue: CGFloat(z), alpha: CGFloat(w))
+    }
+}
+
 extension simd_quatf {
     static func forXYZRotationInDegrees(_ x: Float, _ y: Float, _ z: Float) -> simd_quatf {
         simd_quatf(angle: x * .deg2rad, axis: [1, 0, 0]) *
@@ -218,7 +198,7 @@ extension simd_quatf {
     }
     
     static func forZRotationInDegrees(_ angle: Float) -> simd_quatf {
-        .forZRotationInRadians(angle)
+        .forZRotationInRadians(angle * .deg2rad)
     }
     
     static func forZRotationInRadians(_ angle: Float) -> simd_quatf {
