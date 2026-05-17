@@ -140,20 +140,30 @@ import UIKit
     }
 
     @MainActor
-    func loadPlanet(
-        representing planet: Planet,
-        into root: Entity
-    ) async {
-        let entity: Entity
-        if let node = try? await ModelNode.load(planet.file) {
-            node.scaleToUnits(planet.scale)
-            entity = node.entity
-        } else {
-            let sphere = GeometryNode.sphere(radius: planet.scale * 0.5, color: planet.color.asUIColor)
-            entity = sphere.entity
+    func loadPlanet(representing planet: Planet, into root: Entity) async {
+        // Add placeholder sphere immediately at full opacity
+        let sphere = GeometryNode.sphere(radius: planet.scale * 0.5, color: planet.color.asUIColor)
+        let placeholder = sphere.entity
+        placeholder.position = planet.position.asSIMD3
+        placeholder.orientation = planet.rotation.asQuatf
+        placeholder.components.set(OpacityComponent(opacity: 1))
+        root.addChild(placeholder)
+
+        // Load the model; leave the placeholder in place on failure
+        guard let node = try? await ModelNode.load(planet.file) else { return }
+        node.scaleToUnits(planet.scale)
+        let model = node.entity
+        model.position = planet.position.asSIMD3
+        model.orientation = planet.rotation.asQuatf
+        model.components.set(OpacityComponent(opacity: 0))
+        root.addChild(model)
+
+        // Cross-fade: model fades in while placeholder fades out
+        let duration: TimeInterval = 1.0
+        model.fadeOpacity(from: 0, to: 1, over: duration)
+        placeholder.fadeOpacity(from: 1, to: 0, over: duration)
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            placeholder.removeFromParent()
         }
-        entity.position = planet.position.asSIMD3
-        entity.orientation = planet.rotation.asQuatf
-        root.addChild(entity)
     }
 }
