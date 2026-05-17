@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.dcengineer.twolinks.functions.rad2deg
 import com.dcengineer.twolinks.model.TwoLinks
+import com.dcengineer.twolinks.model.ViewMode
 import com.dcengineer.twolinks.model.maxPivot
 import com.dcengineer.twolinks.model.offsetNorm
 import dev.romainguy.kotlin.math.Float2
@@ -27,6 +28,13 @@ class MainViewModel : ViewModel() {
     var shuffleDialogIsVisible = mutableStateOf(false)
 
     var isPaused = mutableStateOf(false)
+
+    val isARAvailable: Boolean get() = getPlatform().isARAvailable
+    var viewMode = mutableStateOf(ViewMode.Standard)
+
+    fun setViewMode(mode: ViewMode) {
+        viewMode.value = mode
+    }
 
     var lastFrameTime: Long? = null
 
