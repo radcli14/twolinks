@@ -102,20 +102,17 @@ struct TwoLinksSceneView: View {
 
     private func applyTransforms() {
         let twoLinks = viewModel.twoLinks
-        let l0 = twoLinks.links[0]
-        let l1 = twoLinks.links[1]
-        let pivot = twoLinks.pivotPosition
 
         // The 180° Y wrapper negates world X and Z; negate angles and positions to compensate
         sceneState.link1AnchorEntity?.orientation = twoLinks.linkOneOrientation
-        sceneState.link1Entity?.position = SIMD3<Float>(-l0.offset, 0, -0.5 * l0.thickness)
-        sceneState.link1Entity?.scale    = SIMD3<Float>(l0.length, l0.height, l0.thickness)
+        sceneState.link1Entity?.position = twoLinks.linkOnePosition
+        sceneState.link1Entity?.scale = twoLinks.linkOneScale
 
-        sceneState.pivot2AnchorEntity?.position = SIMD3<Float>(-pivot.x, pivot.y, -pivot.z)
+        sceneState.pivot2AnchorEntity?.position = -twoLinks.pivotPosition.asSIMD3
 
         sceneState.link2AnchorEntity?.orientation = twoLinks.linkTwoOrientation
-        sceneState.link2Entity?.position = SIMD3<Float>(-l1.offset, 0, -0.5 * l1.thickness)
-        sceneState.link2Entity?.scale    = SIMD3<Float>(l1.length, l1.height, l1.thickness)
+        sceneState.link2Entity?.position = twoLinks.linkTwoPosition
+        sceneState.link2Entity?.scale = twoLinks.linkTwoScale
     }
 
     private func applyColors() {
