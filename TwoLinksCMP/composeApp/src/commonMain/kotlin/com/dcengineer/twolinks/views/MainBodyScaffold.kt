@@ -18,7 +18,10 @@ fun MainBodyScaffold(viewModel: MainViewModel) {
                 TwoLinksTopAppBar(
                         onEditDimensions = viewModel::toggleLinkDimensionEditor,
                         onEditColors = viewModel::toggleLinkColorEditor,
-                        onShuffle = viewModel::toggleShuffleDialog
+                        onShuffle = viewModel::toggleShuffleDialog,
+                        isARAvailable = viewModel.isARAvailable,
+                        viewMode = viewModel.viewMode.value,
+                        onSetViewMode = viewModel::setViewMode
                 )
             },
             containerColor = Color.Transparent
