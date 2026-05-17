@@ -173,49 +173,6 @@ struct TwoLinksSceneView: View {
     }
 }
 
-extension Kotlin_mathFloat3 {
-    var asSIMD3: SIMD3<Float> {
-        .init(x, y, z)
-    }
-    
-    /// Assuming this Kotlin `Float3` represents a XYZ rotation sequence with states in degrees, provide the corresponding quaternion
-    var asQuatf: simd_quatf {
-        .forXYZRotationInDegrees(x, y, z)
-    }
-}
-
-extension Kotlin_mathFloat4 {
-    var asUIColor: UIColor {
-        UIColor(red: CGFloat(x), green: CGFloat(y), blue: CGFloat(z), alpha: CGFloat(w))
-    }
-}
-
-extension simd_quatf {
-    static func forXYZRotationInDegrees(_ x: Float, _ y: Float, _ z: Float) -> simd_quatf {
-        simd_quatf(angle: x * .deg2rad, axis: [1, 0, 0]) *
-        simd_quatf(angle: y * .deg2rad, axis: [0, 1, 0]) *
-        simd_quatf(angle: z * .deg2rad, axis: [0, 0, 1])
-    }
-    
-    static func forZRotationInDegrees(_ angle: Float) -> simd_quatf {
-        .forZRotationInRadians(angle * .deg2rad)
-    }
-    
-    static func forZRotationInRadians(_ angle: Float) -> simd_quatf {
-        simd_quatf(angle: angle, axis: [0, 0, 1])
-    }
-}
-
-extension TwoLinks {
-    var linkOneOrientation: simd_quatf {
-        .forZRotationInRadians(-simulationState.x)
-    }
-    
-    var linkTwoOrientation: simd_quatf {
-        .forZRotationInRadians(simulationState.x - simulationState.y)
-    }
-}
-
 extension Float {
     static let deg2rad: Float = .pi / 180
 }
