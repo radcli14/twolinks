@@ -127,21 +127,21 @@ struct TwoLinksSceneView: View {
 
         if c0 != sceneState.lastLink0Color, let entity = sceneState.link1Entity {
             sceneState.lastLink0Color = c0
-            var mat = SimpleMaterial()
-            mat.color    = .init(tint: UIColor(red: CGFloat(c0.x), green: CGFloat(c0.y), blue: CGFloat(c0.z), alpha: 1))
-            mat.metallic  = .init(floatLiteral: 0.5)
-            mat.roughness = .init(floatLiteral: 0.4)
-            entity.model?.materials = [mat]
+            applyColor(l0.color.asUIColor, to: entity)
         }
 
         if c1 != sceneState.lastLink1Color, let entity = sceneState.link2Entity {
             sceneState.lastLink1Color = c1
-            var mat = SimpleMaterial()
-            mat.color    = .init(tint: UIColor(red: CGFloat(c1.x), green: CGFloat(c1.y), blue: CGFloat(c1.z), alpha: 1))
-            mat.metallic  = .init(floatLiteral: 0.5)
-            mat.roughness = .init(floatLiteral: 0.4)
-            entity.model?.materials = [mat]
+            applyColor(l1.color.asUIColor, to: entity)
         }
+    }
+    
+    private func applyColor(_ color: UIColor, to link: ModelEntity) {
+        var mat = SimpleMaterial()
+        mat.color    = .init(tint: color)
+        mat.metallic  = .init(floatLiteral: 0.5)
+        mat.roughness = .init(floatLiteral: 0.4)
+        link.model?.materials = [mat]
     }
     
     // MARK: - Planets
