@@ -4,12 +4,54 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<base target="_blank">
 
-	<title class="pageTitle">{{ site.page_title }}</title>
+	<!-- Title & Description -->
+	<title>{{ site.page_title }}</title>
 	<meta name="description" content="{{ site.app_description }}">
 
-	<link rel="shortcut icon" href="{{ site.app_icon | relative_url }}">
+	<!-- Canonical URL -->
+	<link rel="canonical" href="{{ site.url }}{{ page.url }}">
 
-	<!-- Smart App Banner -->
+	<!-- Open Graph -->
+	<meta property="og:type"        content="website">
+	<meta property="og:site_name"   content="{{ site.app_name }}">
+	<meta property="og:title"       content="{{ site.page_title }}">
+	<meta property="og:description" content="{{ site.app_description }}">
+	<meta property="og:url"         content="{{ site.url }}{{ page.url }}">
+	<meta property="og:image"       content="{{ site.url }}/{{ site.cover_image }}">
+
+	<!-- Twitter Card -->
+	<meta name="twitter:card"        content="summary_large_image">
+	<meta name="twitter:title"       content="{{ site.page_title }}">
+	<meta name="twitter:description" content="{{ site.app_description }}">
+	<meta name="twitter:image"       content="{{ site.url }}/{{ site.cover_image }}">
+
+	<!-- JSON-LD: SoftwareApplication structured data -->
+	<script type="application/ld+json">
+	{
+	  "@context": "https://schema.org",
+	  "@type": "SoftwareApplication",
+	  "name": "{{ site.app_name }}",
+	  "description": "{{ site.app_description }}",
+	  "url": "{{ site.url }}",
+	  "applicationCategory": "EducationApplication",
+	  "operatingSystem": "iOS, Android, Web",
+	  "offers": {
+	    "@type": "Offer",
+	    "price": "0",
+	    "priceCurrency": "USD"
+	  },
+	  "author": {
+	    "@type": "Person",
+	    "name": "{{ site.your_name }}",
+	    "url": "{{ site.your_link }}"
+	  },
+	  "installUrl": "{{ site.appstore_link }}",
+	  "image": "{{ site.url }}/{{ site.app_icon }}"
+	}
+	</script>
+
+	<!-- Favicon & Smart App Banner -->
+	<link rel="shortcut icon" href="{{ site.app_icon | relative_url }}">
 	{% if site.enable_smart_app_banner %}
 		<meta name="apple-itunes-app" content="app-id={{ site.ios_app_id }}">
 	{% endif %}
