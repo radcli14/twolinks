@@ -31,9 +31,7 @@ struct TwoLinksSceneView: View {
             .onChange(of: context.date) { _, _ in
                 let newIsARMode = (viewModel.viewMode.value as? ViewMode) == .ar
                 if isARMode != newIsARMode { isARMode = newIsARMode }
-                if !isARMode {
-                    manager.updateOnFrame(viewModel: viewModel)
-                }
+                manager.updateOnFrame(viewModel: viewModel)
             }
         }
     }

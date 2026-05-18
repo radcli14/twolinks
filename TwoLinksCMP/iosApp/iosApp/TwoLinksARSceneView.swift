@@ -8,10 +8,32 @@ struct TwoLinksARSceneView: View {
     let viewModel: MainViewModel
     let manager: SceneManager
 
+    var body: some View {
+        RealityView { content in
+            content.camera = .spatialTracking
+            let anchor = AnchorEntity(plane: .horizontal, minimumBounds: [0.1, 0.1])
+            let container = Entity()
+            container.position = [0, 0.1, 0]
+            container.scale = SIMD3(repeating: 0.1)
+            anchor.addChild(container)
+            content.add(anchor)
+            manager.buildScene(root: container, representing: viewModel)
+        }
+        .edgesIgnoringSafeArea(.all)
+    }
+}
+
+/*
+// ARSceneView-based implementation (SceneViewSwift). Camera feed not visible when embedded
+// in the UIKitViewController/UIHostingController/Compose hierarchy — raised with SceneViewSwift maintainers.
+struct TwoLinksARSceneViewLegacy: View {
+    let viewModel: MainViewModel
+    let manager: SceneManager
+
     @State private var gestureHandler = ARGestureHandler()
 
     var body: some View {
-        ARSceneView(planeDetection: .horizontal, showCoachingOverlay: true)
+        ARSceneView(planeDetection: .horizontal, showPlaneOverlay: false, showCoachingOverlay: true)
             .onSessionStarted { arView in
                 let anchor = AnchorEntity(plane: .horizontal, minimumBounds: [0.1, 0.1])
                 let container = Entity()
@@ -86,3 +108,4 @@ class ARGestureHandler: NSObject, UIGestureRecognizerDelegate {
         container.setOrientation(initialOrientation * delta, relativeTo: nil)
     }
 }
+*/
