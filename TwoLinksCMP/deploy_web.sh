@@ -32,6 +32,9 @@ if [ ! -d "$BUILD_OUTPUT_DIR" ]; then
     exit 1
 fi
 
+# Inject noindex so crawlers don't index the canvas-rendered app — the landing page is the SEO target
+sed -i '' 's|<head>|<head><meta name="robots" content="noindex">|' "$BUILD_OUTPUT_DIR/index.html"
+
 # Step 2: Ensure working copy is clean
 if ! git -C "$REPO_ROOT" diff-index --quiet HEAD --; then
     echo "Error: You have uncommitted changes. Please commit or stash them before deploying."
