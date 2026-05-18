@@ -8,18 +8,105 @@ struct TwoLinksARSceneView: View {
     let viewModel: MainViewModel
     let manager: SceneManager
 
+    @State private var container: Entity?
+    @State private var scale: Entity?
+    @State private var dragStartPosition: SIMD3<Float>?
+    @State private var dragStartUnproject: SIMD3<Float>?
+    @State private var scaleStart: Float = 0.314
+    @State private var yawStart: Float?
+    
+    private let doorBaseOffset: Float = 0.0628
+
     var body: some View {
         RealityView { content in
             content.camera = .spatialTracking
             let anchor = AnchorEntity(plane: .horizontal, minimumBounds: [0.1, 0.1])
-            let container = Entity()
-            container.position = [0, 0.1, 0]
-            container.scale = SIMD3(repeating: 0.1)
-            anchor.addChild(container)
             content.add(anchor)
-            manager.buildScene(root: container, representing: viewModel)
+            
+            // Container handles the user translate or rotate
+            container = Entity()
+            container?.setParent(anchor)
+
+            // Scale entity: child of container, has a fixed vertical offset, and receives pinch-to-scale changes.
+            scale = Entity()
+            scale?.position = SIMD3(0, doorBaseOffset, 0)
+            scale?.scale = SIMD3(repeating: scaleStart)
+            scale?.setParent(container)
+
+            // Fixed-position entity: lifts the scene so the door-bottom/moon-top join
+            // using half of the door height in the scene space.
+            let offset = Entity()
+            offset.position = [0, 0.5 * viewModel.doorSize.y, 0]
+            scale?.addChild(offset)
+
+            manager.buildScene(root: offset, representing: viewModel)
+
+            // Invisible hitbox sized to cover the ground surrounding the scene.
+            // InputTargetComponent + CollisionComponent are required for targetedToAnyEntity().
+            let hitbox = Entity()
+            hitbox.components.set(InputTargetComponent())
+            hitbox.components.set(CollisionComponent(shapes: [.generateBox(size: [2, 0.1, 2])]))
+            container?.addChild(hitbox)
         }
+        .gesture(
+            DragGesture()
+                .targetedToAnyEntity()
+                .onChanged(handleDragChanged)
+                .onEnded(handleDragEnded)
+        )
+        .gesture(
+            MagnifyGesture()
+                .simultaneously(with: RotationGesture())
+                .onChanged { value in
+                    if let mag = value.first { handleMagnifyChanged(mag) }
+                    if let rot = value.second { handleRotateChanged(rot) }
+                }
+                .onEnded { _ in
+                    //scaleStart = nil
+                    yawStart = nil
+                }
+        )
         .edgesIgnoringSafeArea(.all)
+    }
+    
+    // MARK: - Drag Gesture
+    
+    private func handleDragChanged(_ value: EntityTargetValue<DragGesture.Value>) {
+        guard let container, let worldPos = value.unproject(value.location, from: .global, to: .scene) else { return }
+        if dragStartPosition == nil {
+            dragStartPosition = container.position(relativeTo: nil)
+            dragStartUnproject = worldPos
+        }
+        guard let dragStartPosition, let dragStartUnproject else { return }
+        let dx = worldPos.x - dragStartUnproject.x
+        let dz = worldPos.z - dragStartUnproject.z
+        let newContainerPos = dragStartPosition + SIMD3(dx, 0, dz)
+        container.setPosition(newContainerPos, relativeTo: nil)
+    }
+    
+    private func handleDragEnded(_ value: EntityTargetValue<DragGesture.Value>) {
+        dragStartPosition = nil
+        dragStartUnproject = nil
+    }
+    
+    // MARK: - Magnify and Rotate Gestures
+
+    private func handleMagnifyChanged(_ value: MagnifyGesture.Value) {
+        guard let scale else { return }
+        let newScale = max(0.01, min(1.0, scaleStart * Float(value.magnification)))
+        scale.scale = SIMD3(repeating: newScale)
+    }
+
+    private func handleRotateChanged(_ value: RotationGesture.Value) {
+        guard let container else { return }
+        if yawStart == nil {
+            // Extract current yaw from the Y-axis rotation component of the orientation
+            let q = container.orientation(relativeTo: nil)
+            yawStart = 2.0 * atan2(q.imag.y, q.real)
+        }
+        guard let yawStart else { return }
+        let yaw = yawStart - Float(value.radians)
+        container.setOrientation(simd_quatf(angle: yaw, axis: [0, 1, 0]), relativeTo: nil)
     }
 }
 
