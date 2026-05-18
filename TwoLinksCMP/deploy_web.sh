@@ -40,6 +40,7 @@ fi
 
 # Step 3: Add a worktree on the web branch (create orphan branch if it doesn't exist yet)
 echo "Setting up git worktree..."
+git -C "$REPO_ROOT" worktree prune
 if ! git -C "$REPO_ROOT" show-ref --verify --quiet refs/heads/web; then
     if git -C "$REPO_ROOT" ls-remote --exit-code --heads origin web > /dev/null 2>&1; then
         echo "Fetching web branch from remote..."

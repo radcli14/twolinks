@@ -36,6 +36,7 @@ fi
 
 # Step 3: Add a worktree on the web branch (no branch switching needed)
 echo "Adding git worktree for web branch..."
+git -C "$REPO_ROOT" worktree prune
 git -C "$REPO_ROOT" worktree add "$WORKTREE_DIR" web
 
 # Step 4: Sync landing page files (--exclude=app preserves the existing web build)
