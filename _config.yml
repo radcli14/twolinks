@@ -1,10 +1,10 @@
-# page title
-TwoLinks                                  :                                           # Automatically populates with app name if not set and if iOS app ID is set. Otherwise enter manually.
+page_title                                : "TwoLinks – Double Pendulum Physics Simulation for iOS, Android & Web"
 
 # App Info
 ios_app_id                                : "1625794656"                               # SwiftyTwoLinks App Store ID
 ios_app_country                           : us                                        # Country code for the app store link (US)
 
+url                                       : "https://twolinks.dc-engineer.com"        # Canonical site URL (used for OG tags and sitemap)
 appstore_link                             : "https://apps.apple.com/us/app/swiftytwolinks/id1625794656" # App Store Link
 playstore_link                            : ""                                        # Enter Google Play Store URL if live
 presskit_download_link                    :                                           # Link to downloadable press kit zip
@@ -12,7 +12,7 @@ presskit_download_link                    :                                     
 app_icon                                  : assets/appicon.png                        # Path to app icon
 app_name                                  : TwoLinks                                  # App name
 app_price                                 : Free                                      # Price
-app_description                           : A real-time, interactive 3D physical simulation of a chaotic double pendulum. Explore chaos theory, custom link dimensions, and gravity.
+app_description                           : "Real-time 3D simulation of a chaotic double pendulum using multibody dynamics and Lagrangian mechanics. Explore chaos theory on iPhone, iPad, and Android — with Augmented Reality support via ARKit and ARCore. Free on iOS, Android, and the web."
 
 enable_smart_app_banner                   : true                                      # Set to true to show a smart app banner on iOS
 
@@ -105,6 +105,9 @@ collections:
   pages:
     output: true
     permalink: /:path/
+
+plugins:
+  - jekyll-sitemap
 
 # Markdown rendering
 markdown: kramdown
