@@ -4,7 +4,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
 LANDING_PAGE_DIR="$SCRIPT_DIR/landing_page"
 WORKTREE_DIR=$(mktemp -d)
 

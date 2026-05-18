@@ -4,8 +4,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-BUILD_OUTPUT_DIR="$SCRIPT_DIR/composeApp/build/dist/wasmJs/productionExecutable"
+REPO_ROOT="$SCRIPT_DIR"
+BUILD_OUTPUT_DIR="$SCRIPT_DIR/TwoLinksCMP/composeApp/build/dist/wasmJs/productionExecutable"
 LANDING_PAGE_DIR="$SCRIPT_DIR/landing_page"
 WORKTREE_DIR=$(mktemp -d)
 
@@ -22,10 +22,10 @@ echo "Starting web deployment process..."
 # Set CLEAN_BUILD=true to force a clean before building (slower but safe)
 if [ "${CLEAN_BUILD:-false}" == "true" ]; then
     echo "Cleaning build..."
-    cd "$SCRIPT_DIR" && ./gradlew clean
+    cd "$SCRIPT_DIR/TwoLinksCMP" && ./gradlew clean
 fi
 echo "Building the wasm application..."
-cd "$SCRIPT_DIR" && ./gradlew :composeApp:wasmJsBrowserDistribution
+cd "$SCRIPT_DIR/TwoLinksCMP" && ./gradlew :composeApp:wasmJsBrowserDistribution
 
 if [ ! -d "$BUILD_OUTPUT_DIR" ]; then
     echo "Error: Build output directory not found: $BUILD_OUTPUT_DIR"
