@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A0A26B72FBB84D5004F9C06 /* SceneViewSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8A0A26B62FBB84D5004F9C06 /* SceneViewSwift */; };
+		8A0A26BA2FBB891F004F9C06 /* SceneViewSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8A0A26B92FBB891F004F9C06 /* SceneViewSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A0A26B72FBB84D5004F9C06 /* SceneViewSwift in Frameworks */,
+				8A0A26BA2FBB891F004F9C06 /* SceneViewSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
-				8A0A26B62FBB84D5004F9C06 /* SceneViewSwift */,
+				8A0A26B92FBB891F004F9C06 /* SceneViewSwift */,
 			);
 			productName = iosApp;
 			productReference = F7368546B9E539524BC421DF /* TwoLinksCMP.app */;
@@ -121,7 +121,7 @@
 			mainGroup = 5E4D0C26E89E9F032AABBC9C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8A0A26B52FBB84D5004F9C06 /* XCRemoteSwiftPackageReference "sceneview-swift" */,
+				8A0A26B82FBB891F004F9C06 /* XCLocalSwiftPackageReference "../../sceneview/SceneViewSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 98690363A02E865F9B17EE09 /* Products */;
@@ -380,21 +380,16 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		8A0A26B52FBB84D5004F9C06 /* XCRemoteSwiftPackageReference "sceneview-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/radcli14/sceneview-swift.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		8A0A26B82FBB891F004F9C06 /* XCLocalSwiftPackageReference "../../sceneview/SceneViewSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../sceneview/SceneViewSwift;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8A0A26B62FBB84D5004F9C06 /* SceneViewSwift */ = {
+		8A0A26B92FBB891F004F9C06 /* SceneViewSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8A0A26B52FBB84D5004F9C06 /* XCRemoteSwiftPackageReference "sceneview-swift" */;
 			productName = SceneViewSwift;
 		};
 /* End XCSwiftPackageProductDependency section */

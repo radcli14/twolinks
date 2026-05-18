@@ -13,26 +13,28 @@ struct TwoLinksSceneView: View {
     var body: some View {
         let _ = sunLight.entity.look(at: .zero, from: Planet.companion.sun.position.asSIMD3, relativeTo: nil)
         return TimelineView(.animation) { context in
-            Group {
-                if isARMode {
-                    TwoLinksARSceneView(viewModel: viewModel, manager: manager)
-                } else {
-                    SceneView { root in
-                        manager.buildScene(root: root, representing: viewModel)
-                    }
-                    .cameraControls(.orbit)
-                    .autoCenterContent(false)
-                    .environment(.custom(name: "NightSky", hdrFile: "NightSky"))
-                    .mainLight(.custom(sunLight))
-                    .fillLight(.disabled)
-                    .edgesIgnoringSafeArea(.all)
-                }
-            }
-            .onChange(of: context.date) { _, _ in
+            sceneViewContent().onChange(of: context.date) { _, _ in
                 let newIsARMode = (viewModel.viewMode.value as? ViewMode) == .ar
                 if isARMode != newIsARMode { isARMode = newIsARMode }
                 manager.updateOnFrame(viewModel: viewModel)
             }
+        }
+    }
+    
+    @ViewBuilder
+    private func sceneViewContent() -> some View {
+        if isARMode {
+                TwoLinksARSceneView(viewModel: viewModel, manager: manager)
+        } else {
+            SceneView { root in
+                manager.buildScene(root: root, representing: viewModel)
+            }
+            .cameraControls(.orbit)
+            .autoCenterContent(false)
+            .environment(.custom(name: "NightSky", hdrFile: "NightSky"))
+            .mainLight(.custom(sunLight))
+            .fillLight(.disabled)
+            .edgesIgnoringSafeArea(.all)
         }
     }
 }
