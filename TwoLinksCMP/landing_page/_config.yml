@@ -7,7 +7,7 @@ ios_app_country                           : us                                  
 
 appstore_link                             : "https://apps.apple.com/us/app/swiftytwolinks/id1625794656" # App Store Link
 playstore_link                            : ""                                        # Enter Google Play Store URL if live
-presskit_download_link                    : ""                                        # Link to downloadable press kit zip
+presskit_download_link                    :                                           # Link to downloadable press kit zip
 
 app_icon                                  : assets/appicon.png                        # Path to app icon
 app_name                                  : TwoLinks                                  # App name
