@@ -16,6 +16,9 @@ import UIKit
     // Color change detection
     var lastLink0Color = SIMD3<Float>(repeating: -1)
     var lastLink1Color = SIMD3<Float>(repeating: -1)
+
+    // Planet entity cache — populated on first load, cloned on subsequent scene builds
+    private var planetCache: [String: Entity] = [:]
     
     private let pivotRadius: Float = 0.01
     private let pivotHeight: Float = 0.015
@@ -88,6 +91,15 @@ import UIKit
         }
     }
     
+    // MARK: - Frame Update
+
+    func updateOnFrame(viewModel: MainViewModel) {
+        let nanos = Int64(ProcessInfo.processInfo.systemUptime * 1_000_000_000)
+        viewModel.updateOnFrame(frameTime: nanos)
+        applyTransforms(from: viewModel.twoLinks)
+        applyColors(from: viewModel.twoLinks)
+    }
+
     // MARK: - Update
     
     func applyTransforms(from twoLinks: TwoLinks) {
@@ -141,6 +153,12 @@ import UIKit
 
     @MainActor
     func loadPlanet(representing planet: Planet, into root: Entity) async {
+        // Fast path: clone the cached entity directly
+        if let cached = planetCache[planet.file] {
+            root.addChild(cached.clone(recursive: true))
+            return
+        }
+
         // Add placeholder sphere immediately at full opacity
         let sphere = GeometryNode.sphere(radius: planet.scale * 0.5, color: planet.color.asUIColor)
         let placeholder = sphere.entity
@@ -155,6 +173,10 @@ import UIKit
         let model = node.entity
         model.position = planet.position.asSIMD3
         model.orientation = planet.rotation.asQuatf
+
+        // Cache a clone before adding the opacity animation
+        planetCache[planet.file] = model.clone(recursive: true)
+
         model.components.set(OpacityComponent(opacity: 0))
         root.addChild(model)
 
