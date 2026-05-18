@@ -380,13 +380,22 @@ nav > ul li a:active {
 
 .iphonePreview {
 	grid-area: p;
-	background-image: url($device-color);
-	background-size: 400px auto;
-	background-repeat: no-repeat;
+	position: relative;
 	margin-top: 68px;
 }
 
+.iphoneBezel {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 400px;
+	pointer-events: none;
+	z-index: 10;
+}
+
 .iphoneScreen {
+	position: relative;
+	z-index: 1;
 	width: 349px;
 	-webkit-clip-path: url(#screenMask);
 	clip-path: url(#screenMask);
@@ -395,6 +404,8 @@ nav > ul li a:active {
 }
 
 .videoContainer {
+	position: relative;
+	z-index: 1;
 	width: 349px;
 	height: 755px;
 	-webkit-clip-path: url(#screenMask);
@@ -410,8 +421,8 @@ nav > ul li a:active {
 
 @media only screen and (max-width: 1070px) {
 
-	.iphonePreview {
-		background-size: 370px auto;
+	.iphoneBezel {
+		width: 370px;
 	}
 
 	.iphoneScreen {
@@ -426,23 +437,27 @@ nav > ul li a:active {
 		margin-left: 24px;
 		margin-top: 22px;
 	}
-	
+
 	.videoContainer > video {
 		width: 322px;
 		height: 698px;
 	}
-	
-} 
+
+}
 
 @media only screen and (max-width: 992px) {
 
 	.iphonePreview {
 		display: flex;
-		background-size: 260px auto;
-		background-position: center 0;
 		margin-top: 47px;
 		justify-content: center;
 		padding-bottom: 75px;
+	}
+
+	.iphoneBezel {
+		width: 260px;
+		left: 50%;
+		transform: translateX(-50%);
 	}
 
 	.iphoneScreen {
@@ -465,8 +480,8 @@ nav > ul li a:active {
 		width: 226px;
 		height: 488px;
 	}
-	
-} 
+
+}
 
 
 // Feature List
