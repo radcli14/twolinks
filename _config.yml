@@ -7,7 +7,7 @@ ios_app_country                           : us                                  
 
 appstore_link                             : "https://apps.apple.com/us/app/swiftytwolinks/id1625794656" # App Store Link
 playstore_link                            : ""                                        # Enter Google Play Store URL if live
-presskit_download_link                    : ""                                        # Link to downloadable press kit zip
+presskit_download_link                    :                                           # Link to downloadable press kit zip
 
 app_icon                                  : assets/appicon.png                        # Path to app icon
 app_name                                  : TwoLinks                                  # App name
@@ -18,7 +18,7 @@ enable_smart_app_banner                   : true                                
 
 # Information About Yourself
 your_name                                 : Eliott Radcliffe
-your_link                                 : https://www.dc-engineer.com
+your_link                                 : https://dc-engineer.com
 your_city                                 : Bilbao
 email_address                             : Eliott.Radcliffe@dc-engineer.com
 linkedin_username                         : www.linkedin.com/in/eliott-radcliffe-dcdc-llc
