@@ -5,42 +5,34 @@ include_in_header: true
 ---
 
 # Changelog
-Keep track of updates to the YouKon unit conversionsa and property database management app.
 
 <br>
 
 ### `Latest`
-# **Version 1.3**
-Improved project editor.
+# **Version 2.0**
+*May 18, 2026*
+
+A complete rewrite in Kotlin Multiplatform brings TwoLinks to Android and the web, adds Augmented Reality, and delivers a fully redesigned interface.
 
 #### What's New
-- Outlined text fields.
-- Images.
-- Review requests.
-
-<br>
-
-# **Version 1.2**
-Many new units and systems.
-
-#### What's New
-- Added volume, area, torques, stiffnesses
-
-# **Version 1.1**
-Purchases.
-
-#### What's New
-- Incorporated RevenueCat.
+- **Android and web support** — the same physics simulation and 3D scene now run natively on Android and in any modern browser.
+- **Augmented Reality** — place the double pendulum in your real environment using ARKit on iOS or ARCore on Android. Drag to reposition, pinch to scale, and rotate with two fingers.
+- **3D planet models** — a high-resolution Earth and Moon appear in the scene, loading with a smooth fade-in transition.
+- **Night sky environment** — an HDR skybox sets the scene against a starlit background in standard view.
+- **Shuffle** — randomize link lengths, offsets, and colors with a single tap.
+- **Refined controls** — a redesigned top bar with menus for view mode, link colors, and dimensions.
 
 <br>
 
 # **Version 1.0**
-This is the first release to the YouKon app. 
+*July 2022*
+
+The original TwoLinks, built in Swift and SceneKit for iPhone.
 
 #### What's New
-- A quick convert card to calculate a single property's value in a target unit.
-- A projects card to store your database of saved properties.
-- Convert all your properties simultaneously into a consistent unit system.
-- Authenticate with Firebase to share your database across multiple devices.
-
-<br>
+- Real-time double pendulum physics simulation.
+- Interactive 3D scene with orbit camera controls.
+- Sliders to adjust the length, height, and pivot offset of each link.
+- Color pickers for both links.
+- Play, pause, and restart controls.
+- Moon model and starry background.
