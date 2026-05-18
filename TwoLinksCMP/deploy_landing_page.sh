@@ -40,7 +40,7 @@ git -C "$REPO_ROOT" worktree add "$WORKTREE_DIR" web
 
 # Step 4: Sync landing page files (--exclude=app preserves the existing web build)
 echo "Syncing landing page files..."
-rsync -av --delete --exclude="app" "$LANDING_PAGE_DIR/" "$WORKTREE_DIR/"
+rsync -av --delete --exclude=".git" --exclude="app" "$LANDING_PAGE_DIR/" "$WORKTREE_DIR/"
 
 # Step 5: Commit and push — only changed files appear in the diff
 echo "Committing and pushing to web branch..."

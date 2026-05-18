@@ -61,7 +61,7 @@ rsync -av --delete "$BUILD_OUTPUT_DIR/" "$WORKTREE_DIR/app/"
 # Step 5: Sync landing page into the root (--exclude=app preserves the web build above)
 if [ -d "$LANDING_PAGE_DIR" ]; then
     echo "Syncing landing page..."
-    rsync -av --delete --exclude="app" "$LANDING_PAGE_DIR/" "$WORKTREE_DIR/"
+    rsync -av --delete --exclude=".git" --exclude="app" "$LANDING_PAGE_DIR/" "$WORKTREE_DIR/"
 else
     echo "Warning: Landing page directory not found. Landing page will not be deployed."
 fi
