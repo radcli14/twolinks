@@ -87,11 +87,91 @@ Transform matrices are computed in Kotlin using `kotlin-math` (`translation`, `r
 
 ---
 
+## Physics
+
+The simulation integrates the equations of motion for a double compound pendulum using **4th-order Runge-Kutta** (RK4).
+
+### Notation
+
+| Symbol | Code | Meaning |
+|--------|------|---------|
+| $\theta_1, \theta_2$ | `x[0]`, `x[1]` | Absolute angles of link 1 and link 2 |
+| $\omega_1, \omega_2$ | `x[2]`, `x[3]` | Angular rates |
+| $\alpha_1, \alpha_2$ | `dx[0]`, `dx[1]` | Angular accelerations (solved each step) |
+| $m_1, m_2$ | `links[i].mass` | Link masses |
+| $I_1, I_2$ | `links[i].moi` | Moments of inertia about each link's own centre of mass |
+| $\Delta I_1, \Delta I_2$ | `links[i].moiRelOffset` | Parallel-axis correction: $m_i c_i^2$ |
+| $c_1, c_2$ | `links[i].offset` | Distance from hinge to centre of mass along link axis |
+| $y$ | `pivot` | Distance from link 1's hinge to the second-link attachment point |
+| $g_x, g_y$ | `gx`, `gy` | Gravity components ($g_x = 0$, $g_y = -1.62\ \text{m/s}^2$) |
+
+### State vector
+
+```math
+\mathbf{x} = \begin{bmatrix} \theta_1 & \theta_2 & \omega_1 & \omega_2 \end{bmatrix}^\top
+```
+
+### Mass matrix
+
+The equation of motion is $\mathbf{M}(\mathbf{x})\,[\alpha_1,\, \alpha_2]^\top = \mathbf{f}(\mathbf{x})$. The 2×2 mass matrix is symmetric:
+
+```math
+\mathbf{M}(\mathbf{x}) =
+\begin{bmatrix}
+  I_1 + \Delta I_1 + m_2 y^2 & m_2\, y\, c_2 \cos(\theta_1 - \theta_2) \\
+  m_2\, y\, c_2 \cos(\theta_1 - \theta_2) & I_2 + \Delta I_2
+\end{bmatrix}
+```
+
+- **M[0,0]** (`m11`) — inertia of the whole system about link 1's hinge, treating link 2 as a point mass at the pivot.
+- **M[1,1]** (`m22`) — inertia of link 2 about its own hinge.
+- **M[0,1] = M[1,0]** (`m12`) — coupling term; goes to zero when the links are parallel ($\theta_1 = \theta_2$).
+
+### Forcing vector (right-hand side)
+
+General form (with $g_x$ and $g_y$):
+
+```math
+\begin{aligned}
+f_1 &= -y\, c_2\, m_2\, \omega_2^2 \sin(\theta_1 - \theta_2)
+       - y\, g_x\, m_2 \sin\theta_1 + y\, g_y\, m_2 \cos\theta_1
+       - c_1 g_x m_1 \sin\theta_1 + c_1 g_y m_1 \cos\theta_1 \\[6pt]
+f_2 &= c_2\, m_2 \bigl( y\, \omega_1^2 \sin(\theta_1 - \theta_2) - g_x \sin\theta_2 + g_y \cos\theta_2 \bigr)
+\end{aligned}
+```
+
+The first terms in each row are Coriolis/centripetal; the remaining terms are gravity acting on each centre of mass. With $g_x = 0$ and $g_y = -g$ (lunar gravity, $g = 1.62\ \text{m/s}^2$) this simplifies to:
+
+```math
+\begin{aligned}
+f_1 &= -y\, c_2\, m_2\, \omega_2^2 \sin(\theta_1 - \theta_2) - g\,(y\, m_2 + c_1 m_1)\cos\theta_1 \\[6pt]
+f_2 &= c_2\, m_2 \bigl( y\, \omega_1^2 \sin(\theta_1 - \theta_2) - g \cos\theta_2 \bigr)
+\end{aligned}
+```
+
+### Integration
+
+The angular accelerations are recovered by inverting the 2×2 mass matrix analytically (`invert2x2`):
+
+```math
+\begin{bmatrix} \alpha_1 \\ \alpha_2 \end{bmatrix} = \mathbf{M}^{-1}(\mathbf{x})\, \mathbf{f}(\mathbf{x})
+```
+
+The full state derivative passed to RK4 is:
+
+```math
+\dot{\mathbf{x}} = \begin{bmatrix} \omega_1 & \omega_2 & \alpha_1 & \alpha_2 \end{bmatrix}^\top
+```
+
+Frame time is capped at 0.1 s before each RK4 step to prevent the integrator from diverging after app suspend/resume. If the resulting state contains NaN or infinity the previous state is kept.
+
+---
+
 ## Calculating Offsets and Pivot Points
 
 ![Dimensional Diagram](assets/offsetDiagram.png)
 
-Five normalized values define the geometry of the two-link system. Each link has a length `L` and an offset `x` — the distance from the hinge point `H` to the link's center of mass `C`. The first link also exposes a pivot point `P` at distance `y` from `H`, where the second link attaches.
+Five normalized values define the geometry of the two-link system. Each link has a length `L` and an offset `x` — the distance from the hinge point `H` to the link's centre of mass `C`. The first link also exposes a pivot point `P` at distance `y` from `H`, where the second link attaches.
 
 ```
           H────────x────────C────────────────────┤
@@ -101,21 +181,21 @@ Five normalized values define the geometry of the two-link system. Each link has
 ```
 
 - **H** — hinge point (origin of the link's local frame; world origin for link 1)
-- **C** — center of mass, at distance `offset` from H along the link axis
+- **C** — centre of mass, at distance `offset` from H along the link axis
 - **P** — pivot for the second link, at distance `pivot` from H (`TwoLinks.pivot`)
 
 ### Normalized offset
 
-The user controls `offsetNorm ∈ [0, 1]`, where 0 places H near one end and 1 centers H on the link:
+The user controls `offsetNorm ∈ [0, 1]`, where 0 places H near one end and 1 centres H on the link:
 
 ```
-offsetNorm = 1 - offset / (L/2 - minDistanceFromEdge)
+offsetNorm = 1 − offset / (L/2 − minDistanceFromEdge)
 ```
 
 Solving for `offset`:
 
 ```
-offset = (1 - offsetNorm) × (L/2 - minDistanceFromEdge)
+offset = (1 − offsetNorm) × (L/2 − minDistanceFromEdge)
 ```
 
 `minDistanceFromEdge = 0.03 m` keeps the hinge at least 3 cm from either end.
@@ -125,7 +205,7 @@ offset = (1 - offsetNorm) × (L/2 - minDistanceFromEdge)
 The pivot `y` can range from 0 (at the hinge) up to the far end of the link minus the minimum edge clearance:
 
 ```
-maxPivot = offset + L/2 - minDistanceFromEdge
+maxPivot = offset + L/2 − minDistanceFromEdge
 ```
 
 `pivotNorm = pivot / maxPivot` maps linearly to this range. When link 1's length or offset changes, the pivot is clamped to the new `maxPivot` so it never falls outside the link.
@@ -139,18 +219,4 @@ Float3(pivot, 0f, links[0].thickness)
 ```
 
 The Z offset by `links[0].thickness` places the second link's hinge flush with the front face of the first link.
-
----
-
-## Physics
-
-The simulation integrates the Lagrangian equations of motion for a double compound pendulum using **4th-order Runge-Kutta** (RK4). The state vector is `Float4(θ₁, θ₂, ω₁, ω₂)`.
-
-The 2×2 mass matrix couples link rotations through the off-diagonal term:
-
-```
-m₁₂ = m₂ · pivot · offset₂ · cos(θ₁ - θ₂)
-```
-
-Gravity is set to **1.62 m/s²** (lunar). Frame time is capped at 0.1 s to prevent the integrator from diverging after app suspend/resume.
 
