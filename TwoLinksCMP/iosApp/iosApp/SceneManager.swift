@@ -26,6 +26,8 @@ import UIKit
     // MARK: - Build
     
     func buildScene(root: Entity, representing viewModel: MainViewModel) {
+        lastLink0Color = SIMD3(repeating: -1)
+        lastLink1Color = SIMD3(repeating: -1)
         // 180° Y-rotation wrapper so the camera at +Z faces the mechanism side
         let wrapper = Entity()
         wrapper.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
