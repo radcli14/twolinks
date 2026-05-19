@@ -16,12 +16,12 @@ fun MainBodyScaffold(viewModel: MainViewModel) {
     Scaffold(
             topBar = {
                 TwoLinksTopAppBar(
-                        onEditDimensions = viewModel::toggleLinkDimensionEditor,
-                        onEditColors = viewModel::toggleLinkColorEditor,
-                        onShuffle = viewModel::toggleShuffleDialog,
-                        isARAvailable = viewModel.isARAvailable,
-                        viewMode = viewModel.viewMode.value,
-                        onSetViewMode = viewModel::setViewMode
+                    onEditDimensions = viewModel::toggleLinkDimensionEditor,
+                    onEditColors = viewModel::toggleLinkColorEditor,
+                    onShuffle = viewModel::toggleShuffleDialog,
+                    isARAvailable = viewModel.isARAvailable,
+                    viewMode = viewModel.viewMode.value,
+                    onSetViewMode = viewModel::setViewMode
                 )
             },
             containerColor = Color.Transparent
@@ -30,9 +30,9 @@ fun MainBodyScaffold(viewModel: MainViewModel) {
         Box {
             TwoLinksSceneView(viewModel)
             PlayAndResetButtons(
-                    modifier =
-                            Modifier.padding(bottom = paddingValues.calculateBottomPadding())
-                                    .align(Alignment.BottomCenter),
+                    modifier = Modifier
+                        .padding(bottom = paddingValues.calculateBottomPadding())
+                        .align(Alignment.BottomCenter),
                     isPaused = viewModel.isPaused.value,
                     onClickPlayPause = viewModel::pause,
                     onClickReset = viewModel::resetStates

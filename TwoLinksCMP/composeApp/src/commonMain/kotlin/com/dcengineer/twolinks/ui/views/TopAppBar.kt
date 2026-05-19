@@ -1,10 +1,12 @@
 package com.dcengineer.twolinks.ui.views
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.Straighten
+import androidx.compose.material.icons.filled._3dRotation
 import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -20,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.dcengineer.twolinks.model.ViewMode
 
 
@@ -46,21 +50,29 @@ fun TwoLinksTopAppBar(
                     expanded = arMenuExpanded,
                     onDismissRequest = { arMenuExpanded = false }
                 ) {
+                    Text(
+                        "Camera Mode",
+                        modifier = Modifier.padding(12.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge
+                    )
                     DropdownMenuItem(
                         text = { Text("Standard") },
-                        leadingIcon = {
-                            if (viewMode == ViewMode.Standard) Icon(Icons.Default.Check, null)
-                        },
+                        leadingIcon = { Icon(Icons.Default._3dRotation, null) },
+                        modifier = if (viewMode == ViewMode.Standard)
+                            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        else Modifier,
                         onClick = {
                             onSetViewMode(ViewMode.Standard)
                             arMenuExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("AR") },
-                        leadingIcon = {
-                            if (viewMode == ViewMode.AR) Icon(Icons.Default.Check, null)
-                        },
+                        text = { Text("Spatial Reality") },
+                        leadingIcon = { Icon(Icons.Default.ViewInAr, null) },
+                        modifier = if (viewMode == ViewMode.AR)
+                            Modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        else Modifier,
                         onClick = {
                             onSetViewMode(ViewMode.AR)
                             arMenuExpanded = false
