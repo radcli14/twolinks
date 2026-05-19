@@ -75,3 +75,6 @@ val Link.offsetNorm: Float
 
 val Link.maxPivot: Float
     get() = 0.5f * length - minDistanceFromEdge + offset
+
+val Link.endDistance: Float
+    get() = offset + 0.5f * length

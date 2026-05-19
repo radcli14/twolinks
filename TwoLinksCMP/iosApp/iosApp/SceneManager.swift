@@ -16,6 +16,10 @@ import UIKit
     // Color change detection
     var lastLink0Color = SIMD3<Float>(repeating: -1)
     var lastLink1Color = SIMD3<Float>(repeating: -1)
+    private var lastIsPaused = false
+
+    // Particle emitter at the tip of link2
+    weak var particleEmitterEntity: Entity?
 
     // Planet entity cache — populated on first load, cloned on subsequent scene builds
     private var planetCache: [String: Entity] = [:]
@@ -88,6 +92,27 @@ import UIKit
         link2Anchor.addChild(link2)
         link2Entity = link2
 
+        // Particle emitter at the tip of link2, child of link2AnchorEntity (rotation-only, unscaled).
+        // Z-rotation never changes the Z direction, so emission in local -Z is always world +Z
+        // (outward from the door toward the camera) regardless of the pendulum angle.
+        if let l1 = viewModel.twoLinks.links.last, let link2Anchor = link2AnchorEntity {
+            let tipEntity = Entity()
+            tipEntity.position = SIMD3<Float>(-l1.endDistance, 0, 0)
+            // Orient local +Y toward link2Anchor's -Z (= world +Z, outward from door)
+            tipEntity.orientation = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+            var emitter = ParticleEmitterComponent()
+            emitter.emitterShape = .point
+            emitter.mainEmitter.lifeSpan = 6.28
+            emitter.mainEmitter.color = .evolving(
+                start: .single(.white),
+                end: .single(l1.color.asUIColor)
+            )
+            emitter.speed = 0.0628
+            tipEntity.components.set(emitter)
+            link2Anchor.addChild(tipEntity)
+            particleEmitterEntity = tipEntity
+        }
+
         // Async planet loading — placed under entities.root (root.parent), not contentRoot,
         // so the planets' large bounding boxes don't inflate the shadow frustum.
         Task { @MainActor [weak root] in
@@ -103,6 +128,14 @@ import UIKit
         viewModel.updateOnFrame(frameTime: nanos)
         applyTransforms(from: viewModel.twoLinks)
         applyColors(from: viewModel.twoLinks)
+        let isPaused = viewModel.isPaused.value as? Bool ?? false
+        if isPaused != lastIsPaused {
+            lastIsPaused = isPaused
+            if var comp = particleEmitterEntity?.components[ParticleEmitterComponent.self] {
+                comp.isEmitting = !isPaused
+                particleEmitterEntity?.components[ParticleEmitterComponent.self] = comp
+            }
+        }
     }
 
     // MARK: - Update
@@ -118,6 +151,10 @@ import UIKit
         link2AnchorEntity?.orientation = twoLinks.linkTwoOrientation
         link2Entity?.position = twoLinks.linkTwoPosition
         link2Entity?.scale = twoLinks.linkTwoScale
+
+        if let l1 = twoLinks.links.last {
+            particleEmitterEntity?.position.x = -l1.endDistance
+        }
     }
 
     func applyColors(from twoLinks: TwoLinks) {
@@ -134,6 +171,10 @@ import UIKit
         if c1 != lastLink1Color, let link2Entity {
             lastLink1Color = c1
             applyColor(l1.color.asUIColor, to: link2Entity)
+            if var comp = particleEmitterEntity?.components[ParticleEmitterComponent.self] {
+                comp.mainEmitter.color = .evolving(start: .single(.white), end: .single(l1.color.asUIColor))
+                particleEmitterEntity?.components[ParticleEmitterComponent.self] = comp
+            }
         }
     }
     
@@ -153,7 +194,7 @@ import UIKit
         await loadPlanet(representing: Planet.companion.moon, into: root)
         await loadPlanet(representing: Planet.companion.earth, into: root)
         // TODO: there is an extra shadown being cast when I add the sun entity, it doesn't match the sun location or shape, but I can't trace the source. Omitting it for now.
-        //await Self.loadPlanet(representing: Planet.companion.sun, into: root)
+        //await loadPlanet(representing: Planet.companion.sun, into: root)
     }
 
     @MainActor
