@@ -1,4 +1,4 @@
-package com.dcengineer.twolinks.views
+package com.dcengineer.twolinks.ui.views
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

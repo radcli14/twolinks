@@ -1,4 +1,4 @@
-package com.dcengineer.twolinks.views
+package com.dcengineer.twolinks.ui.views
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
