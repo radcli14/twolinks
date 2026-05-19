@@ -37,7 +37,7 @@ struct TwoLinksARSceneView: View {
             offset.position = [0, 0.5 * StaticObjects.Door.shared.height, 0]
             scale?.addChild(offset)
 
-            manager.buildScene(root: offset, representing: viewModel)
+            manager.buildScene(root: offset, representing: viewModel, includeParticles: false)
 
             // Invisible hitbox sized to cover the ground surrounding the scene.
             // InputTargetComponent + CollisionComponent are required for targetedToAnyEntity().

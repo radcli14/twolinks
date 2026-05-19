@@ -47,7 +47,7 @@ val Link.size: Float3
  * of the link box, at offset distance in the x direction, and half its thickness in the z.
  */
 val Link.center: Float3
-    get() = Float3(offset, 0f, 0.5f * thickness)
+    get() = Float3(offset, 0f, 0f)
 
 val Link.mass: Float
     get() = _mass ?: (density * length * height * thickness)

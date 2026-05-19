@@ -30,7 +30,7 @@ import UIKit
 
     // MARK: - Build
     
-    func buildScene(root: Entity, representing viewModel: MainViewModel) {
+    func buildScene(root: Entity, representing viewModel: MainViewModel, includeParticles: Bool = true) {
         lastLink0Color = SIMD3(repeating: -1)
         lastLink1Color = SIMD3(repeating: -1)
         // 180° Y-rotation wrapper so the camera at +Z faces the mechanism side
@@ -49,6 +49,10 @@ import UIKit
         wrapper.addChild(doorEntity)
 
         // Pivot 1 (static cylinder at origin, lying along Z)
+        let pivot1Anchor = Entity()
+        pivot1Anchor.position = SIMD3<Float>(0, 0, -0.5 * pivot.height)
+        wrapper.addChild(pivot1Anchor)
+        
         let p1Mesh = MeshResource.generateCylinder(height: pivot.height, radius: pivot.radius)
         var pivotMat = PhysicallyBasedMaterial()
         pivotMat.baseColor = .init(tint: pivot.color.asUIColor)
@@ -56,12 +60,11 @@ import UIKit
         pivotMat.roughness = .init(floatLiteral: pivot.roughness)
         let pivot1 = ModelEntity(mesh: p1Mesh, materials: [pivotMat])
         pivot1.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
-        pivot1.position = SIMD3<Float>(0, 0, -viewModel.twoLinks.links[0].thickness)
-        wrapper.addChild(pivot1)
+        pivot1Anchor.addChild(pivot1)
 
         // Link 1 anchor (rotates around Z, carries link1 and pivot2 hierarchy)
         let link1Anchor = Entity()
-        wrapper.addChild(link1Anchor)
+        pivot1Anchor.addChild(link1Anchor)
         link1AnchorEntity = link1Anchor
 
         // Link 1 visual (unit cube scaled each frame to link dimensions)
@@ -95,7 +98,9 @@ import UIKit
         // Particle emitter at the tip of link2, child of link2AnchorEntity (rotation-only, unscaled).
         // Z-rotation never changes the Z direction, so emission in local -Z is always world +Z
         // (outward from the door toward the camera) regardless of the pendulum angle.
-        if let l1 = viewModel.twoLinks.links.last, let link2Anchor = link2AnchorEntity {
+        // Omitted in AR mode: RealityView's spatialTracking render pass lacks the stencil
+        // attachment that ParticleEmitterComponent's alpha-fade pipeline requires.
+        if includeParticles, let l1 = viewModel.twoLinks.links.last, let link2AnchorEntity {
             let tipEntity = Entity()
             tipEntity.position = SIMD3<Float>(-l1.endDistance, 0, 0)
             // Orient local +Y toward link2Anchor's -Z (= world +Z, outward from door)
@@ -109,7 +114,7 @@ import UIKit
             )
             emitter.speed = 0.0628
             tipEntity.components.set(emitter)
-            link2Anchor.addChild(tipEntity)
+            link2AnchorEntity.addChild(tipEntity)
             particleEmitterEntity = tipEntity
         }
 
