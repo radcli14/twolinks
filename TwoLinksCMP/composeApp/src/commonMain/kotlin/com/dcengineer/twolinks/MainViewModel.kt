@@ -43,8 +43,6 @@ class MainViewModel : ViewModel() {
     val elapsedTime: Float get() = elapsedTimeState.value
     val maxFrameTime = 0.1f  // Limit to prevent simulation crashing from over-stepping
 
-    val doorSize = Float3(0.91f, 2.03f, 0.035f)
-
     val anglesDegrees: Float2
         get() = Float2(twoLinks.simulationState[0] * rad2deg, twoLinks.simulationState[1] * rad2deg)
 

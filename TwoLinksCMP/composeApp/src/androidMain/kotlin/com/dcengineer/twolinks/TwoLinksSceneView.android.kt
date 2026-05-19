@@ -1,6 +1,5 @@
 package com.dcengineer.twolinks
 
-import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.dcengineer.twolinks.model.Link
+import com.dcengineer.twolinks.model.StaticObjects
 import com.dcengineer.twolinks.model.Planet
 import com.dcengineer.twolinks.model.center
 import com.dcengineer.twolinks.model.size
@@ -59,7 +59,7 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
         ) {
 
             // Base node is the door, the camera orbits around the door
-            DoorNode(viewModel.doorSize) {
+            DoorNode {
 
                 // The center about which the first link rotates
                 PivotNode()
@@ -86,18 +86,17 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
  */
 @Composable
 fun SceneScope.DoorNode(
-    size: Float3,
     content: @Composable (NodeScope.() -> Unit)? = null
 ) {
     CubeNode(
-        size = size,
+        size = StaticObjects.Door.size,
         // Offset backwards so the door surface is at zero
-        center = Float3(0f, 0f, -0.5f * size.z),
+        center = Float3(0f, 0f, -0.5f * StaticObjects.Door.thickness),
         materialInstance = materialLoader.createColorInstance(
-            color = Color.GRAY,
-            roughness = 0f,
-            metallic = 1f,
-            reflectance = 1f
+            color = StaticObjects.Door.color,
+            roughness = StaticObjects.Door.roughness,
+            metallic = StaticObjects.Door.metallic,
+            reflectance = StaticObjects.Door.reflectance
         ),
         apply = {
             isShadowCaster = true
@@ -112,17 +111,19 @@ fun SceneScope.DoorNode(
  */
 @Composable
 fun NodeScope.PivotNode(
-    radius: Float = 0.01f,
-    height: Float = 0.015f,
-    position: Float3 = Float3(),
-    color: Int = Color.GRAY
+    position: Float3 = Float3()
 ) {
     CylinderNode(
-        radius = radius,
-        height = height,
+        radius = StaticObjects.Pivot.radius,
+        height = StaticObjects.Pivot.height,
         position = position,
         rotation = Float3(90f, 0f, 0f),
-        materialInstance = materialLoader.createColorInstance(color = color)
+        materialInstance = materialLoader.createColorInstance(
+            color = StaticObjects.Pivot.color,
+            roughness = StaticObjects.Pivot.roughness,
+            metallic = StaticObjects.Pivot.metallic,
+            reflectance = StaticObjects.Pivot.reflectance
+        )
     )
 }
 
@@ -243,7 +244,7 @@ fun TwoLinksARScene(viewModel: MainViewModel) {
                     scale = Float3(sceneScale),
                     rotation = Float3(0f, sceneRotationY, 0f)
                 ) {
-                    DoorNode(viewModel.doorSize) {
+                    DoorNode {
                         PivotNode()
                         LinkNode(state.links[0], rotation = viewModel.linkOneRotation) {
                             PivotNode(position = state.pivotPosition)

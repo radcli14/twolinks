@@ -15,8 +15,6 @@ struct TwoLinksARSceneView: View {
     @State private var scaleStart: Float = 0.314
     @State private var yawStart: Float?
     
-    private let doorBaseOffset: Float = 0.0628
-
     var body: some View {
         RealityView { content in
             content.camera = .spatialTracking
@@ -29,14 +27,14 @@ struct TwoLinksARSceneView: View {
 
             // Scale entity: child of container, has a fixed vertical offset, and receives pinch-to-scale changes.
             scale = Entity()
-            scale?.position = SIMD3(0, doorBaseOffset, 0)
+            scale?.position = SIMD3(0, StaticObjects.Door.shared.offset, 0)
             scale?.scale = SIMD3(repeating: scaleStart)
             scale?.setParent(container)
 
             // Fixed-position entity: lifts the scene so the door-bottom/moon-top join
             // using half of the door height in the scene space.
             let offset = Entity()
-            offset.position = [0, 0.5 * viewModel.doorSize.y, 0]
+            offset.position = [0, 0.5 * StaticObjects.Door.shared.height, 0]
             scale?.addChild(offset)
 
             manager.buildScene(root: offset, representing: viewModel)

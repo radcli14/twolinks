@@ -60,19 +60,19 @@ actual fun TwoLinksSceneView(viewModel: MainViewModel) {
             if (!renderLoopActive) return@initSceneViewAsync
 
             // Create static primitives, and assign transforms that are permanent
-            val doorEntity = createBox(svRef, viewModel.doorSize.x, viewModel.doorSize.y, viewModel.doorSize.z, 0.75f, 0.75f, 0.75f)
-            val doorPos = Float3(0f, 0f, -0.5f * viewModel.doorSize.z)
+            val doorEntity = createBox(svRef, StaticObjects.Door.width, StaticObjects.Door.height, StaticObjects.Door.thickness, 0.75f, 0.75f, 0.75f)
+            val doorPos = Float3(0f, 0f, -0.5f * StaticObjects.Door.thickness)
             val doorOriginT = translation(doorPos)
             setEntityTransform(svRef, doorEntity, doorOriginT)
             setEntityMaterialProperties(svRef, doorEntity, metallic = 0.97f, roughness = 0.05f, reflectance = 0.95f)
 
-            val pivot1Entity = createCylinder(svRef, 0.01f, 0.015f, 0.69f, 0.69f, 0.69f)
+            val pivot1Entity = createCylinder(svRef, StaticObjects.Pivot.radius, StaticObjects.Pivot.height, 0.69f, 0.69f, 0.69f)
             val pivotRotation = rotation(Float3(90f, 0f, 0f))
             val pivot1T = translation(Float3(0f, 0f, state.links[0].thickness)) * pivotRotation
             setEntityTransform(svRef, pivot1Entity, pivot1T)
 
             // Create dynamic primitives, but don't assign transforms until the update loop
-            val pivot2Entity = createCylinder(svRef, 0.01f, 0.015f, 0.5f, 0.5f, 0.5f)
+            val pivot2Entity = createCylinder(svRef, StaticObjects.Pivot.radius, StaticObjects.Pivot.height, 0.5f, 0.5f, 0.5f)
             
             var lastLink1Color = state.links[0].color
             var lastLink2Color = state.links[1].color

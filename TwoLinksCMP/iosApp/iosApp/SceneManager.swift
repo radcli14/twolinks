@@ -20,8 +20,9 @@ import UIKit
     // Planet entity cache — populated on first load, cloned on subsequent scene builds
     private var planetCache: [String: Entity] = [:]
     
-    private let pivotRadius: Float = 0.01
-    private let pivotHeight: Float = 0.015
+    // Constant dimensions
+    private let door = StaticObjects.Door.shared
+    private let pivot = StaticObjects.Pivot.shared
 
     // MARK: - Build
     
@@ -34,19 +35,22 @@ import UIKit
         root.addChild(wrapper)
 
         // Door (static, metallic gray panel)
-        let doorMesh = MeshResource.generateBox(size: viewModel.doorSize.asSIMD3)
+        let doorMesh = MeshResource.generateBox(size: door.size.asSIMD3)
         var doorMat = PhysicallyBasedMaterial()
-        doorMat.baseColor = .init(tint: UIColor(white: 0.75, alpha: 1))
-        doorMat.metallic = .init(floatLiteral: 0.97)
-        doorMat.roughness = .init(floatLiteral: 0.05)
+        doorMat.baseColor = .init(tint: door.color.asUIColor)
+        doorMat.metallic = .init(floatLiteral: door.metallic)
+        doorMat.roughness = .init(floatLiteral: door.roughness)
         let doorEntity = ModelEntity(mesh: doorMesh, materials: [doorMat])
-        doorEntity.position = SIMD3<Float>(0, 0, 0.5 * viewModel.doorSize.z)
+        doorEntity.position = SIMD3<Float>(0, 0, 0.5 * door.thickness)
         wrapper.addChild(doorEntity)
 
         // Pivot 1 (static cylinder at origin, lying along Z)
-        let p1Mesh = MeshResource.generateCylinder(height: pivotHeight, radius: pivotRadius)
-        let p1Mat = SimpleMaterial(color: UIColor(white: 0.69, alpha: 1), isMetallic: false)
-        let pivot1 = ModelEntity(mesh: p1Mesh, materials: [p1Mat])
+        let p1Mesh = MeshResource.generateCylinder(height: pivot.height, radius: pivot.radius)
+        var pivotMat = PhysicallyBasedMaterial()
+        pivotMat.baseColor = .init(tint: pivot.color.asUIColor)
+        pivotMat.metallic = .init(floatLiteral: pivot.metallic)
+        pivotMat.roughness = .init(floatLiteral: pivot.roughness)
+        let pivot1 = ModelEntity(mesh: p1Mesh, materials: [pivotMat])
         pivot1.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
         pivot1.position = SIMD3<Float>(0, 0, -viewModel.twoLinks.links[0].thickness)
         wrapper.addChild(pivot1)
@@ -68,9 +72,8 @@ import UIKit
         pivot2AnchorEntity = pivot2Anchor
 
         // Pivot 2 cylinder (lying along Z)
-        let p2Mesh = MeshResource.generateCylinder(height: pivotHeight, radius: pivotRadius)
-        let p2Mat = SimpleMaterial(color: UIColor(white: 0.5, alpha: 1), isMetallic: false)
-        let pivot2 = ModelEntity(mesh: p2Mesh, materials: [p2Mat])
+        let p2Mesh = MeshResource.generateCylinder(height: pivot.height, radius: pivot.radius)
+        let pivot2 = ModelEntity(mesh: p2Mesh, materials: [pivotMat])
         pivot2.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
         pivot2Anchor.addChild(pivot2)
 
